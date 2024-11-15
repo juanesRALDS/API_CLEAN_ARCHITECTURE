@@ -1,6 +1,7 @@
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using MongoDB.Driver;
+using System.Threading.Tasks;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 {
@@ -8,14 +9,36 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
     {
         private readonly IMongoCollection<User> _collection;
 
-        public UserRepository(IMongoDatabase database)
+        public UserRepository(IMongoCollection<User> collection)
         {
-            _collection = database.GetCollection<User>("users");
+            _collection = collection;
         }
 
-        public async Task CreateAsync(User user) => await _collection.InsertOneAsync(user);
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _collection.Find(user => user.Email == email).FirstOrDefaultAsync();
+        }
 
-        public async Task<User?> GetByEmailAsync(string email) =>
-            await _collection.Find(x => x.Email == email).FirstOrDefaultAsync();
+        public async Task<List<User>> GetAllAsync() =>
+            await _collection.Find(_ => true).ToListAsync();
+
+        public async Task<User?> GetByIdAsync(string id) =>
+            await _collection.Find(user => user.Id == id).FirstOrDefaultAsync();
+
+        public async Task CreateAsync(User user) =>
+            await _collection.InsertOneAsync(user);
+
+        public async Task UpdateAsync(string id, User user)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
+                .Set(u => u.Name, user.Name)
+                .Set(u => u.Email, user.Email)
+                .Set(u => u.Password, user.Password);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task DeleteAsync(string id) =>
+            await _collection.DeleteOneAsync(user => user.Id == id);
     }
 }

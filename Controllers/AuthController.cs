@@ -1,43 +1,46 @@
-using System.Threading.Tasks;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Application.DTO;
+using api_completa_mongodb_net_6_0.Application.UseCases;
 using Microsoft.AspNetCore.Mvc;
 
-
-namespace api_completa_mongodb_net_6_0.Controllers
-
+namespace api_completa_mongodb_net_6_0.Presentation.Controllers
 {
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IEncryptionServices _encryptionService;
+        private readonly LoginUserUseCase _loginUserUseCase;
 
-        public AuthController(IUserRepository userRepository, IEncryptionServices encryptionService)
+        public AuthController(LoginUserUseCase loginUserUseCase)
         {
-            _userRepository = userRepository;
-            _encryptionService = encryptionService;
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
-        {
-            // Encriptar la contraseña antes de guardarla en la base de datos.
-            user.Password = _encryptionService.EncryptPassword(user.Password);
-            await _userRepository.CreateAsync(user);
-            return Ok("User created");
+            _loginUserUseCase = loginUserUseCase;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User loginUser)
+        public async Task<IActionResult> Login([FromBody] LoginUserDto loginDto)
         {
-            // Verificar si el usuario existe por su email.
-            var user = await _userRepository.GetByEmailAsync(loginUser.Email);
-            if (user == null || !_encryptionService.VerifyPassword(loginUser.Password, user.Password))
-                return Unauthorized("Invalid credentials");
+            try
+            {
+                var token = await _loginUserUseCase.ExecuteAsync(loginDto);
+                return Ok(new { Token = token });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Credenciales inválidas.");
+            }
+        }
 
-            return Ok("Login successful");
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] CreateUserDto userDto)
+        {
+            try
+            {
+                await _loginUserUseCase.RegisterAsync(userDto);
+                return Ok("Usuario registrado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
