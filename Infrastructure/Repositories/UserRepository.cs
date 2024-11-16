@@ -19,8 +19,14 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
             return await _collection.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
 
-        public async Task<List<User>> GetAllAsync() =>
-            await _collection.Find(_ => true).ToListAsync();
+        public async Task<List<User>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            return await _collection
+                .Find(_ => true)
+                .Skip((pageNumber - 1) * pageSize)
+                .Limit(pageSize)
+                .ToListAsync();
+        }
 
         public async Task<User?> GetByIdAsync(string id) =>
             await _collection.Find(user => user.Id == id).FirstOrDefaultAsync();

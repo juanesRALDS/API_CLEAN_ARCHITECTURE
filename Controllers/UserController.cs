@@ -26,9 +26,12 @@ namespace api_completa_mongodb_net_6_0.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<UserDto>>> GetAll()
+        public async Task<ActionResult<List<UserDto>>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var users = await _getAllUsersUseCase.ExecuteAsync();
+            if (pageNumber <= 0 || pageSize <= 0)
+                return BadRequest("El número de página y el tamaño deben ser mayores a 0");
+
+            List<UserDto> users = await _getAllUsersUseCase.ExecuteAsync(pageNumber, pageSize);
             return Ok(users);
         }
 
