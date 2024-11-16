@@ -20,7 +20,7 @@ namespace api_completa_mongodb_net_6_0.Presentation.Controllers
         {
             try
             {
-                var token = await _loginUserUseCase.ExecuteAsync(loginDto);
+                string? token = await _loginUserUseCase.ExecuteAsync(loginDto);
                 return Ok(new { Token = token });
             }
             catch (UnauthorizedAccessException)

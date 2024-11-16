@@ -20,7 +20,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services
 
         public async Task<string> LoginAsync(LoginUserDto loginDto)
         {
-            var user = await _userRepository.GetByEmailAsync(loginDto.Email);
+            User? user = await _userRepository.GetByEmailAsync(loginDto.Email);
 
             if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
                 throw new UnauthorizedAccessException("Credenciales inválidas");
@@ -30,9 +30,9 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services
 
         public async Task RegisterAsync(CreateUserDto userDto)
         {
-            var hashedPassword = _passwordHasher.HashPassword(userDto.Password);
+            string? hashedPassword = _passwordHasher.HashPassword(userDto.Password);
 
-            var newUser = new User
+            User? newUser = new()
             {
                 Name = userDto.Name,
                 Email = userDto.Email,

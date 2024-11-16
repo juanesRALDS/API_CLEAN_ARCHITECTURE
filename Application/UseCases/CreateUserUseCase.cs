@@ -18,9 +18,9 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
 
         public async Task ExecuteAsync(CreateUserDto dto)
         {
-            var hashedPassword = _passwordHasher.HashPassword(dto.Password);
+            string?  hashedPassword = _passwordHasher.HashPassword(dto.Password);
 
-            var user = new User
+            User? user = new User
             {
                 Name = dto.Name,
                 Email = dto.Email,

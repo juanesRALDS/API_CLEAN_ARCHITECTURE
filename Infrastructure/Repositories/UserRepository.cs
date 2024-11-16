@@ -36,8 +36,8 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task UpdateAsync(string id, User user)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            var update = Builders<User>.Update
+            FilterDefinition<User>? filter = Builders<User>.Filter.Eq(u => u.Id, id);
+             UpdateDefinition<User>? update = Builders<User>.Update
                 .Set(u => u.Name, user.Name)
                 .Set(u => u.Email, user.Email)
                 .Set(u => u.Password, user.Password);

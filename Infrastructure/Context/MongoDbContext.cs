@@ -13,7 +13,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Context
             if (string.IsNullOrEmpty(settings.Value.ConnectionString))
                 throw new ArgumentNullException(nameof(settings.Value.ConnectionString), "La cadena de conexión no puede ser nula");
 
-            var client = new MongoClient(settings.Value.ConnectionString);
+            MongoClient? client = new(settings.Value.ConnectionString);
             _database = client.GetDatabase(settings.Value.DatabaseName);
         }
 

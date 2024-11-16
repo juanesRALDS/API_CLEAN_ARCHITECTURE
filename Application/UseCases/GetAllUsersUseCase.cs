@@ -18,7 +18,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
 
         public async Task<List<UserDto>> ExecuteAsync(int pageNumber, int pageSize)
         {
-            var users = await _userRepository.GetAllAsync(pageNumber, pageSize);
+            List<User> users = await _userRepository.GetAllAsync(pageNumber, pageSize);
             return users.Select(u => new UserDto
             {
                 Id = u.Id,

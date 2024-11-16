@@ -24,7 +24,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
             }
 
 
-            var userEntity = new User
+            User? userEntity = new()
             {
                 Id = id, 
                 Name = updatedUserDto.Name,

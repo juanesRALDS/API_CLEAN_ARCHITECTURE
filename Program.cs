@@ -5,7 +5,6 @@ using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
 using api_completa_mongodb_net_6_0.Infrastructure.Services;
-using api_completa_mongodb_net_6_0.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,28 +13,26 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de MongoDBSettings desde appsettings.json
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
 
-// Registrar MongoDbContext como Scoped
+
 builder.Services.AddScoped<MongoDbContext>();
 
-// Registrar IMongoCollection<User> como un servicio
+
 builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 {
-    var settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
-    var client = new MongoClient(settings.ConnectionString);
-    var database = client.GetDatabase(settings.DatabaseName);
+    MongoDBSettings? settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    MongoClient? client = new(settings.ConnectionString);
+    IMongoDatabase? database = client.GetDatabase(settings.DatabaseName);
     return database.GetCollection<User>(settings.CollectionName);
 });
 
-// Registrar UserRepository como Scoped usando su interfaz
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Registrar servicios de autenticación y encriptación
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Registrar los Use Cases
+
 builder.Services.AddScoped<CreateUserUseCase>();
 builder.Services.AddScoped<GetAllUsersUseCase>();
 builder.Services.AddScoped<UpdateUserUseCase>();
@@ -45,7 +42,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 
-// Configurar autenticación JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -58,7 +54,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Configuración de controladores y Swagger
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
