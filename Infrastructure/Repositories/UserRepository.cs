@@ -1,5 +1,6 @@
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
@@ -9,9 +10,9 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
     {
         private readonly IMongoCollection<User> _collection;
 
-        public UserRepository(IMongoCollection<User> collection)
+        public UserRepository(MongoDbContext context)
         {
-            _collection = collection;
+           _collection = context.GetCollection<User>("users");
         }
 
         public async Task<User?> GetByEmailAsync(string email)

@@ -30,7 +30,7 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 
 builder.Services.AddScoped<CreateUserUseCase>();

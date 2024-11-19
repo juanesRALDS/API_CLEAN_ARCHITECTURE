@@ -1,12 +1,11 @@
-using System;
-using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Utils;
+using api_completa_mongodb_net_6_0.Infrastructure.Utils;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Services
-{
+
+namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
+
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
@@ -42,4 +41,4 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services
             await _userRepository.CreateAsync(newUser);
         }
     }
-}
+

@@ -5,8 +5,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 
-namespace api_completa_mongodb_net_6_0.Utils
-{
+namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
     public static class JwtHelper
     {
         public static string GenerateToken(User user)
@@ -27,7 +26,7 @@ namespace api_completa_mongodb_net_6_0.Utils
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            JwtSecurityToken? token = new JwtSecurityToken(
+            JwtSecurityToken? token = new(
                 issuer: "yourapp",
                 audience: "yourapp",
                 claims: claims,
@@ -38,4 +37,4 @@ namespace api_completa_mongodb_net_6_0.Utils
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-}
+

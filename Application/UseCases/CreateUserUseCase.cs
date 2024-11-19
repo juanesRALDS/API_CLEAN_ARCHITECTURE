@@ -20,7 +20,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
         {
             string?  hashedPassword = _passwordHasher.HashPassword(dto.Password);
 
-            User? user = new User
+            User? user = new()
             {
                 Name = dto.Name,
                 Email = dto.Email,

@@ -1,7 +1,6 @@
 using BCrypt.Net;
 
-namespace api_completa_mongodb_net_6_0.Utils
-{
+namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
     public static class HashingHelper
     {
         public static string HashPassword(string password)
@@ -14,4 +13,4 @@ namespace api_completa_mongodb_net_6_0.Utils
             return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
     }
-}
+

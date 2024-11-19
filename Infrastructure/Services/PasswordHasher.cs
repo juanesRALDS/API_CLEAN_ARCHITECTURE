@@ -1,8 +1,7 @@
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using BCrypt.Net;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Services
-{
+namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
     public class PasswordHasher : IPasswordHasher
     {
         public string HashPassword(string password)
@@ -15,4 +14,4 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services
             return BCrypt.Net.BCrypt.Verify(inputPassword, hashedPassword);
         }
     }
-}
+

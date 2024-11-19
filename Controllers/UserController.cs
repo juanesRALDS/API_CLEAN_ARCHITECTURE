@@ -45,8 +45,10 @@ namespace api_completa_mongodb_net_6_0.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, UpdateUserDto dto)
         {
-            await _updateUserUseCase.ExecuteAsync(id, dto);
-            return NoContent();
+            
+            var response = await _updateUserUseCase.ExecuteAsync(id, dto);
+
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]

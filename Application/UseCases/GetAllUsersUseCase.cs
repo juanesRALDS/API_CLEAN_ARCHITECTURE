@@ -3,6 +3,7 @@
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases
@@ -25,6 +26,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
                 Name = u.Name,
                 Email = u.Email
             }).ToList();
+
         }
     }
 }
