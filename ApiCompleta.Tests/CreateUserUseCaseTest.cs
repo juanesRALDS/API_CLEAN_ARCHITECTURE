@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases;
@@ -14,12 +15,12 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         public async Task ExecuteAsync_WithValidData_ShouldCallRepositoryAndHasher()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
+            Mock<IUserRepository>? mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
 
-            var useCase = new CreateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+            CreateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new CreateUserDto
+            CreateUserDto? dto = new()
             {
                 Name = "juan jose",
                 Email = "juanjose@example.com",
@@ -43,18 +44,21 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             )), Times.Once);
         }
 
-        [Fact]
-        public async Task ExecuteAsync_WithMissingName_ShouldThrowException()
+        [Theory]
+        [InlineData(null)]  
+        [InlineData("")]   
+        [InlineData("   ")] 
+        public async Task ExecuteAsync_WithMissingName_ShouldThrowArgumentNullException(string invalidName)
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
+            Mock<IUserRepository>? mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
 
-            var useCase = new CreateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+            CreateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new CreateUserDto
+            CreateUserDto? dto = new()
             {
-                Name = null, // Faltante
+                Name = invalidName,
                 Email = "juanjose@example.com",
                 Password = "password123"
             };
@@ -66,47 +70,51 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);
         }
 
-        [Fact]
-        public async Task ExecuteAsync_WithEmptyPassword_ShouldThrowException()
+        [Theory]
+        [InlineData("plainaddress")]
+        [InlineData("@missingusername.com")]
+        [InlineData("missingatsign.com")]
+        [InlineData("username@.com")]
+        public async Task ExecuteAsync_WithInvalidEmail_ShouldThrowFormatException(string invalidEmail)
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
+            Mock<IUserRepository> mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
 
-            var useCase = new CreateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+            CreateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new CreateUserDto
+            CreateUserDto dto = new()
             {
                 Name = "juan jose",
-                Email = "juanjose@example.com",
-                Password = string.Empty 
+                Email = invalidEmail,
+                Password = "password123"
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(dto));
+            await Assert.ThrowsAsync<FormatException>(() => useCase.ExecuteAsync(dto));
 
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithInvalidEmail_ShouldThrowException()
+        public async Task ExecuteAsync_WithEmptyPassword_ShouldThrowArgumentException()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
+            Mock<IUserRepository> mockUserRepository = new();
+            Mock<IPasswordHasher> mockPasswordHasher = new();
 
-            var useCase = new CreateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+            CreateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new CreateUserDto
+            CreateUserDto? dto = new()
             {
                 Name = "juan jose",
-                Email = "not-an-email", 
-                Password = "password123"
+                Email = "juanjose@example.com",
+                Password = string.Empty
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<FormatException>(() => useCase.ExecuteAsync(dto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(dto));
 
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);
