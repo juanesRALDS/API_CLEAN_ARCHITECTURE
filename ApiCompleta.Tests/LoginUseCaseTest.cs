@@ -43,7 +43,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             var useCase = new LoginUserUseCase(mockAuthService.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.ExecuteAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.ExecuteAsync(new()));
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             var useCase = new LoginUserUseCase(mockAuthService.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.RegisterAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.RegisterAsync(new())) ;
         }
     }
 }
