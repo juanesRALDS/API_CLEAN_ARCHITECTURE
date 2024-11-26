@@ -8,12 +8,14 @@ using api_completa_mongodb_net_6_0.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MongoApiDemo.Infrastructure;
 using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
+builder.Services.AddSingleton<EmailService>();
 
 
 builder.Services.AddScoped<MongoDbContext>();

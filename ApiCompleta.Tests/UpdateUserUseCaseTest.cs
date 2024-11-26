@@ -124,5 +124,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             mockPasswordHasher.Verify(h => h.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<string>(), It.IsAny<User>()), Times.Never);
         }
+
+        
     }
 }

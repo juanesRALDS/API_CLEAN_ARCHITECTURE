@@ -13,7 +13,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
     public class GetAllUsersUseCaseTests
     {
         [Fact]
-        public async Task ExecuteAsync_WithValidPagination_ShouldReturnMappedUserList()
+        public async Task ExecuteAsyncWithValidPaginationShouldReturnMappedUserList()
         {
             // Arrange
             var mockUserRepository = new Mock<IUserRepository>();
@@ -45,7 +45,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithNoUsers_ShouldReturnEmptyList()
+        public async Task TestWithNoUsersShouldReturnEmptyList()
         {
             // Arrange
             var mockUserRepository = new Mock<IUserRepository>();

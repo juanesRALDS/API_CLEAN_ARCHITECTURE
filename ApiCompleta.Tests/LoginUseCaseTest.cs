@@ -123,14 +123,25 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         }
 
         [Fact]
-        public async Task RegisterAsync_WithNullDto_ShouldThrowArgumentNullException()
+        public async Task ExecuteAsyncWithNullDtoShouldThrowArgumentException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
             var useCase = new LoginUserUseCase(mockAuthService.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.RegisterAsync(new())) ;
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(new LoginUserDto
+            {
+                Email = "",
+                Password = "password123"
+            }));
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(null));
+            Assert.Equal("Email cannot be empty or whitespace.", exception.Message);
         }
+
+
+
+
     }
 }
