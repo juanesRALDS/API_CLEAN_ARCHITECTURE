@@ -1,50 +1,48 @@
 using System.Net;
 using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
+using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Interfaces
+namespace api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
+
+public class EmailService : IEmailService
 {
-    public class EmailService
+    private readonly string _smtpServer;
+    private readonly int _smtpPort;
+    private readonly string _smtpUser;
+    private readonly string _smtpPassword;
+
+    public EmailService(IConfiguration configuration)
     {
-        private readonly string _smtpServer;
-        private readonly int _smtpPort;
-        private readonly string _smtpUser;
-        private readonly string _smtpPassword;
+        IConfigurationSection? emailSettings = configuration.GetSection("EmailSettings");
+        _smtpServer = emailSettings["SmtpServer"];
+        _smtpPort = int.Parse(emailSettings["SmtpPort"]);
+        _smtpUser = emailSettings["SmtpUser"];
+        _smtpPassword = emailSettings["SmtpPassword"];
+    }
 
-        public EmailService(IConfiguration configuration)
+    public async Task SendEmailAsync(string to, string subject, string body)
+    {
+        try
         {
-            IConfigurationSection? emailSettings = configuration.GetSection("EmailSettings");
-            _smtpServer = emailSettings["SmtpServer"];
-            _smtpPort = int.Parse(emailSettings["SmtpPort"]);
-            _smtpUser = emailSettings["SmtpUser"];
-            _smtpPassword = emailSettings["SmtpPassword"];
+            using SmtpClient? client = new(_smtpServer, _smtpPort);
+            client.Credentials = new NetworkCredential(_smtpUser, _smtpPassword);
+            client.EnableSsl = true;
+
+            MailMessage? mailMessage = new()
+            {
+                From = new MailAddress(_smtpUser),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+
+            mailMessage.To.Add(to);
+            await client.SendMailAsync(mailMessage);
         }
-
-        public async Task SendEmailAsync(string to, string subject, string body)
+        catch (Exception ex)
         {
-            try
-            {
-                using (SmtpClient? client = new SmtpClient(_smtpServer, _smtpPort))
-                {
-                    client.Credentials = new NetworkCredential(_smtpUser, _smtpPassword);
-                    client.EnableSsl = true;
-
-                    MailMessage? mailMessage = new()
-                    {
-                        From = new MailAddress(_smtpUser),
-                        Subject = subject,
-                        Body = body,
-                        IsBodyHtml = true
-                    };
-
-                    mailMessage.To.Add(to);
-                    await client.SendMailAsync(mailMessage);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Error sending email: {ex.Message}", ex);
-            }
+            throw new InvalidOperationException($"Error sending email: {ex.Message}", ex);
         }
     }
 }
+

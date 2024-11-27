@@ -6,6 +6,7 @@ using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
 using api_completa_mongodb_net_6_0.Infrastructure.Services;
 using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Interfaces;
+using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
