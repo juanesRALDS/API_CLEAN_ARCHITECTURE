@@ -12,7 +12,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public UserRepository(MongoDbContext context)
         {
-           _collection = context.GetCollection<User>("users");
+            _collection = context.GetCollection<User>("users");
         }
 
         public async Task<User?> GetByEmailAsync(string email)
@@ -37,13 +37,17 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task UpdateAsync(string id, User user)
         {
-            FilterDefinition<User>? filter = Builders<User>.Filter.Eq(u => u.Id, id);
-             UpdateDefinition<User>? update = Builders<User>.Update
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
                 .Set(u => u.Name, user.Name)
                 .Set(u => u.Email, user.Email)
-                .Set(u => u.Password, user.Password);
+                .Set(u => u.Password, user.Password)
+                .Set(u => u.Token, user.Token)
+                .Set(u => u.TokenExpiration, user.TokenExpiration);
+
             await _collection.UpdateOneAsync(filter, update);
         }
+
 
         public async Task DeleteAsync(string id) =>
             await _collection.DeleteOneAsync(user => user.Id == id);

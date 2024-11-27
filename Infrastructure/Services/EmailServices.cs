@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 
-namespace MongoApiDemo.Infrastructure
+namespace api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Interfaces
 {
     public class EmailService
     {

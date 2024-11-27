@@ -10,9 +10,11 @@ public class UpdateUserDto
     public string? Email { get; set; }
     public string? Password { get; set; }
 
+    
+
 }
 
 public class UpdateUserResponseDto : UserDto
 {
-
+    public string? Token { get; set; }
 }

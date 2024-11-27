@@ -5,17 +5,16 @@ using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
 using api_completa_mongodb_net_6_0.Infrastructure.Services;
+using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MongoApiDemo.Infrastructure;
 using MongoDB.Driver;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
-builder.Services.AddSingleton<EmailService>();
 
 
 builder.Services.AddScoped<MongoDbContext>();
@@ -30,10 +29,7 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-
-
-
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<CreateUserUseCase>();
 builder.Services.AddScoped<GetAllUsersUseCase>();
@@ -61,7 +57,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
