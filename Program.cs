@@ -31,6 +31,12 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenServices>();
+builder.Services.AddScoped<GetUserByIdUseCase>();
+builder.Services.AddScoped<GetUserByTokenUseCase>();
+
+
 
 builder.Services.AddScoped<CreateUserUseCase>();
 builder.Services.AddScoped<GetAllUsersUseCase>();
@@ -47,9 +53,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("TuClaveSecretaSuperSegura")),
-            ValidateIssuer = false,
-            ValidateAudience = false
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtConfig.SecretKey)),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = JwtConfig.Issuer,
+            ValidAudience = JwtConfig.Audience
         };
     });
 
@@ -68,7 +76,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

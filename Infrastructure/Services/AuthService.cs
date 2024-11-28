@@ -24,7 +24,8 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
             if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
                 throw new UnauthorizedAccessException("Credenciales inválidas");
 
-            return JwtHelper.GenerateToken(user);
+            return JwtHelper.GenerateToken(user, DateTime.UtcNow.AddHours(1));
+           
         }
 
         public async Task RegisterAsync(CreateUserDto userDto)

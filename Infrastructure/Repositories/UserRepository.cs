@@ -29,8 +29,10 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<User?> GetByIdAsync(string id) =>
-            await _collection.Find(user => user.Id == id).FirstOrDefaultAsync();
+        public async Task<User?> GetByIdAsync(string id)
+        {
+            return await _collection.Find(user => user.Id == id).FirstOrDefaultAsync();
+        }
 
         public async Task CreateAsync(User user) =>
             await _collection.InsertOneAsync(user);
@@ -47,6 +49,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
             await _collection.UpdateOneAsync(filter, update);
         }
+
 
 
         public async Task DeleteAsync(string id) =>

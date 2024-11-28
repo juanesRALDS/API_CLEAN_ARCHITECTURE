@@ -1,40 +1,64 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using api_completa_mongodb_net_6_0.Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
-    public static class JwtHelper
+
+public static class JwtHelper
+{
+    private static string SecretKey => Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "TuClaveSecretaMuyLargaDe32Caracteres";
+    private static string Issuer => "yourapp"; // Configura tu emisor
+    private static string Audience => "yourapp"; // Configura tu audiencia
+
+    public static string GenerateToken(User user, DateTime expiration)
     {
-        public static string GenerateToken(User user)
+        // Asegúrate de que la clave sea de al menos 32 caracteres
+        if (SecretKey.Length < 32)
+            throw new ArgumentException("La clave secreta debe tener al menos 32 caracteres.");
+
+        // Configuración de la clave de firma
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        // Claims personalizados para incluir información del usuario
+        var claims = new[]
         {
-            // Obtén la clave secreta desde las variables de entorno o `appsettings.json`
-            string? secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "TuClaveSecretaMuyLargaDe32Caracteres";
-            
-            // Asegúrate de que la clave sea de al menos 32 caracteres
-            if (secretKey.Length < 32)
-                throw new ArgumentException("La clave secreta debe tener al menos 32 caracteres.");
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email), // Identificador único del usuario
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Identificador del token
+            new Claim("id", user.Id.ToString()), // ID del usuario como un claim personalizado
+            new Claim("name", user.Name) // Nombre del usuario
+        };
 
-            SymmetricSecurityKey? key = new(Encoding.UTF8.GetBytes(secretKey));
-            SigningCredentials? credentials = new(key, SecurityAlgorithms.HmacSha256);
+        // Creación del token JWT
+        var token = new JwtSecurityToken(
+            issuer: Issuer,
+            audience: Audience,
+            claims: claims,
+            expires: expiration,
+            signingCredentials: credentials
+        );
 
-             Claim[]? claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            JwtSecurityToken? token = new(
-                issuer: "yourapp",
-                audience: "yourapp",
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public static JwtSecurityToken? DecodeJwtToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+
+        // Verifica si el token es legible
+        if (!handler.CanReadToken(token))
+            return null; // Retorna null si el token no es válido
+
+        try
+        {
+            // Decodifica el token JWT
+            return handler.ReadJwtToken(token);
+        }
+        catch
+        {
+            return null; // Retorna null si ocurre algún error durante la decodificación
+        }
+    }
+}
