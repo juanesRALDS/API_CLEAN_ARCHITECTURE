@@ -12,6 +12,7 @@ namespace api_completa_mongodb_net_6_0.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly GetUserByTokenUseCase _getUserByTokenUseCase;
+        
 
         public TokenController(ITokenService tokenService, GetUserByTokenUseCase getUserByTokenUseCase)
         {
@@ -34,8 +35,8 @@ namespace api_completa_mongodb_net_6_0.Controllers
                 return Unauthorized("Token inválido o caducado.");
 
             // Obtiene la información del usuario directamente desde los Claims
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+
 
             if (userId == null) 
                 return Unauthorized("No se pudo identificar al usuario.");
@@ -46,12 +47,7 @@ namespace api_completa_mongodb_net_6_0.Controllers
                 return NotFound("Usuario no encontrado.");
 
                 
-            return Ok(new 
-            { 
-                UserId = userId, 
-                Email = email, 
-                Nombre = user.Name,
-            });
+            return Ok(user);
         }
     }
 }

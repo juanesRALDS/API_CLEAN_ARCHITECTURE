@@ -15,29 +15,28 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// **1. Configuración de MongoDB**
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
-
-
 builder.Services.AddScoped<MongoDbContext>();
-
-
 builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 {
-    MongoDBSettings? settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
-    MongoClient? client = new(settings.ConnectionString);
-    IMongoDatabase? database = client.GetDatabase(settings.DatabaseName);
+    var settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    var client = new MongoClient(settings.ConnectionString);
+    var database = client.GetDatabase(settings.DatabaseName);
     return database.GetCollection<User>(settings.CollectionName);
 });
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+// **2. Configuración de JwtConfig desde appsettings.json**
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
+var jwtConfig = builder.Configuration.GetSection("JwtSettings").Get<JwtConfig>();
+
+// **3. Registro de dependencias**
+builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
 builder.Services.AddScoped<GetUserByIdUseCase>();
 builder.Services.AddScoped<GetUserByTokenUseCase>();
-
-
-
 builder.Services.AddScoped<CreateUserUseCase>();
 builder.Services.AddScoped<GetAllUsersUseCase>();
 builder.Services.AddScoped<UpdateUserUseCase>();
@@ -46,28 +45,29 @@ builder.Services.AddScoped<LoginUserUseCase>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-
+// **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtConfig.SecretKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfig.SecretKey)),
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = JwtConfig.Issuer,
-            ValidAudience = JwtConfig.Audience
+            ValidIssuer = jwtConfig.Issuer,
+            ValidAudience = jwtConfig.Audience
         };
     });
 
-
+// **5. Agregar controladores y Swagger**
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-WebApplication? app = builder.Build();
+var app = builder.Build();
 
+// **6. Middlewares**
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

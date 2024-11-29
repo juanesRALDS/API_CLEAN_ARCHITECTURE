@@ -12,7 +12,7 @@ public static class JwtHelper
     private static string Issuer => "yourapp"; // Configura tu emisor
     private static string Audience => "yourapp"; // Configura tu audiencia
 
-    public static string GenerateToken(User user, DateTime expiration)
+    public static string GenerateToken(string secretKey, string v, User user, DateTime expiration)
     {
         // Asegúrate de que la clave sea de al menos 32 caracteres
         if (SecretKey.Length < 32)
@@ -61,4 +61,6 @@ public static class JwtHelper
             return null; // Retorna null si ocurre algún error durante la decodificación
         }
     }
+
+
 }

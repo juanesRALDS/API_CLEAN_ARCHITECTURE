@@ -1,8 +1,10 @@
-
-namespace api_completa_mongodb_net_6_0.Infrastructure.Config;
-public static class JwtConfig
+namespace api_completa_mongodb_net_6_0.Infrastructure.Config
 {
-    public static string SecretKey { get; set; } = "TuClaveSecretaMuyLargaDe32Caracteres";
-    public static string Issuer { get; set; } = "yourapp";
-    public static string Audience { get; set; } = "yourapp";
+    public class JwtConfig
+    {
+        public string SecretKey { get; set; }
+        public string Issuer { get; set; }
+        public string Audience { get; set; }
+        public int ExpirationMinutes { get; set; }
+    }
 }

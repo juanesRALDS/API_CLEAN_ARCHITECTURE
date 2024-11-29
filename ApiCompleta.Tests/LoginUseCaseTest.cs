@@ -136,7 +136,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 Password = "password123"
             }));
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(null));
+            ArgumentException? exception = await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(null));
             Assert.Equal("Email cannot be empty or whitespace.", exception.Message);
         }
 
