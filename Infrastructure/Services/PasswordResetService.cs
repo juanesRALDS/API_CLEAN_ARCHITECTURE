@@ -1,51 +1,52 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using api_completa_mongodb_net_6_0.Application.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using api_completa_mongodb_net_6_0.Infrastructure.Utils;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
+namespace api_completa_mongodb_net_6_0.Application.Services;
 
 public class PasswordResetService : IPasswordResetService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
+    private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly JwtConfig _jwtConfig;
 
-    public PasswordResetService(IUserRepository userRepository, IPasswordResetTokenRepository passwordResetTokenRepository, JwtConfig jwtConfig)
+    public PasswordResetService(IUserRepository userRepository, IPasswordResetTokenRepository tokenRepository, JwtConfig jwtConfig)
     {
         _userRepository = userRepository;
-        _passwordResetTokenRepository = passwordResetTokenRepository;
+        _tokenRepository = tokenRepository;
         _jwtConfig = jwtConfig;
     }
 
-    public async Task<string> GeneratePasswordResetToken(string email)
+    public async Task<string> GenerateResetTokenAsync(string email)
     {
-        // Verifica si el correo existe en la base de datos
-        User? user = await _userRepository.GetByEmailAsync(email) ?? throw new Exception("El correo no está registrado.");
+        // Validar si el usuario existe
+        var user = await _userRepository.GetUserByEmailAsync(email);
+        if (user == null)
+            throw new Exception("Usuario no encontrado con el correo proporcionado.");
 
-        // Genera el token JWT
-        DateTime expiration = DateTime.UtcNow.AddHours(1);
-        Claim[]? claims = new[]
-        {
-                new Claim("id", user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            };
-        string token = JwtHelper.GenerateToken(_jwtConfig.SecretKey, _jwtConfig.Issuer, user, expiration);
+        // Generar el token usando JwtHelper
+        var expiration = DateTime.UtcNow.AddMinutes(30);
+        var tokenValue = JwtHelper.GenerateToken(
+            secretKey: Environment.GetEnvironmentVariable(_jwtConfig.SecretKey) ?? "TuClaveSecretaMuyLargaDe32Caracteres",
+            v: string.Empty,
+            user: user,
+            expiration: expiration
+        );
 
-        // Guarda el token en la colección `PasswordResetTokens`
-        PasswordResetToken resetToken = new()
+        // Crear el documento de token
+        var token = new Token
         {
-            UserId = user.Id,
-            Token = token,
-            Expiration = expiration
+            Tokens = tokenValue,
+            Expiration = expiration,
+            UserId = user.Id
         };
-        await _passwordResetTokenRepository.InsertAsync(resetToken);
 
-        // Retorna la URL de restauración
-        return $"https://yourfrontendapp.com/reset-password?token={token}";
+        // Guardar el token en la base de datos
+        await _tokenRepository.SaveTokenAsync(token);
+
+        // Retornar la URL de restablecimiento
+        return $"https://tu-dominio.com/reset-password?token={tokenValue}";
     }
 }
-

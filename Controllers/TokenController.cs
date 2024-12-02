@@ -25,12 +25,12 @@ namespace api_completa_mongodb_net_6_0.Controllers
         public IActionResult GetUserFromToken()
         {
             // Obtiene el token del encabezado
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            if (string.IsNullOrEmpty(token)) 
+            var tokens = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (string.IsNullOrEmpty(tokens)) 
                 return BadRequest("Token no proporcionado.");
 
             // Valida el token y extrae los reclamos
-            var principal = _tokenService.ValidateTokenAndGetPrincipal(token);
+            var principal = _tokenService.ValidateTokenAndGetPrincipal(tokens);
             if (principal == null) 
                 return Unauthorized("Token inválido o caducado.");
 

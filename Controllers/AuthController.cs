@@ -20,8 +20,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            string? token = await _loginUserUseCase.ExecuteAsync(loginDto);
-            return Ok(new { Token = token });
+            string? tokens = await _loginUserUseCase.ExecuteAsync(loginDto);
+            return Ok(new { Tokens = tokens });
         }
         catch (UnauthorizedAccessException)
         {
@@ -42,5 +42,7 @@ public class AuthController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    
 }
 

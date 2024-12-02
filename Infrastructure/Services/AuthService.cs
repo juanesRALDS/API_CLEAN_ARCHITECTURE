@@ -23,7 +23,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
 
         public async Task<string> LoginAsync(LoginUserDto loginDto)
         {
-            User? user = await _userRepository.GetByEmailAsync(loginDto.Email);
+            User? user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
 
             if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
                 throw new UnauthorizedAccessException("Credenciales inválidas");

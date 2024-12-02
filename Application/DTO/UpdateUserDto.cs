@@ -16,5 +16,5 @@ public class UpdateUserDto
 
 public class UpdateUserResponseDto : UserDto
 {
-    public string? Token { get; set; }
+    public string? Tokens { get; set; }
 }

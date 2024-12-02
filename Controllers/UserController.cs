@@ -59,9 +59,9 @@ public class UsersController : ControllerBase
         if (string.IsNullOrEmpty(authorization))
             return BadRequest("Token is missing.");
 
-        var token = authorization.StartsWith("Bearer ") ? authorization.Substring(7) : authorization;
+        var tokens = authorization.StartsWith("Bearer ") ? authorization.Substring(7) : authorization;
 
-        var user = await _getUserByTokenUseCase.ExecuteAsync(token);
+        var user = await _getUserByTokenUseCase.ExecuteAsync(tokens);
 
         if (user == null) return NotFound("User not found.");
 

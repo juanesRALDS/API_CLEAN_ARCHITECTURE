@@ -42,19 +42,14 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
             // Hashear la nueva contraseña
             string hashedPassword = _passwordHasher.HashPassword(updatedUserDto.Password);
 
-            // Generar un nuevo token
-            string newToken = Guid.NewGuid().ToString(); // Puedes cambiar esto por un JWT si es necesario
-            DateTime tokenExpiration = DateTime.UtcNow.AddHours(1); // expira en 1 hora
 
-            
+
             User updatedUser = new()
             {
                 Id = id,
                 Name = updatedUserDto.Name,
                 Email = updatedUserDto.Email,
-                Password = hashedPassword,
-                Token = newToken,
-                TokenExpiration = tokenExpiration
+                Password = hashedPassword
             };
 
             await _userRepository.UpdateAsync(id, updatedUser);
@@ -63,8 +58,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
             {
                 Id = id,
                 Name = updatedUserDto.Name,
-                Email = updatedUserDto.Email,
-                Token = newToken 
+                Email = updatedUserDto.Email, 
             };
         }
 

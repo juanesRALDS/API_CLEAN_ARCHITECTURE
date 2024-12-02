@@ -18,6 +18,5 @@ public class User
 
     [BsonElement("password")]
     public string Password { get; set; } = null!;
-    public string? Token { get; set; }
-    public DateTime? TokenExpiration { get; set; }
+
 }

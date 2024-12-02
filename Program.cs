@@ -1,3 +1,5 @@
+using api_completa_mongodb_net_6_0.Application.Interfaces;
+using api_completa_mongodb_net_6_0.Application.Services;
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
@@ -28,9 +30,12 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 
 // **2. Configuración de JwtConfig desde appsettings.json**
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
-var jwtConfig = builder.Configuration.GetSection("JwtSettings").Get<JwtConfig>();
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<JwtConfig>>().Value);
 
-// **3. Registro de dependencias**
+
+// **3. Registro de dependencias**  
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -44,11 +49,18 @@ builder.Services.AddScoped<DeleteUserUseCase>();
 builder.Services.AddScoped<LoginUserUseCase>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<UpdatePasswordUseCase>();
 
 // **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var jwtConfig = builder.Configuration.GetSection("JwtSettings").Get<JwtConfig>();
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,

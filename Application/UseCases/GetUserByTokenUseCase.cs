@@ -20,9 +20,9 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
         }
 
 
-        public async Task<UserDto> ExecuteAsync(string token)
+        public async Task<UserDto?> ExecuteAsync(string tokens)
         {
-            var userId = _tokenServices.ValidateToken(token);
+            var userId = _tokenServices.ValidateToken(tokens);
             if (userId == null) return null;
 
             var user = await _userRepository.GetByIdAsync(userId);

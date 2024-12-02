@@ -15,7 +15,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
             _collection = context.GetCollection<User>("users");
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _collection.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
@@ -43,9 +43,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
             var update = Builders<User>.Update
                 .Set(u => u.Name, user.Name)
                 .Set(u => u.Email, user.Email)
-                .Set(u => u.Password, user.Password)
-                .Set(u => u.Token, user.Token)
-                .Set(u => u.TokenExpiration, user.TokenExpiration);
+                .Set(u => u.Password, user.Password);
 
             await _collection.UpdateOneAsync(filter, update);
         }
@@ -54,5 +52,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task DeleteAsync(string id) =>
             await _collection.DeleteOneAsync(user => user.Id == id);
+
+
     }
 }
