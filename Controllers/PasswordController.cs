@@ -18,6 +18,10 @@ namespace api_completa_mongodb_net_6_0.Controllers
         [HttpPost("update")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
+
+            if(string.IsNullOrWhiteSpace(request.NewPassword)|| string.IsNullOrWhiteSpace(request.Tokens))
+            return BadRequest("la nueva contraseña y el token son requeridas");
+
             var result = await _updatePasswordUseCase.ExecuteAsync(request.Tokens, request.NewPassword);
 
             if (!result)

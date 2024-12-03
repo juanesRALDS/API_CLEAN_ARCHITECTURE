@@ -27,6 +27,8 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
             return await _tokensCollection
                 .Find(t => t.Tokens == Tokens)
                 .FirstOrDefaultAsync();
+
+            
         }
 
         public async Task DeleteTokenAsync(string tokenValue)

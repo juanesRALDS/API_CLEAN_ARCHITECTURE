@@ -47,12 +47,15 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
             await _collection.UpdateOneAsync(filter, update);
         }
-
-
-
         public async Task DeleteAsync(string id) =>
             await _collection.DeleteOneAsync(user => user.Id == id);
 
+        public async Task UpdatePasswordAsync(string userId, string hashedPassword)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+            var update = Builders<User>.Update.Set(u => u.Password, hashedPassword);
 
+            await _collection.UpdateOneAsync(filter, update);
+        }
     }
 }

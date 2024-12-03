@@ -12,5 +12,6 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces
         Task CreateAsync(User user);
         Task UpdateAsync(string id, User user);
         Task DeleteAsync(string id);
+        Task UpdatePasswordAsync(String userId,string hashedPassword);
     }
 }
