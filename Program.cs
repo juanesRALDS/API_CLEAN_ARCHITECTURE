@@ -54,6 +54,8 @@ builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepo
 builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<UpdatePasswordUseCase>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<GetMoviesUseCase>();
 
 // **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
