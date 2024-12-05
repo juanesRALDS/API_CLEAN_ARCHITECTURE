@@ -1,3 +1,4 @@
+using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ namespace api_completa_mongodb_net_6_0.Controllers
             [FromQuery] int pageSize = 10, 
             [FromQuery] string? genre = null)
         {
-            (IEnumerable<Domain.Entities.Movie> movies, int total)
+            (IEnumerable<MovieDto> movies, int total)
                 = await _getMoviesUseCase.ExecuteAsync(page, pageSize, genre);
                 return Ok(new { Data = movies, Total = total });
         }

@@ -22,17 +22,22 @@ public class UpdatePasswordUseCase
         Console.WriteLine($"Fecha actual: {DateTime.UtcNow}");
 
         // Valida el token
-        if (storedToken == null || storedToken.Expiration.ToUniversalTime() < DateTime.UtcNow)
-        {   
+        if (storedToken == null || storedToken.Expiration.Date < DateTime.UtcNow.Date)
+        {
             Console.WriteLine("Token expirado.");
             Console.WriteLine($"Token inválido o expirado. Expiración: {storedToken?.Expiration}, Ahora: {DateTime.UtcNow}");
             return false;
         }
 
         // Lógica para actualizar la contraseña (implementación pendiente)
-        var user = await _userRepository.GetUserByEmailAsync(storedToken.UserId);
+        var user = await _userRepository.GetByIdAsync(storedToken.UserId);
+
         if (user == null)
+        {
+            Console.WriteLine("usuario no encontrado");
             return false;
+
+        }
 
         //encriptacion de contraseña
         var hashedPassword = HashingHelper.HashPassword(newPassword);

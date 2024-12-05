@@ -1,4 +1,4 @@
-using api_completa_mongodb_net_6_0.Application.DTO;
+using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases

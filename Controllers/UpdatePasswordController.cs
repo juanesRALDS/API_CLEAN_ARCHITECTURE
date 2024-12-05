@@ -1,4 +1,4 @@
-using api_completa_mongodb_net_6_0.Application.DTOs;
+using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using Microsoft.AspNetCore.Mvc;
 

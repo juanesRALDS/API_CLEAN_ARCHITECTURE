@@ -1,4 +1,4 @@
-using api_completa_mongodb_net_6_0.Application.DTO;
+using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
 
-    public class AuthService : IAuthService
+public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
