@@ -12,7 +12,7 @@ public class GeneratePasswordResetTokenUseCase
         _passwordResetService = passwordResetService;
     }
 
-    public async Task<string> ExecuteAsync(string email)
+    public async Task<string> Login(string email)
     {
         return await _passwordResetService.GenerateResetTokenAsync(email);
     }

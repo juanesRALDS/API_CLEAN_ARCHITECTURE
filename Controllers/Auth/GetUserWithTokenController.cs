@@ -25,24 +25,24 @@ namespace api_completa_mongodb_net_6_0.Controllers
         public IActionResult GetUserFromToken()
         {
             // Obtiene el token del encabezado
-            var tokens = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string? tokens = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (string.IsNullOrEmpty(tokens)) 
                 return BadRequest("Token no proporcionado.");
 
             // Valida el token y extrae los reclamos
-            var principal = _tokenService.ValidateTokenAndGetPrincipal(tokens);
+            ClaimsPrincipal? principal = _tokenService.ValidateTokenAndGetPrincipal(tokens);
             if (principal == null) 
                 return Unauthorized("Token inválido o caducado.");
 
             // Obtiene la información del usuario directamente desde los Claims
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            string? userId = principal.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
 
 
             if (userId == null) 
                 return Unauthorized("No se pudo identificar al usuario.");
 
             // Llama al caso de uso para obtener el usuario
-            var user = _getUserByTokenUseCase.ExecuteAsync(userId).Result;
+            Application.DTO.UserDto? user = _getUserByTokenUseCase.Login(userId).Result;
             if (user == null) 
                 return NotFound("Usuario no encontrado.");
 

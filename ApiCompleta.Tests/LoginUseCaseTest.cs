@@ -10,7 +10,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
     public class LoginUserUseCaseTests
     {
         [Fact]
-        public async Task ExecuteAsync_WithValidCredentials_ShouldReturnToken()
+        public async Task Login_WithValidCredentials_ShouldReturnToken()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
@@ -28,7 +28,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .ReturnsAsync(expectedToken);
 
             // Act
-            var result = await useCase.ExecuteAsync(loginDto);
+            var result = await useCase.Login(loginDto);
 
             // Assert
             mockAuthService.Verify(auth => auth.LoginAsync(loginDto), Times.Once);
@@ -36,18 +36,18 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithNullDto_ShouldThrowArgumentNullException()
+        public async Task Login_WithNullDto_ShouldThrowArgumentNullException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
             var useCase = new LoginUserUseCase(mockAuthService.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.ExecuteAsync(new()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.Login(new()));
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithEmptyEmail_ShouldThrowArgumentException()
+        public async Task Login_WithEmptyEmail_ShouldThrowArgumentException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
@@ -60,12 +60,12 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(loginDto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(loginDto));
             mockAuthService.Verify(auth => auth.LoginAsync(It.IsAny<LoginUserDto>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithEmptyPassword_ShouldThrowArgumentException()
+        public async Task Login_WithEmptyPassword_ShouldThrowArgumentException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
@@ -78,12 +78,12 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(loginDto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(loginDto));
             mockAuthService.Verify(auth => auth.LoginAsync(It.IsAny<LoginUserDto>()), Times.Never);
         }
 
         [Fact]
-        public async Task RegisterAsync_WithValidData_ShouldCallAuthService()
+        public async Task Register_WithValidData_ShouldCallAuthService()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
@@ -97,14 +97,14 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act
-            await useCase.RegisterAsync(userDto);
+            await useCase.Register(userDto);
 
             // Assert
-            mockAuthService.Verify(auth => auth.RegisterAsync(userDto), Times.Once);
+            mockAuthService.Verify(auth => auth.Register(userDto), Times.Once);
         }
 
         [Fact]
-        public async Task RegisterAsync_WithMissingName_ShouldThrowArgumentException()
+        public async Task Register_WithMissingName_ShouldThrowArgumentException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
@@ -118,25 +118,25 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.RegisterAsync(userDto));
-            mockAuthService.Verify(auth => auth.RegisterAsync(It.IsAny<CreateUserDto>()), Times.Never);
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Register(userDto));
+            mockAuthService.Verify(auth => auth.Register(It.IsAny<CreateUserDto>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsyncWithNullDtoShouldThrowArgumentException()
+        public async Task LoginWithNullDtoShouldThrowArgumentException()
         {
             // Arrange
             var mockAuthService = new Mock<IAuthService>();
             var useCase = new LoginUserUseCase(mockAuthService.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(new LoginUserDto
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(new LoginUserDto
             {
                 Email = "",
                 Password = "password123"
             }));
             // Act & Assert
-            ArgumentException? exception = await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(null));
+            ArgumentException? exception = await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(null));
             Assert.Equal("Email cannot be empty or whitespace.", exception.Message);
         }
 

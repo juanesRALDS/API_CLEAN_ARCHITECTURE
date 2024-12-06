@@ -23,7 +23,7 @@ public class PasswordResetController : ControllerBase
 
         try
         {
-            var resetUrl = await _useCase.ExecuteAsync(request.Email);
+            string? resetUrl = await _useCase.Login(request.Email);
             return Ok(new { Message = "Token generado con éxito.", Url = resetUrl });
         }
         catch (Exception ex)

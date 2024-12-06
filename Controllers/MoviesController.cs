@@ -22,7 +22,7 @@ namespace api_completa_mongodb_net_6_0.Controllers
             [FromQuery] string? genre = null)
         {
             (IEnumerable<MovieDto> movies, int total)
-                = await _getMoviesUseCase.ExecuteAsync(page, pageSize, genre);
+                = await _getMoviesUseCase.Login(page, pageSize, genre);
                 return Ok(new { Data = movies, Total = total });
         }
     }

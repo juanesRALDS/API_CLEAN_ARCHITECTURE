@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases;
+using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using Moq;
@@ -13,7 +14,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
     public class GetAllUsersUseCaseTests
     {
         [Fact]
-        public async Task ExecuteAsyncWithValidPaginationShouldReturnMappedUserList()
+        public async Task LoginWithValidPaginationShouldReturnMappedUserList()
         {
             // Arrange
             var mockUserRepository = new Mock<IUserRepository>();
@@ -33,7 +34,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .ReturnsAsync(users);
 
             // Act
-            var result = await useCase.ExecuteAsync(pageNumber, pageSize);
+            var result = await useCase.Login(pageNumber, pageSize);
 
             // Assert
             Assert.NotNull(result);
@@ -59,7 +60,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .ReturnsAsync(new List<User>());
 
             // Act
-            var result = await useCase.ExecuteAsync(pageNumber, pageSize);
+            var result = await useCase.Login(pageNumber, pageSize);
 
             // Assert
             Assert.NotNull(result);
@@ -68,7 +69,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_WhenRepositoryThrowsException_ShouldThrowSameException()
+        public async Task Login_WhenRepositoryThrowsException_ShouldThrowSameException()
         {
             // Arrange
             var mockUserRepository = new Mock<IUserRepository>();
@@ -82,13 +83,13 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .ThrowsAsync(new InvalidOperationException("Error en el repositorio"));
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(pageNumber, pageSize));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.Login(pageNumber, pageSize));
             Assert.Equal("Error en el repositorio", exception.Message);
             mockUserRepository.Verify(repo => repo.GetAllAsync(pageNumber, pageSize), Times.Once);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithInvalidPagination_ShouldThrowArgumentException()
+        public async Task Login_WithInvalidPagination_ShouldThrowArgumentException()
         {
             // Arrange
             var mockUserRepository = new Mock<IUserRepository>();
@@ -98,7 +99,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             int invalidPageSize = -5; // Invalid page size
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(invalidPageNumber, invalidPageSize));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(invalidPageNumber, invalidPageSize));
             mockUserRepository.Verify(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
     }

@@ -42,14 +42,14 @@ public class UsersController : ControllerBase
         if (pageNumber <= 0 || pageSize <= 0)
             return BadRequest("El número de página y el tamaño deben ser mayores a 0");
 
-        List<UserDto> users = await _getAllUsersUseCase.ExecuteAsync(pageNumber, pageSize);
+        List<UserDto> users = await _getAllUsersUseCase.Login(pageNumber, pageSize);
         return Ok(users);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateUserDto dto)
     {
-        await _createUserUseCase.ExecuteAsync(dto);
+        await _createUserUseCase.Login(dto);
         return CreatedAtAction(nameof(GetAll), new { });
     }
 
@@ -61,9 +61,9 @@ public class UsersController : ControllerBase
         if (string.IsNullOrEmpty(authorization))
             return BadRequest("Token is missing.");
 
-        var tokens = authorization.StartsWith("Bearer ") ? authorization.Substring(7) : authorization;
+        string? tokens = authorization.StartsWith("Bearer ") ? authorization.Substring(7) : authorization;
 
-        var user = await _getUserByTokenUseCase.ExecuteAsync(tokens);
+        UserDto? user = await _getUserByTokenUseCase.Login(tokens);
 
         if (user == null) return NotFound("User not found.");
 
@@ -75,7 +75,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, UpdateUserDto dto)
     {
-        var response = await _updateUserUseCase.ExecuteAsync(id, dto);
+        UpdateUserResponseDto? response = await _updateUserUseCase.Login(id, dto);
         return Ok(response);
     }
 
@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _deleteUserUseCase.ExecuteAsync(id);
+        await _deleteUserUseCase.Login(id);
         return NoContent();
     }
 }

@@ -9,10 +9,12 @@ namespace api_completa_mongodb_net_6_0.Presentation.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly LoginUserUseCase _loginUserUseCase;
+    private readonly RegisterUseCase _registerUseCase;
 
-    public AuthController(LoginUserUseCase loginUserUseCase)
+    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUseCase registerUseCase)
     {
         _loginUserUseCase = loginUserUseCase;
+        _registerUseCase = registerUseCase;
     }
 
     [HttpPost("login")]
@@ -20,7 +22,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            string? tokens = await _loginUserUseCase.ExecuteAsync(loginDto);
+            string? tokens = await _loginUserUseCase.Login(loginDto);
             return Ok(new { Tokens = tokens });
         }
         catch (UnauthorizedAccessException)
@@ -34,7 +36,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            await _loginUserUseCase.RegisterAsync(userDto);
+            await _registerUseCase.Register(userDto);
             return Ok("Usuario registrado exitosamente.");
         }
         catch (Exception ex)

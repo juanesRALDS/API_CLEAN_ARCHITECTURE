@@ -23,13 +23,12 @@ public class PasswordResetService : IPasswordResetService
     public async Task<string> GenerateResetTokenAsync(string email)
     {
         // Validar si el usuario existe
-        var user = await _userRepository.GetUserByEmailAsync(email);
-        if (user == null)
-            throw new Exception("Usuario no encontrado con el correo proporcionado.");
+        User? user = await _userRepository.GetUserByEmailAsync(email) 
+            ?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
 
         // Generar el token usando JwtHelper
-        var expiration = DateTime.UtcNow.AddMinutes(30);
-        var tokenValue = JwtHelper.GenerateToken(
+         DateTime expiration = DateTime.UtcNow.AddMinutes(30);
+        string? tokenValue = JwtHelper.GenerateToken(
             secretKey: Environment.GetEnvironmentVariable(_jwtConfig.SecretKey) ?? "TuClaveSecretaMuyLargaDe32Caracteres",
             v: string.Empty,
             user: user,
@@ -37,7 +36,7 @@ public class PasswordResetService : IPasswordResetService
         );
 
         // Crear el documento de token
-        var token = new Token
+        Token? token = new Token
         {
             Tokens = tokenValue,
             Expiration = expiration,

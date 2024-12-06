@@ -21,12 +21,12 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth
         }
 
 
-        public async Task<UserDto?> ExecuteAsync(string tokens)
+        public async Task<UserDto?> Login(string tokens)
         {
-            var userId = _tokenServices.ValidateToken(tokens);
+            string? userId = _tokenServices.ValidateToken(tokens);
             if (userId == null) return null;
 
-            var user = await _userRepository.GetByIdAsync(userId);
+            Domain.Entities.User? user = await _userRepository.GetByIdAsync(userId);
             if (user == null) return null;
 
             // Map the User entity to a UserDto

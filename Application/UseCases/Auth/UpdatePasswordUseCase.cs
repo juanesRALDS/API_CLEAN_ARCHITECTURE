@@ -15,10 +15,10 @@ public class UpdatePasswordUseCase
         _userRepository = userRepository;
     }
 
-    public async Task<bool> ExecuteAsync(string token, string newPassword)
+    public async Task<bool> Login(string token, string newPassword)
     {
         // Busca el token en la base de datos
-        var storedToken = await _tokenRepository.GetByTokenAsync(token);
+        Domain.Entities.Token? storedToken = await _tokenRepository.GetByTokenAsync(token);
         Console.WriteLine($"Expiración del token almacenado: {storedToken.Expiration}");
         Console.WriteLine($"Fecha actual: {DateTime.UtcNow}");
 
@@ -31,7 +31,7 @@ public class UpdatePasswordUseCase
         }
 
         // Lógica para actualizar la contraseña (implementación pendiente)
-        var user = await _userRepository.GetByIdAsync(storedToken.UserId);
+        Domain.Entities.User? user = await _userRepository.GetByIdAsync(storedToken.UserId);
 
         if (user == null)
         {
@@ -41,7 +41,7 @@ public class UpdatePasswordUseCase
         }
 
         //encriptacion de contraseña
-        var hashedPassword = HashingHelper.HashPassword(newPassword);
+        string? hashedPassword = HashingHelper.HashPassword(newPassword);
 
         //actualizar contraseña del usuario
         await _userRepository.UpdatePasswordAsync(user.Id, hashedPassword);

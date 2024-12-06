@@ -11,7 +11,7 @@ public class DeleteUserUseCase
         _userRepository = userRepository;
     }
 
-    public async Task ExecuteAsync(string id)
+    public async Task Login(string id)
     {
         await _userRepository.DeleteAsync(id);
     }

@@ -12,7 +12,7 @@ public class LoginUserUseCase
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
-    public async Task<string> ExecuteAsync(LoginUserDto loginDto)
+    public async Task<string> Login(LoginUserDto loginDto)
     {
         if (loginDto == null)
             throw new ArgumentNullException(nameof(loginDto));
@@ -26,22 +26,6 @@ public class LoginUserUseCase
         return await _authService.LoginAsync(loginDto);
     }
 
-    public async Task RegisterAsync(CreateUserDto userDto)
-    {
-        if (userDto == null)
-            throw new ArgumentNullException(nameof(userDto));
-
-        if (string.IsNullOrWhiteSpace(userDto.Name))
-            throw new ArgumentException("Name cannot be empty or whitespace.", nameof(userDto.Name));
-
-        if (string.IsNullOrWhiteSpace(userDto.Email))
-            throw new ArgumentNullException("Email cannot be empty or whitespace.", nameof(userDto.Email));
-
-        if (string.IsNullOrWhiteSpace(userDto.Password))
-            throw new ArgumentException("Password cannot be empty or whitespace.", nameof(userDto.Password));
-
-        await _authService.RegisterAsync(userDto);
-    }
 
 }
 

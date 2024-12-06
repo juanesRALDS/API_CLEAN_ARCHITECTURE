@@ -15,7 +15,7 @@ public class UpdateUserUseCase
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<UpdateUserResponseDto> ExecuteAsync(string id, UpdateUserDto updatedUserDto)
+    public async Task<UpdateUserResponseDto> Login(string id, UpdateUserDto updatedUserDto)
     {
         if (string.IsNullOrWhiteSpace(id))
         {

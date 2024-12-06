@@ -12,7 +12,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
     public class CreateUserUseCaseTests
     {
         [Fact]
-        public async Task ExecuteAsync_WithValidData_ShouldCallRepositoryAndHasher()
+        public async Task Login_WithValidData_ShouldCallRepositoryAndHasher()
         {
             // Arrange
             Mock<IUserRepository>? mockUserRepository = new();
@@ -33,7 +33,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .Returns(hashedPassword);
 
             // Act
-            await useCase.ExecuteAsync(dto);
+            await useCase.Login(dto);
 
             // Assert
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(dto.Password), Times.Once);
@@ -48,7 +48,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         [InlineData(null)]  
         [InlineData("")]   
         [InlineData("   ")] 
-        public async Task ExecuteAsync_WithMissingName_ShouldThrowArgumentNullException(string invalidName)
+        public async Task Login_WithMissingName_ShouldThrowArgumentNullException(string invalidName)
         {
             // Arrange
             Mock<IUserRepository>? mockUserRepository = new();
@@ -64,7 +64,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.ExecuteAsync(dto));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => useCase.Login(dto));
 
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);
@@ -75,7 +75,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         [InlineData("@missingusername.com")]
         [InlineData("missingatsign.com")]
         [InlineData("username@.com")]
-        public async Task ExecuteAsync_WithInvalidEmail_ShouldThrowFormatException(string invalidEmail)
+        public async Task Login_WithInvalidEmail_ShouldThrowFormatException(string invalidEmail)
         {
             // Arrange
             Mock<IUserRepository> mockUserRepository = new();
@@ -91,14 +91,14 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<FormatException>(() => useCase.ExecuteAsync(dto));
+            await Assert.ThrowsAsync<FormatException>(() => useCase.Login(dto));
 
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithEmptyPassword_ShouldThrowArgumentException()
+        public async Task Login_WithEmptyPassword_ShouldThrowArgumentException()
         {
             // Arrange
             Mock<IUserRepository> mockUserRepository = new();
@@ -114,7 +114,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(dto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login(dto));
 
             mockPasswordHasher.Verify(hasher => hasher.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Never);

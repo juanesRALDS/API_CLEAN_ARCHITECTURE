@@ -19,11 +19,11 @@ public static class JwtHelper
             throw new ArgumentException("La clave secreta debe tener al menos 32 caracteres.");
 
         // Configuración de la clave de firma
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
+        SigningCredentials? credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         // Claims personalizados para incluir información del usuario
-        var claims = new[]
+        Claim[]? claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email), // Identificador único del usuario
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Identificador del token
@@ -32,7 +32,7 @@ public static class JwtHelper
         };
 
         // Creación del token JWT
-        var token = new JwtSecurityToken(
+        JwtSecurityToken? token = new JwtSecurityToken(
             issuer: Issuer,
             audience: Audience,
             claims: claims,
@@ -45,7 +45,7 @@ public static class JwtHelper
 
     public static JwtSecurityToken? DecodeJwtToken(string token)
     {
-        var handler = new JwtSecurityTokenHandler();
+        JwtSecurityTokenHandler? handler = new JwtSecurityTokenHandler();
 
         // Verifica si el token es legible
         if (!handler.CanReadToken(token))

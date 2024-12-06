@@ -14,7 +14,7 @@ public class GetAllUsersUseCase
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
-    public async Task<List<UserDto>> ExecuteAsync(int pageNumber, int pageSize)
+    public async Task<List<UserDto>> Login(int pageNumber, int pageSize)
     {
         if (pageNumber <= 0)
             throw new ArgumentException("Page number must be greater than 0.", nameof(pageNumber));
@@ -22,7 +22,7 @@ public class GetAllUsersUseCase
         if (pageSize <= 0)
             throw new ArgumentException("Page size must be greater than 0.", nameof(pageSize));
 
-        var users = await _userRepository.GetAllAsync(pageNumber, pageSize)
+        List<User>? users = await _userRepository.GetAllAsync(pageNumber, pageSize)
             ?? throw new InvalidOperationException("The repository returned null users list.");
 
         return users.Select(ToUserDto).ToList();

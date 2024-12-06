@@ -5,6 +5,6 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 public interface IAuthService
 {
     Task<string> LoginAsync(LoginUserDto loginDto);
-    Task RegisterAsync(CreateUserDto userDto);
+    Task Register(CreateUserDto userDto);
 }
 

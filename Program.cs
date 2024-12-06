@@ -17,16 +17,16 @@ using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 // **1. Configuración de MongoDB**
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
 builder.Services.AddScoped<MongoDbContext>();
 builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 {
-    var settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
-    var client = new MongoClient(settings.ConnectionString);
-    var database = client.GetDatabase(settings.DatabaseName);
+    MongoDBSettings? settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
+    MongoClient? client = new MongoClient(settings.ConnectionString);
+    IMongoDatabase? database = client.GetDatabase(settings.DatabaseName);
     return database.GetCollection<User>(settings.CollectionName);
 });
 
@@ -63,7 +63,7 @@ builder.Services.AddScoped<GetMoviesUseCase>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var jwtConfig = builder.Configuration.GetSection("JwtSettings").Get<JwtConfig>();
+        JwtConfig? jwtConfig = builder.Configuration.GetSection("JwtSettings").Get<JwtConfig>();
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -81,7 +81,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 // **6. Middlewares**
 if (app.Environment.IsDevelopment())

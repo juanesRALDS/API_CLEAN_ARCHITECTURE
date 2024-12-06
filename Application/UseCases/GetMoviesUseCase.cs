@@ -16,7 +16,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases
             _repository = repository;
         }
 
-        public async Task<(IEnumerable<MovieDto>, int)> ExecuteAsync(int page, int pageSize, string genre = null)
+        public async Task<(IEnumerable<MovieDto>, int)> Login(int page, int pageSize, string genre = null)
         {
             // Obtener las películas y el total desde el repositorio
             (IEnumerable<Movie> movies, int total) = await _repository.GetMoviesAsync(page, pageSize, genre);

@@ -20,7 +20,7 @@ public class TokenServices : ITokenService
     }
     public string GenerateUserToken(User user)
     {
-        var expiration = DateTime.UtcNow.AddHours(2);
+        DateTime expiration = DateTime.UtcNow.AddHours(2);
 
         // Llama a JwtHelper.GenerateToken con los parámetros correctos
         return JwtHelper.GenerateToken(
@@ -33,7 +33,7 @@ public class TokenServices : ITokenService
     public string? ValidateToken(string token)
     {
         // Usa directamente el método estático de JwtHelper
-        var jwtToken = JwtHelper.DecodeJwtToken(token);
+        JwtSecurityToken? jwtToken = JwtHelper.DecodeJwtToken(token);
         if (jwtToken == null)
         {
             return null; // Retorna null si el token es inválido
@@ -45,12 +45,12 @@ public class TokenServices : ITokenService
 
     public ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token)
     {
-        var handler = new JwtSecurityTokenHandler();
+         JwtSecurityTokenHandler? handler = new JwtSecurityTokenHandler();
 
         try
         {
             // Configura la validación del token (ajusta según tu lógica)
-            var validationParameters = new TokenValidationParameters
+            TokenValidationParameters? validationParameters = new()
             {
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
@@ -58,12 +58,12 @@ public class TokenServices : ITokenService
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey)) // Reemplaza con tu clave secreta
             };
 
-            var principal = handler.ValidateToken(token, validationParameters, out _);
+            ClaimsPrincipal? principal = handler.ValidateToken(token, validationParameters, out _);
             return principal;
         }
         catch
         {
-            return null; // Retorna null si la validación falla
+            return null; 
         }
     }
 

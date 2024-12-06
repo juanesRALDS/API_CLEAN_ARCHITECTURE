@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases;
+using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using Moq;
@@ -11,26 +12,26 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
     public class UpdateUserUseCaseTests
     {
         [Fact]
-        public async Task ExecuteAsync_WithValidData_ShouldUpdateUserAndReturnResponse()
+        public async Task Login_WithValidData_ShouldUpdateUserAndReturnResponse()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
-            var useCase = new UpdateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+             Mock<IUserRepository>? mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
+            UpdateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new UpdateUserDto
+            UpdateUserDto? dto = new()
             {
                 Name = "Juan Perez",
                 Email = "juan.perez@example.com",
                 Password = "securepassword123"
             };
 
-            var hashedPassword = "hashed_password";
+            string? hashedPassword = "hashed_password";
             mockPasswordHasher
                 .Setup(h => h.HashPassword(dto.Password))
                 .Returns(hashedPassword);
 
-            var existingUser = new User
+            User? existingUser = new()
             {
                 Id = "1",
                 Name = "Old Name",
@@ -43,7 +44,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
                 .ReturnsAsync(existingUser);
 
             // Act
-            var result = await useCase.ExecuteAsync("1", dto);
+            UpdateUserResponseDto? result = await useCase.Login("1", dto);
 
             // Assert
             Assert.Equal("1", result.Id);
@@ -59,35 +60,35 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithInvalidEmail_ShouldThrowFormatException()
+        public async Task Login_WithInvalidEmail_ShouldThrowFormatException()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
-            var useCase = new UpdateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+             Mock<IUserRepository> mockUserRepository = new();
+            Mock<IPasswordHasher> mockPasswordHasher = new();
+            UpdateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new UpdateUserDto
-            {
+             UpdateUserDto? dto = new()
+             {
                 Name = "Juan Perez",
                 Email = "invalidemail",
                 Password = "securepassword123"
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<FormatException>(() => useCase.ExecuteAsync("1", dto));
+            await Assert.ThrowsAsync<FormatException>(() => useCase.Login("1", dto));
             mockPasswordHasher.Verify(h => h.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<string>(), It.IsAny<User>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithMissingFields_ShouldThrowArgumentException()
+        public async Task Login_WithMissingFields_ShouldThrowArgumentException()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
-            var useCase = new UpdateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+             Mock<IUserRepository>? mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
+            UpdateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new UpdateUserDto
+            UpdateUserDto? dto = new()
             {
                 Name = "Juan Perez",
                 Email = "",
@@ -95,20 +96,20 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync("1", dto));
+            await Assert.ThrowsAsync<ArgumentException>(() => useCase.Login("1", dto));
             mockPasswordHasher.Verify(h => h.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<string>(), It.IsAny<User>()), Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_WithNonExistentUser_ShouldThrowKeyNotFoundException()
+        public async Task Login_WithNonExistentUser_ShouldThrowKeyNotFoundException()
         {
             // Arrange
-            var mockUserRepository = new Mock<IUserRepository>();
-            var mockPasswordHasher = new Mock<IPasswordHasher>();
-            var useCase = new UpdateUserUseCase(mockUserRepository.Object, mockPasswordHasher.Object);
+            Mock<IUserRepository>? mockUserRepository = new();
+            Mock<IPasswordHasher>? mockPasswordHasher = new();
+            UpdateUserUseCase? useCase = new(mockUserRepository.Object, mockPasswordHasher.Object);
 
-            var dto = new UpdateUserDto
+            UpdateUserDto? dto = new()
             {
                 Name = "Juan Perez",
                 Email = "juan.perez@example.com",
@@ -117,10 +118,10 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
 
             mockUserRepository
                 .Setup(repo => repo.GetByIdAsync("1"))
-                .ReturnsAsync((User)null);
+                .ReturnsAsync((User?)null);
 
             // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => useCase.ExecuteAsync("1", dto));
+            await Assert.ThrowsAsync<KeyNotFoundException>(() => useCase.Login("1", dto));
             mockPasswordHasher.Verify(h => h.HashPassword(It.IsAny<string>()), Times.Never);
             mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<string>(), It.IsAny<User>()), Times.Never);
         }

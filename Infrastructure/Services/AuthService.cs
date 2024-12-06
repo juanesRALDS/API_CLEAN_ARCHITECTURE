@@ -33,7 +33,7 @@ public class AuthService : IAuthService
            
         }
 
-        public async Task RegisterAsync(CreateUserDto userDto)
+        public async Task Register(CreateUserDto userDto)
         {
             string? hashedPassword = _passwordHasher.HashPassword(userDto.Password);
 

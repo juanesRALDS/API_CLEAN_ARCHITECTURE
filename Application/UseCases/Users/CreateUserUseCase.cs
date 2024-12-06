@@ -18,7 +18,7 @@ public class CreateUserUseCase
         _passwordHasher = passwordHasher;
     }
 
-    public async Task ExecuteAsync(CreateUserDto dto)
+    public async Task Login(CreateUserDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Name))
         {
@@ -52,7 +52,7 @@ public class CreateUserUseCase
         if (string.IsNullOrWhiteSpace(email)) return false;
 
         // Expresión regular básica para validar correos electrónicos
-        var emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        string? emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
         return Regex.IsMatch(email, emailRegex);
     }
 }
