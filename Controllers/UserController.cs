@@ -1,8 +1,9 @@
 using System.Security.Claims;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
-using api_completa_mongodb_net_6_0.Application.UseCases;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+using api_completa_mongodb_net_6_0.Application.UseCases.Users;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

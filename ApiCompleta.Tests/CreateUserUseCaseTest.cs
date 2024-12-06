@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
-using api_completa_mongodb_net_6_0.Application.UseCases;
+using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using Moq;

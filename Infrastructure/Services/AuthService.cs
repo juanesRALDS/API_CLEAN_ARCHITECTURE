@@ -1,6 +1,7 @@
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using api_completa_mongodb_net_6_0.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
