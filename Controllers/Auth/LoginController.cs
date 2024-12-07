@@ -1,17 +1,18 @@
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Mvc;
+using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 
-namespace api_completa_mongodb_net_6_0.Presentation.Controllers;
+namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class LoginController : ControllerBase
 {
-    private readonly LoginUserUseCase _loginUserUseCase;
-    private readonly RegisterUseCase _registerUseCase;
+    private readonly ILoginUseCase _loginUserUseCase;
+    private readonly IRegisterUseCase _registerUseCase;
 
-    public AuthController(LoginUserUseCase loginUserUseCase, RegisterUseCase registerUseCase)
+    public LoginController(ILoginUseCase loginUserUseCase, IRegisterUseCase registerUseCase)
     {
         _loginUserUseCase = loginUserUseCase;
         _registerUseCase = registerUseCase;
@@ -31,20 +32,8 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] CreateUserDto userDto)
-    {
-        try
-        {
-            await _registerUseCase.Register(userDto);
-            return Ok("Usuario registrado exitosamente.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
-    
+
+
 }
 

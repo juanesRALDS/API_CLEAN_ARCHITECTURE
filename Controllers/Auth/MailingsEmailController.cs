@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 
-namespace api_completa_mongodb_net_6_0.MongoApiDemo.Controllers;
+namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 [ApiController]
 [Route("api/[controller]")]
 public class EmailController : ControllerBase
@@ -38,4 +38,5 @@ public class EmailController : ControllerBase
         }
     }
 }
+
 

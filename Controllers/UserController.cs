@@ -6,34 +6,36 @@ using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 
 namespace api_completa_mongodb_net_6_0.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly CreateUserUseCase _createUserUseCase;
     private readonly GetAllUsersUseCase _getAllUsersUseCase;
     private readonly UpdateUserUseCase _updateUserUseCase;
     private readonly DeleteUserUseCase _deleteUserUseCase;
     private readonly ITokenService _tokenService;
     private readonly GetUserByTokenUseCase _getUserByTokenUseCase;
 
+    private readonly IRegisterUseCase _registerUseCase;
+
 
     public UsersController(
-        CreateUserUseCase createUserUseCase,
         GetAllUsersUseCase getAllUsersUseCase,
         UpdateUserUseCase updateUserUseCase,
         DeleteUserUseCase deleteUserUseCase,
         ITokenService tokenService,
-        GetUserByTokenUseCase getUserByTokenUseCase)
+        GetUserByTokenUseCase getUserByTokenUseCase,
+        IRegisterUseCase registerUseCase)
     {
-        _createUserUseCase = createUserUseCase;
         _getAllUsersUseCase = getAllUsersUseCase;
         _updateUserUseCase = updateUserUseCase;
         _deleteUserUseCase = deleteUserUseCase;
         _tokenService = tokenService;
         _getUserByTokenUseCase = getUserByTokenUseCase;
+        _registerUseCase = registerUseCase;
     }
 
     [HttpGet]
@@ -46,11 +48,18 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateUserDto dto)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] CreateUserDto userDto)
     {
-        await _createUserUseCase.Login(dto);
-        return CreatedAtAction(nameof(GetAll), new { });
+        try
+        {
+            await _registerUseCase.Register(userDto);
+            return Ok("Usuario registrado exitosamente.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
 

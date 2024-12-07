@@ -2,7 +2,7 @@ using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api_completa_mongodb_net_6_0.Controllers;
+namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -28,7 +28,7 @@ public class PasswordResetController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Message = ex.Message });
+            return BadRequest(new { ex.Message });
         }
     }
 }

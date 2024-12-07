@@ -1,36 +1,78 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
+using api_completa_mongodb_net_6_0.Domain.Entities;
+using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
-public class RegisterUseCase
+public class RegisterUseCase : IRegisterUseCase
 {
-    private readonly IAuthService _authServices;
+    private readonly IUserRepository _userRepository;
+    private readonly JwtConfig _jwtConfig;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public RegisterUseCase(IAuthService authServices)
+    public RegisterUseCase(IUserRepository userRepository, IOptions<JwtConfig> jwtConfig, IPasswordHasher passwordHasher)
     {
-        _authServices = authServices ?? throw new ArgumentOutOfRangeException(nameof(authServices));
+        _userRepository = userRepository ?? throw new ArgumentOutOfRangeException(nameof(userRepository));
+        _passwordHasher = passwordHasher;
+        _jwtConfig = jwtConfig.Value;
     }
 
-    public async Task Register(CreateUserDto userDto)
+    public async Task<string> Register(CreateUserDto userDto)
     {
         if (userDto == null)
             throw new ArgumentNullException(nameof(userDto));
 
         if (string.IsNullOrWhiteSpace(userDto.Name))
-            throw new ArgumentException("Name cannot be empty or whitespace.", nameof(userDto.Name));
+            throw new ArgumentException("El nombre no puede estar vacío o nulo.", nameof(userDto.Name));
 
         if (string.IsNullOrWhiteSpace(userDto.Email))
-            throw new ArgumentNullException("Email cannot be empty or whitespace.", nameof(userDto.Email));
+            throw new ArgumentNullException("el correo no puede ser nulo", nameof(userDto.Email));
 
         if (string.IsNullOrWhiteSpace(userDto.Password))
-            throw new ArgumentException("Password cannot be empty or whitespace.", nameof(userDto.Password));
+            throw new ArgumentException("la contraseña no puede  estar vacia o ser nula ", nameof(userDto.Password));
 
-        await _authServices.Register(userDto);
+        var existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Ya existe un usuario registrado con este correo.");
+        }
+
+        if (!IsValidEmail(userDto.Email))
+        {
+            throw new FormatException("El correo electrónico no tiene un formato válido.");
+        }
+
+        string? hashedPassword = _passwordHasher.HashPassword(userDto.Password);
+
+        User? newUser = new()
+        {
+            Name = userDto.Name,
+            Email = userDto.Email,
+            Password = hashedPassword
+        };
+
+        await _userRepository.CreateAsync(newUser);
+
+        return "User registered successfully";
     }
+    private bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email)) return false;
+
+        // Expresión regular básica para validar correos electrónicos
+        string? emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        return Regex.IsMatch(email, emailRegex);
+    }
+
 
 
 }
