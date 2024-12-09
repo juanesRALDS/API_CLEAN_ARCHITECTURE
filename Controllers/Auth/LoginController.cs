@@ -24,6 +24,11 @@ public class LoginController : ControllerBase
         try
         {
             string? tokens = await _loginUserUseCase.Login(loginDto);
+
+            string callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/reset-password?token={tokens}";
+
+            Console.WriteLine(callbackUrl);
+
             return Ok(new { Tokens = tokens });
         }
         catch (UnauthorizedAccessException)
@@ -31,9 +36,5 @@ public class LoginController : ControllerBase
             return Unauthorized("Credenciales inválidas.");
         }
     }
-
-
-
-
 }
 

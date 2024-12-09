@@ -42,7 +42,7 @@ public class LoginUserUseCase : ILoginUseCase
         if (string.IsNullOrWhiteSpace(loginDto.Password))
             throw new ArgumentException("Password cannot be empty or whitespace.", nameof(loginDto.Password));
 
-        return JwtHelper.GenerateToken(_jwtConfig.SecretKey, _jwtConfig.Issuer, user, DateTime.UtcNow.AddHours(1));
+        return JwtHelper.GenerateToken(_jwtConfig,user, DateTime.UtcNow.AddHours(1));
     }
 
 

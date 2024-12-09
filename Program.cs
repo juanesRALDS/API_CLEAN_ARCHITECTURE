@@ -1,5 +1,4 @@
-using api_completa_mongodb_net_6_0.Application.Interfaces;
-using api_completa_mongodb_net_6_0.Application.Services;
+
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Users;
@@ -33,10 +32,9 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 
 // **2. Configuración de JwtConfig desde appsettings.json**
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<JwtConfig>>().Value);
-
+    
 
 // **3. Registro de dependencias**  
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
@@ -51,13 +49,10 @@ builder.Services.AddScoped<DeleteUserUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<UpdatePasswordUseCase>();
-builder.Services.AddScoped<IMovieRepository, MovieRepository>();
-builder.Services.AddScoped<GetMoviesUseCase>();
 
 // **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

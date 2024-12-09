@@ -68,7 +68,6 @@ public class RegisterUseCase : IRegisterUseCase
     {
         if (string.IsNullOrWhiteSpace(email)) return false;
 
-        // Expresión regular básica para validar correos electrónicos
         string? emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
         return Regex.IsMatch(email, emailRegex);
     }

@@ -1,3 +1,4 @@
+using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -23,8 +24,23 @@ public class PasswordResetController : ControllerBase
 
         try
         {
-            string? resetUrl = await _useCase.Login(request.Email);
-            return Ok(new { Message = "Token generado con éxito.", Url = resetUrl });
+            string? resetToken = await _useCase.GenerateResetTokenAsync(request.Email);
+            if (string.IsNullOrEmpty(resetToken))
+            {
+                return BadRequest(new {Message = "no se pudo generar el token de restablecimiento"});
+            }
+
+            string resetUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/reset-password?token={resetToken}";
+
+            Console.WriteLine(resetUrl);
+
+            return Ok( new 
+            {
+                Message = "Token generado con éxito.",
+                ResetUrl = resetUrl
+            }
+            );
+
         }
         catch (Exception ex)
         {

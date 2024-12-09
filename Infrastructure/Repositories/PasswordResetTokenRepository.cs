@@ -23,7 +23,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task<Token> GetByTokenAsync(string Tokens)
         {
-            // Busca el token en la colección
+
             return await _tokensCollection
                 .Find(t => t.Tokens == Tokens)
                 .FirstOrDefaultAsync();
@@ -33,7 +33,6 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task DeleteTokenAsync(string tokenValue)
         {
-            // Elimina el token en la colección
             await _tokensCollection.DeleteOneAsync(t => t.Tokens == tokenValue);
         }
     }
