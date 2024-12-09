@@ -45,7 +45,7 @@ public class TokenServices : ITokenService
 
     public ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token)
     {
-         JwtSecurityTokenHandler? handler = new JwtSecurityTokenHandler();
+        JwtSecurityTokenHandler? handler = new();
 
         try
         {
@@ -63,7 +63,7 @@ public class TokenServices : ITokenService
         }
         catch
         {
-            return null; 
+            return null;
         }
     }
 

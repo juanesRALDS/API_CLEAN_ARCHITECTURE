@@ -19,8 +19,8 @@ public static class JwtHelper
             throw new ArgumentException("La clave secreta debe tener al menos 32 caracteres.");
 
         // Configuración de la clave de firma
-        SymmetricSecurityKey? key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
-        SigningCredentials? credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey? key = new(Encoding.UTF8.GetBytes(SecretKey));
+        SigningCredentials? credentials = new(key, SecurityAlgorithms.HmacSha256);
 
         // Claims personalizados para incluir información del usuario
         Claim[]? claims = new[]
@@ -45,22 +45,18 @@ public static class JwtHelper
 
     public static JwtSecurityToken? DecodeJwtToken(string token)
     {
-        JwtSecurityTokenHandler? handler = new JwtSecurityTokenHandler();
+        JwtSecurityTokenHandler? handler = new();
 
-        // Verifica si el token es legible
         if (!handler.CanReadToken(token))
-            return null; // Retorna null si el token no es válido
+            return null;
 
         try
         {
-            // Decodifica el token JWT
             return handler.ReadJwtToken(token);
         }
         catch
         {
-            return null; // Retorna null si ocurre algún error durante la decodificación
+            return null;
         }
     }
-
-
 }

@@ -23,7 +23,7 @@ namespace api_completa_mongodb_net_6_0.ApiCompleta.Tests
             int pageNumber = 1;
             int pageSize = 2;
 
-            var users = new List<User>
+            List<User>? users = new()
             {
                 new User { Id = "1", Name = "John Doe", Email = "john@example.com" },
                 new User { Id = "2", Name = "Jane Doe", Email = "jane@example.com" }

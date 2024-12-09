@@ -1,6 +1,8 @@
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using api_completa_mongodb_net_6_0.Infrastructure.Utils;
+using Microsoft.IdentityModel.Tokens;
+using ZstdSharp;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 
@@ -17,36 +19,29 @@ public class UpdatePasswordUseCase
 
     public async Task<bool> Login(string token, string newPassword)
     {
-        // Busca el token en la base de datos
+        
         Domain.Entities.Token? storedToken = await _tokenRepository.GetByTokenAsync(token);
-        Console.WriteLine($"Expiración del token almacenado: {storedToken.Expiration}");
-        Console.WriteLine($"Fecha actual: {DateTime.UtcNow}");
 
-        // Valida el token
-        if (storedToken == null || storedToken.Expiration.Date < DateTime.UtcNow.Date)
+        if (storedToken == null)
         {
-            Console.WriteLine("Token expirado.");
-            Console.WriteLine($"Token inválido o expirado. Expiración: {storedToken?.Expiration}, Ahora: {DateTime.UtcNow}");
-            return false;
+            throw new InvalidOperationException("el Token no se encontro o es nulo");
+
+        }if(storedToken.Expiration.Date < DateTime.UtcNow.Date)
+        {
+            throw new SecurityTokenExpiredException($"el token ha expirado, Expiracion{storedToken.Expiration}, tiempo actual: {DateTime.UtcNow}");
         }
 
-        // Lógica para actualizar la contraseña (implementación pendiente)
-        Domain.Entities.User? user = await _userRepository.GetByIdAsync(storedToken.UserId);
 
-        if (user == null)
-        {
-            Console.WriteLine("usuario no encontrado");
-            return false;
+        Domain.Entities.User? user = await _userRepository.GetByIdAsync(storedToken.UserId) 
+            ?? throw new KeyNotFoundException("el usuario asociado al token no se encontro");
 
-        }
 
-        //encriptacion de contraseña
         string? hashedPassword = HashingHelper.HashPassword(newPassword);
 
-        //actualizar contraseña del usuario
+        
         await _userRepository.UpdatePasswordAsync(user.Id, hashedPassword);
 
-        // Borra el token después de su uso
+
         await _tokenRepository.DeleteTokenAsync(token);
 
         return true;
