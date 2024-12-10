@@ -16,7 +16,6 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
     private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly JwtConfig _jwtConfig;
     private readonly IEmailService _emailService;
-    private readonly JwtConfig? _jwtconfig;
     public GeneratePasswordResetTokenUseCase(IUserRepository userRepository, IPasswordResetTokenRepository tokenRepository, JwtConfig jwtConfig, IEmailService emailService,IOptions<JwtConfig> jwtconfig)
     {
         _userRepository = userRepository;

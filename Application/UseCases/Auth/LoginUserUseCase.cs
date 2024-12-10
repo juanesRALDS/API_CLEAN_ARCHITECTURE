@@ -28,7 +28,7 @@ public class LoginUserUseCase : ILoginUseCase
         if (loginDto == null)
             throw new ArgumentNullException(nameof(loginDto));
 
-        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
+        Domain.Entities.User? user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
         if (user == null)
         {
             throw new UnauthorizedAccessException("Credenciales inválidas");

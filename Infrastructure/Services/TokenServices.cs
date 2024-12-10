@@ -23,9 +23,9 @@ public class TokenServices : ITokenService
         DateTime expiration = DateTime.UtcNow.AddHours(2);
 
         return JwtHelper.GenerateToken(
-            jwtConfig: _jwtConfig,    
-            user: user,                
-            expiration: expiration   
+            jwtConfig: _jwtConfig,
+            user: user,
+            expiration: expiration
         );
     }
     public string? ValidateToken(string token)
@@ -34,7 +34,7 @@ public class TokenServices : ITokenService
         JwtSecurityToken? jwtToken = JwtHelper.DecodeJwtToken(token);
         if (jwtToken == null)
         {
-            return null; 
+            return null;
         }
 
 
@@ -45,6 +45,11 @@ public class TokenServices : ITokenService
     {
         JwtSecurityTokenHandler? handler = new();
 
+        if (string.IsNullOrEmpty(_jwtConfig.SecretKey))
+        {
+            throw new InvalidOperationException("La clave secreta para JWT no está configurada.");
+        }
+
         try
         {
             TokenValidationParameters? validationParameters = new()
@@ -52,7 +57,7 @@ public class TokenServices : ITokenService
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey)) 
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey))
             };
 
             ClaimsPrincipal? principal = handler.ValidateToken(token, validationParameters, out _);

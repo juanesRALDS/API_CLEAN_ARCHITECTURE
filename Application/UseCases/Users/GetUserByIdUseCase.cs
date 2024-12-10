@@ -11,7 +11,7 @@ public class GetUserByIdUseCase
         _userRepository = userRepository;
     }
 
-    public async Task<User?> Login(string userId)
+    public async Task<User?> GetByIdUser(string userId)
     {
         return await _userRepository.GetByIdAsync(userId);
     }
