@@ -1,7 +1,7 @@
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using Microsoft.AspNetCore.Mvc;
-using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 
 namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 
@@ -10,12 +10,11 @@ namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 public class LoginController : ControllerBase
 {
     private readonly ILoginUseCase _loginUserUseCase;
-    private readonly IRegisterUseCase _registerUseCase;
 
-    public LoginController(ILoginUseCase loginUserUseCase, IRegisterUseCase registerUseCase)
+
+    public LoginController(ILoginUseCase loginUserUseCase)
     {
         _loginUserUseCase = loginUserUseCase;
-        _registerUseCase = registerUseCase;
     }
 
     [HttpPost("login")]
@@ -23,7 +22,7 @@ public class LoginController : ControllerBase
     {
         try
         {
-            string? tokens = await _loginUserUseCase.Login(loginDto);
+            string? tokens = await _loginUserUseCase.Execute(loginDto);
 
             string callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/reset-password?token={tokens}";
 

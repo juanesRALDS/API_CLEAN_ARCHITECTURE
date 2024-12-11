@@ -5,6 +5,7 @@ using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
@@ -13,7 +14,6 @@ using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 using MongoDB.Driver;
 using System.Text;
 

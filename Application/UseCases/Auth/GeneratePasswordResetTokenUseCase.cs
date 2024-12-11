@@ -24,7 +24,7 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
         _jwtConfig = jwtconfig.Value;
     }
 
-    public async Task<string> GenerateResetTokenAsync(string email)
+    public async Task<string> Execute(string email)
     {
 
         User? user = await _userRepository.GetUserByEmailAsync(email)

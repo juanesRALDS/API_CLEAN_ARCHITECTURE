@@ -1,12 +1,13 @@
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Infrastructure.Utils;
 using Microsoft.IdentityModel.Tokens;
 using ZstdSharp;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 
-public class UpdatePasswordUseCase
+public class UpdatePasswordUseCase : IUpdatePasswordUseCase
 {
     private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly IUserRepository _userRepository;
@@ -17,7 +18,7 @@ public class UpdatePasswordUseCase
         _userRepository = userRepository;
     }
 
-    public async Task<bool> Login(string token, string newPassword)
+    public async Task<bool> Execute(string token, string newPassword)
     {
         
         Domain.Entities.Token? storedToken = await _tokenRepository.GetByTokenAsync(token);

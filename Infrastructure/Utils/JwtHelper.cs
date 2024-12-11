@@ -2,16 +2,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Infrastructure.Config; 
+using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
 
 public static class JwtHelper
-{
+{   
     public static string GenerateToken(JwtConfig jwtConfig, User user, DateTime expiration)
     {
-        
+
         if (jwtConfig == null)
             throw new ArgumentNullException(nameof(jwtConfig));
         if (string.IsNullOrEmpty(jwtConfig.SecretKey) || jwtConfig.SecretKey.Length < 32)
@@ -22,16 +22,23 @@ public static class JwtHelper
             throw new ArgumentException("La audiencia (Audience) no puede estar vacía.", nameof(jwtConfig.Audience));
 
 
+        if (string.IsNullOrWhiteSpace(jwtConfig.Issuer))
+            throw new ArgumentException("El emisor (Issuer) no puede estar vacío.", nameof(jwtConfig.Issuer));
+
+        if (string.IsNullOrWhiteSpace(jwtConfig.SecretKey))
+            throw new ArgumentException("La clave secreta no puede estar vacía.", nameof(jwtConfig.SecretKey));
+
+
         SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(jwtConfig.SecretKey));
         SigningCredentials credentials = new(key, SecurityAlgorithms.HmacSha256);
 
 
         Claim[] claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email), 
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
-            new Claim("id", user.Id.ToString()), 
-            new Claim("name", user.Name) 
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("id", user.Id.ToString()),
+            new Claim("name", user.Name)
         };
 
 

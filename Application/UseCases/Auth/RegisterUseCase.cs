@@ -7,10 +7,10 @@ using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 public class RegisterUseCase : IRegisterUseCase
@@ -26,7 +26,7 @@ public class RegisterUseCase : IRegisterUseCase
         _jwtConfig = jwtConfig.Value;
     }
 
-    public async Task<string> Register(CreateUserDto userDto)
+    public async Task<string> Execute(CreateUserDto userDto)
     {
         if (userDto == null)
             throw new ArgumentNullException(nameof(userDto));

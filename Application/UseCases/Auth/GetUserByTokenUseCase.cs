@@ -21,7 +21,7 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth
         }
 
 
-        public async Task<UserDto?> Login(string tokens)
+        public async Task<UserDto?> Execute(string tokens)
         {
             string? userId = _tokenServices.ValidateToken(tokens);
             if (userId == null) return null;

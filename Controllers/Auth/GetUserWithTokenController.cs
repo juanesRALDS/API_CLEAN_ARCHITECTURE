@@ -51,7 +51,7 @@ public class TokenController : ControllerBase
             }
 
             // 4. Usar el caso de uso para obtener la información del usuario
-            UserDto? user = await _getUserByTokenUseCase.Login(userId);
+            UserDto? user = await _getUserByTokenUseCase.Execute(userId);
             if (user == null)
             {
                 return NotFound(new { Message = "Usuario no encontrado." });

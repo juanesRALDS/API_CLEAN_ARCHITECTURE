@@ -22,7 +22,7 @@ public class PasswordController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.Tokens))
             return BadRequest("la nueva contraseña y el token son requeridas");
 
-        bool result = await _updatePasswordUseCase.Login(request.Tokens, request.NewPassword);
+        bool result = await _updatePasswordUseCase.Execute(request.Tokens, request.NewPassword);
 
         if (!result)
             return BadRequest("El token es inválido o ha expirado.");

@@ -1,4 +1,4 @@
-using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
+
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +9,11 @@ namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 [Route("api/[controller]")]
 public class PasswordResetController : ControllerBase
 {
-    private readonly GeneratePasswordResetTokenUseCase _useCase;
+    private readonly GeneratePasswordResetTokenUseCase _GeneratePasswordReset;
 
     public PasswordResetController(GeneratePasswordResetTokenUseCase useCase)
     {
-        _useCase = useCase;
+        _GeneratePasswordReset = useCase;
     }
 
     [HttpPost("forgot-password")]
@@ -24,7 +24,7 @@ public class PasswordResetController : ControllerBase
 
         try
         {
-            string? resetToken = await _useCase.GenerateResetTokenAsync(request.Email);
+            string? resetToken = await _GeneratePasswordReset.Execute(request.Email);
             if (string.IsNullOrEmpty(resetToken))
             {
                 return BadRequest(new {Message = "no se pudo generar el token de restablecimiento"});

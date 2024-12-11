@@ -7,6 +7,6 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases
 {
     public interface IGeneratePasswordResetTokenUseCase
     {
-        Task<string> GenerateResetTokenAsync(string email);
+        Task<string> Execute(string email);
     }
 }
