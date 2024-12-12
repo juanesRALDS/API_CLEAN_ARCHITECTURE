@@ -1,4 +1,5 @@
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
+using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
@@ -18,7 +19,6 @@ public class LoginUserUseCase : ILoginUseCase
 
     public LoginUserUseCase(IUserRepository userRepository, IOptions<JwtConfig> jwtConfig, IPasswordHasher passwordHasher)
     {
-
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _jwtConfig = jwtConfig.Value;
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
@@ -37,8 +37,8 @@ public class LoginUserUseCase : ILoginUseCase
         }
 
         // Validación de usuario en la base de datos
-        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
-        if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
+        User? user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
+        if (user is null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
         {
             throw new UnauthorizedAccessException("Credenciales inválidas.");
         }
@@ -46,7 +46,5 @@ public class LoginUserUseCase : ILoginUseCase
         // Generación del token
         return JwtHelper.GenerateToken(_jwtConfig, user, DateTime.UtcNow.AddHours(1));
     }
-
-
 }
 

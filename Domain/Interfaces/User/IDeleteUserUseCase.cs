@@ -7,6 +7,6 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces.User
 {
     public interface IDeleteUserUseCase
     {
-        Task DeleteUser(string id);
+        Task Execute(string id);
     }
 }

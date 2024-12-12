@@ -4,6 +4,7 @@ using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MongoApiDemo.Domain.Interfaces.Utils;
 using Moq;

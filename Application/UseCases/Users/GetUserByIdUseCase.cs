@@ -13,7 +13,7 @@ public class GetUserByIdUseCase : IGetUserByIdUseCase
         _userRepository = userRepository;
     }
 
-    public async Task<UserDto?> Execute(string userId)
+    public async Task<User?> Execute(string userId)
     {
         return await _userRepository.GetByIdAsync(userId);
     }

@@ -1,4 +1,3 @@
-
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Users;
@@ -12,7 +11,6 @@ using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
 using api_completa_mongodb_net_6_0.Infrastructure.Services;
 using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoApiDemo.Domain.Interfaces.Utils;
@@ -50,7 +48,7 @@ builder.Services.AddScoped<UpdateUserUseCase>();
 builder.Services.AddScoped<DeleteUserUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IHashingHelper, HashingHelper>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();

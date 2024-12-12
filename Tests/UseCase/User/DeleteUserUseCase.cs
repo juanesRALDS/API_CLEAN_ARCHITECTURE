@@ -27,7 +27,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _useCase.DeleteUser(userId);
+            await _useCase.Execute(userId);
 
             // Assert
             _userRepositoryMock.Verify(repo => repo.DeleteAsync(userId), Times.Once);
@@ -40,7 +40,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
             string? userId = null;
 
             // Act
-            Func<Task> act = async () => await _useCase.DeleteUser(userId);
+            Func<Task> act = async () => await _useCase.Execute(userId);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(act);
@@ -54,7 +54,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
             var userId = string.Empty;
 
             // Act
-            Func<Task> act = async () => await _useCase.DeleteUser(userId);
+            Func<Task> act = async () => await _useCase.Execute(userId);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);

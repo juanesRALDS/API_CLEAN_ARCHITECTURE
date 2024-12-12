@@ -8,6 +8,6 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces.User
 {
     public interface IGetAllUsersUseCase
     {
-        Task<List<UserDto>> Login(int pageNumber, int pageSize);
+        Task<List<UserDto>> Execute(int pageNumber, int pageSize);
     }
 }

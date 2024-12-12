@@ -36,7 +36,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             _userRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(users);
 
             // Act
-            var result = await _useCase.Login(1, 10);
+            var result = await _useCase.Execute(1, 10);
 
             // Assert
             Assert.NotNull(result);
@@ -51,7 +51,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
         public async Task Login_ShouldThrowArgumentException_WhenPageNumberIsLessThanOrEqualToZero()
         {
             // Act
-            Func<Task> act = async () => await _useCase.Login(0, 10);
+            Func<Task> act = async () => await _useCase.Execute(0, 10);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
@@ -61,7 +61,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
         public async Task Login_ShouldThrowArgumentException_WhenPageSizeIsLessThanOrEqualToZero()
         {
             // Act
-            Func<Task> act = async () => await _useCase.Login(1, 0);
+            Func<Task> act = async () => await _useCase.Execute(1, 0);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
@@ -74,7 +74,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             _userRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((List<User>)null);
 
             // Act
-            Func<Task> act = async () => await _useCase.Login(1, 10);
+            Func<Task> act = async () => await _useCase.Execute(1, 10);
 
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(act);

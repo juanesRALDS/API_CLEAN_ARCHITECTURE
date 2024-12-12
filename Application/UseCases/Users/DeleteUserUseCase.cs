@@ -12,7 +12,7 @@ public class DeleteUserUseCase : IDeleteUserUseCase
         _userRepository = userRepository;
     }
 
-    public async Task DeleteUser(string id)
+    public async Task Execute(string id)
     {
         await _userRepository.DeleteAsync(id);
     }

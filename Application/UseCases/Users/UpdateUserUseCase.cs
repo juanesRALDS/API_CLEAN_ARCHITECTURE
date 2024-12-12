@@ -45,7 +45,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
 
 
 
-        User updatedUser = new()
+        User? updatedUser = new()
         {
             Id = id,
             Name = updatedUserDto.Name,

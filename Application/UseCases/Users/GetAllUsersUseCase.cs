@@ -15,7 +15,7 @@ public class GetAllUsersUseCase : IGetAllUsersUseCase
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
-    public async Task<List<UserDto>> Login(int pageNumber, int pageSize)
+    public async Task<List<UserDto>> Execute(int pageNumber, int pageSize)
     {
         if (pageNumber <= 0)
             throw new ArgumentException("Page number must be greater than 0.", nameof(pageNumber));
