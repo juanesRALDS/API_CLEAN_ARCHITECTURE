@@ -28,7 +28,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
 
             _jwtConfig = Options.Create(new JwtConfig
             {
-                SecretKey = "SuperSecretKeyForTesting",
+                SecretKey = "SuperSecretKeyForTestingdfdsfdsdsf",
                 Issuer = "TestIssuer",
                 Audience = "TestAudience"
             });

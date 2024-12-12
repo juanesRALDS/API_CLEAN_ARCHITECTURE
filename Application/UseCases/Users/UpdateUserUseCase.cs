@@ -2,9 +2,11 @@ using System.Text.RegularExpressions;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Entities;
+using MongoApiDemo.Domain.Interfaces.Utils;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Users;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Users;
-public class UpdateUserUseCase
+public class UpdateUserUseCase : IUpdateUserUseCase
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
@@ -15,7 +17,7 @@ public class UpdateUserUseCase
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<UpdateUserResponseDto> Login(string id, UpdateUserDto updatedUserDto)
+    public async Task<UpdateUserResponseDto> Execute(string id, UpdateUserDto updatedUserDto)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -60,7 +62,5 @@ public class UpdateUserUseCase
             Email = updatedUserDto.Email,
         };
     }
-
-
 }
 

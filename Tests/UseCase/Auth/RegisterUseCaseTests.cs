@@ -1,106 +1,184 @@
-using System;
-using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
+using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
+using MongoApiDemo.Domain.Interfaces.Utils;
 using Moq;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
-public class RegisterUseCaseTests
+namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock;
-    private readonly Mock<IPasswordHasher> _passwordHasherMock;
-    private readonly IOptions<JwtConfig> _jwtConfig;
-    private readonly RegisterUseCase _registerUseCase;
-
-    public RegisterUseCaseTests()
+    public class RegisterUseCaseTests
     {
-        _userRepositoryMock = new Mock<IUserRepository>();
-        _passwordHasherMock = new Mock<IPasswordHasher>();
+        private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<IPasswordHasher> _passwordHasherMock;
+        private readonly IOptions<JwtConfig> _jwtConfig;
+        private readonly RegisterUseCase _useCase;
 
-        var jwtConfigMock = new Mock<IOptions<JwtConfig>>();
-        jwtConfigMock.Setup(c => c.Value).Returns(new JwtConfig { SecretKey = "TestSecret" });
-        _jwtConfig = jwtConfigMock.Object;
+        public RegisterUseCaseTests()
+        {
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _passwordHasherMock = new Mock<IPasswordHasher>();
 
-        _registerUseCase = new RegisterUseCase(_userRepositoryMock.Object, _jwtConfig, _passwordHasherMock.Object);
-    }
+            _jwtConfig = Options.Create(new JwtConfig
+            {
+                SecretKey = "SuperSecretKeyForTestinlsadklaslkdsallg",
+                Issuer = "TestIssuer",
+                Audience = "TestAudience"
+            });
 
-    [Fact]
-    public async Task Execute_ShouldThrowArgumentNullException_WhenUserDtoIsNull()
-    {
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _registerUseCase.Execute(null));
-    }
+            _useCase = new RegisterUseCase(
+                _userRepositoryMock.Object,
+                _jwtConfig,
+                _passwordHasherMock.Object
+            );
+        }
 
-    [Fact]
-    public async Task Execute_ShouldThrowArgumentException_WhenNameIsEmpty()
-    {
-        // Arrange
-        var userDto = new CreateUserDto { Name = "", Email = "test@example.com", Password = "password123" };
+        [Fact]
+        public async Task Execute_ShouldRegisterUserSuccessfully()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "Test User",
+                Email = "test@example.com",
+                Password = "Password123"
+            };
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => _registerUseCase.Execute(userDto));
-    }
+            _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email))
+                .ReturnsAsync((User?)null);
 
-    [Fact]
-    public async Task Execute_ShouldThrowArgumentNullException_WhenEmailIsNull()
-    {
-        // Arrange
-         CreateUserDto? userDto = new CreateUserDto { Name = "John", Email = null, Password = "password123" };
+            _passwordHasherMock.Setup(hasher => hasher.HashPassword(userDto.Password))
+                .Returns("hashedPassword");
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _registerUseCase.Execute(userDto));
-    }
+            _userRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+                .Returns(Task.CompletedTask);
 
-    [Fact]
-    public async Task Execute_ShouldThrowArgumentException_WhenPasswordIsEmpty()
-    {
-        // Arrange
-        var userDto = new CreateUserDto { Name = "John", Email = "test@example.com", Password = "" };
+            // Act
+            var result = await _useCase.Execute(userDto);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => _registerUseCase.Execute(userDto));
-    }
+            // Assert
+            result.Should().Be("User registered successfully");
 
-    [Fact]
-    public async Task Execute_ShouldThrowInvalidOperationException_WhenUserAlreadyExists()
-    {
-        // Arrange
-        var userDto = new CreateUserDto { Name = "John", Email = "test@example.com", Password = "password123" };
-        _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email)).ReturnsAsync(new User());
+            _userRepositoryMock.Verify(repo => repo.GetUserByEmailAsync(userDto.Email), Times.Once);
+            _passwordHasherMock.Verify(hasher => hasher.HashPassword(userDto.Password), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Once);
+        }
 
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _registerUseCase.Execute(userDto));
-    }
+        [Fact]
+        public async Task Execute_ShouldThrowArgumentNullException_WhenUserDtoIsNull()
+        {
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(null);
 
-    [Fact]
-    public async Task Execute_ShouldThrowFormatException_WhenEmailIsInvalid()
-    {
-        // Arrange
-        var userDto = new CreateUserDto { Name = "John", Email = "invalid-email", Password = "password123" };
+            // Assert
+            await act.Should().ThrowAsync<ArgumentNullException>()
+                .WithMessage("Value cannot be null. (Parameter 'userDto')");
+        }
 
-        // Act & Assert
-        await Assert.ThrowsAsync<FormatException>(() => _registerUseCase.Execute(userDto));
-    }
+        [Fact]
+        public async Task Execute_ShouldThrowArgumentException_WhenNameIsEmpty()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "",
+                Email = "test@example.com",
+                Password = "Password123"
+            };
 
-    [Fact]
-    public async Task Execute_ShouldCreateUser_WhenDataIsValid()
-    {
-        // Arrange
-        var userDto = new CreateUserDto { Name = "John", Email = "test@example.com", Password = "password123" };
-        var hashedPassword = "hashedPassword123";
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(userDto);
 
-        _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email)).ReturnsAsync((User?)null);
-        _passwordHasherMock.Setup(hasher => hasher.HashPassword(userDto.Password)).Returns(hashedPassword);
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("El nombre no puede estar vacío o nulo. (Parameter 'userDto.Name')");
+        }
 
-        // Act
-        var result = await _registerUseCase.Execute(userDto);
+        [Fact]
+        public async Task Execute_ShouldThrowArgumentNullException_WhenEmailIsEmpty()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "Test User",
+                Email = "",
+                Password = "Password123"
+            };
 
-        // Assert
-        Assert.Equal("User registered successfully", result);
-        _userRepositoryMock.Verify(repo => repo.CreateAsync(It.Is<User>(u => u.Name == userDto.Name && u.Email == userDto.Email && u.Password == hashedPassword)), Times.Once);
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(userDto);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("el correo no puede ser nulo (Parameter 'userDto.Email')");
+        }
+
+        [Fact]
+        public async Task Execute_ShouldThrowArgumentException_WhenPasswordIsEmpty()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "Test User",
+                Email = "test@example.com",
+                Password = ""
+            };
+
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(userDto);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("la contraseña no puede  estar vacia o ser nula  (Parameter 'userDto.Password')");
+        }
+
+        [Fact]
+        public async Task Execute_ShouldThrowInvalidOperationException_WhenEmailAlreadyExists()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "Test User",
+                Email = "test@example.com",
+                Password = "Password123"
+            };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email))
+                .ReturnsAsync(new User());
+
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(userDto);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("Ya existe un usuario registrado con este correo.");
+
+            _userRepositoryMock.Verify(repo => repo.GetUserByEmailAsync(userDto.Email), Times.Once);
+        }
+
+        [Fact]
+        public async Task Execute_ShouldThrowFormatException_WhenEmailIsInvalid()
+        {
+            // Arrange
+            var userDto = new CreateUserDto
+            {
+                Name = "Test User",
+                Email = "invalid-email",
+                Password = "Password123"
+            };
+
+            // Act
+            Func<Task> act = async () => await _useCase.Execute(userDto);
+
+            // Assert
+            await act.Should().ThrowAsync<FormatException>()
+                .WithMessage("El correo electrónico no tiene un formato válido.");
+        }
     }
 }

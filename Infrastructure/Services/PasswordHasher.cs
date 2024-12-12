@@ -1,5 +1,6 @@
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using BCrypt.Net;
+using MongoApiDemo.Domain.Interfaces.Utils;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
     public class PasswordHasher : IPasswordHasher

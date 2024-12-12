@@ -9,8 +9,10 @@ using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using MongoApiDemo.Domain.Interfaces.Utils;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 public class RegisterUseCase : IRegisterUseCase
@@ -39,6 +41,7 @@ public class RegisterUseCase : IRegisterUseCase
 
         if (string.IsNullOrWhiteSpace(userDto.Password))
             throw new ArgumentException("la contraseña no puede  estar vacia o ser nula ", nameof(userDto.Password));
+
 
         var existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
         if (existingUser != null)
