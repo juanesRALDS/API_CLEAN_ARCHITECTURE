@@ -1,7 +1,7 @@
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.User;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 using Microsoft.AspNetCore.Mvc;
 
 

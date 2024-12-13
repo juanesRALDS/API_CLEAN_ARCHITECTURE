@@ -2,7 +2,6 @@ using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Infrastructure.Context;
 using MongoDB.Driver;
-using System.Threading.Tasks;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 {
@@ -47,6 +46,7 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
             await _collection.UpdateOneAsync(filter, update);
         }
+
         public async Task DeleteAsync(string id) =>
             await _collection.DeleteOneAsync(user => user.Id == id);
 

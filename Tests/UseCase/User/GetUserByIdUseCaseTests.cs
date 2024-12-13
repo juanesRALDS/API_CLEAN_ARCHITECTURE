@@ -4,7 +4,7 @@ using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.User;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 using Moq;
 using Xunit;
 
@@ -18,7 +18,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
         public GetUserByIdUseCaseTests()
         {
             _userRepositoryMock = new Mock<IUserRepository>();
-            _useCase = new IGetUserByIdUseCase(_userRepositoryMock.Object);
+            _useCase = new GetUserByIdUseCase(_userRepositoryMock.Object);
         }
 
         [Fact]

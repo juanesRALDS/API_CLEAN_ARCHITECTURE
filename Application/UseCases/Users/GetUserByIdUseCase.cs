@@ -1,7 +1,7 @@
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.User;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Users;
 public class GetUserByIdUseCase : IGetUserByIdUseCase
@@ -13,9 +13,19 @@ public class GetUserByIdUseCase : IGetUserByIdUseCase
         _userRepository = userRepository;
     }
 
-    public async Task<User?> Execute(string userId)
+    public async Task<UserDto> Execute(string userId)
     {
-        return await _userRepository.GetByIdAsync(userId);
+        User? user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {   
+            throw new InvalidOperationException("User not found.");
+        }
+        return new UserDtoResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email
+        };
     }
 }
 

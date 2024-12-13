@@ -1,5 +1,6 @@
 using api_completa_mongodb_net_6_0.Application.UseCases;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+using api_completa_mongodb_net_6_0.Infrastructure.Utils;
 using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
@@ -13,9 +14,9 @@ using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MongoApiDemo.Domain.Interfaces.Utils;
 using MongoDB.Driver;
 using System.Text;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddSingleton(resolver =>
     
 
 // **3. Registro de dependencias**  
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
@@ -48,11 +50,12 @@ builder.Services.AddScoped<UpdateUserUseCase>();
 builder.Services.AddScoped<DeleteUserUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
-builder.Services.AddScoped<IHashingHelper, HashingHelper>();
+builder.Services.AddScoped<IPasswordHasher,api_completa_mongodb_net_6_0.Infrastructure.Services.PasswordHasher>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<UpdatePasswordUseCase>();
+
 
 // **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

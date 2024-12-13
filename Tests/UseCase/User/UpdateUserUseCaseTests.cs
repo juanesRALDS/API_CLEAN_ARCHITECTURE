@@ -4,8 +4,8 @@ using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Users;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Users;
-using MongoApiDemo.Domain.Interfaces.Utils;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
 using Moq;
 using Xunit;
 
@@ -39,7 +39,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             await _useCase.Execute(userId, updateUserDto);
 
             // Assert
-            _userRepositoryMock.Verify(repo => repo.UpdateAsync(It.Is<User>(u => 
+            _userRepositoryMock.Verify(repo => repo.UpdateAsync(userId,It.Is<User>(u => 
                 u.Id == userId && 
                 u.Name == updateUserDto.Name && 
                 u.Email == updateUserDto.Email && 
@@ -80,7 +80,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             var userId = "1";
             var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
 
-            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
+            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User?)null);
 
             // Act
             Func<Task> act = async () => await _useCase.Execute(userId, updateUserDto);

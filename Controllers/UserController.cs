@@ -44,7 +44,7 @@ public class UsersController : ControllerBase
         if (pageNumber <= 0 || pageSize <= 0)
             return BadRequest("El número de página y el tamaño deben ser mayores a 0");
 
-        List<UserDto> users = await _getAllUsersUseCase.Login(pageNumber, pageSize);
+        List<UserDto> users = await _getAllUsersUseCase.Execute(pageNumber, pageSize);
         return Ok(users);
     }
 
@@ -84,7 +84,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, UpdateUserDto dto)
     {
-        UpdateUserResponseDto? response = await _updateUserUseCase.Login(id, dto);
+        UpdateUserResponseDto? response = await _updateUserUseCase.Execute(id, dto);
         return Ok(response);
     }
 
@@ -92,7 +92,7 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _deleteUserUseCase.DeleteUser(id);
+        await _deleteUserUseCase.Execute(id);
         return NoContent();
     }
 }

@@ -1,10 +1,10 @@
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Identity;
-using MongoApiDemo.Domain.Interfaces.Utils;
 
 namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
-    public class HashingHelper : IPasswordHasher
+public class PasswordHasher : IPasswordHasher
     {
         public string HashPassword(string password)
         {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using MongoApiDemo.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Identity;
-using MongoApiDemo.Domain.Interfaces.Utils;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
 
 
 namespace api_completa_mongodb_net_6_0.Test.UseCases;

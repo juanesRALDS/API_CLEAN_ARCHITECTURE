@@ -2,8 +2,8 @@ using System.Text.RegularExpressions;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Entities;
-using MongoApiDemo.Domain.Interfaces.Utils;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Users;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Users;
 public class UpdateUserUseCase : IUpdateUserUseCase

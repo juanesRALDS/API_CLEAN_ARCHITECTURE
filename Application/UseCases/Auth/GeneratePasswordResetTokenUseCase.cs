@@ -16,21 +16,29 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
     private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly JwtConfig _jwtConfig;
     private readonly IEmailService _emailService;
-    public GeneratePasswordResetTokenUseCase(IUserRepository userRepository, IPasswordResetTokenRepository tokenRepository, JwtConfig jwtConfig, IEmailService emailService,IOptions<JwtConfig> jwtconfig)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public GeneratePasswordResetTokenUseCase(
+        IUserRepository userRepository,
+        IPasswordResetTokenRepository tokenRepository,
+        IEmailService emailService,
+        IOptions<JwtConfig> jwtconfig,
+        IHttpContextAccessor httpContextAccessor
+        )
     {
         _userRepository = userRepository;
         _tokenRepository = tokenRepository;
         _emailService = emailService;
         _jwtConfig = jwtconfig.Value;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<string> Execute(string email)
     {
 
         User? user = await _userRepository.GetUserByEmailAsync(email)
-            ?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
+?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
 
-        // Generar el token usando JwtHelper
+
         DateTime expiration = DateTime.UtcNow.AddMinutes(30);
         string? tokenValue = JwtHelper.GenerateToken(
             jwtConfig: _jwtConfig,
@@ -45,13 +53,17 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
             UserId = user.Id
         };
 
-        string resetUrl = $"https://tu-dominio.com/reset-password?token={tokenValue}";
+        HttpContext? httpContext = _httpContextAccessor.HttpContext;
+        string scheme = httpContext?.Request.Scheme;
+        string host = httpContext?.Request.Host.Value;
+        string callbackUrl = $"{scheme}://{host}/reset-password?token={tokenValue}";
+
         string subject = "Restablecimiento de contraseña";
         string body = $@"
             <h1>Solicitud de Restablecimiento de Contraseña</h1>
             <p>Hola {user.Name},</p>
             <p>Recibimos una solicitud para restablecer tu contraseña. Puedes hacerlo haciendo clic en el siguiente enlace:</p>
-            <a href='{resetUrl}'>Restablecer Contraseña</a>
+            <a href='{callbackUrl}'>Restablecer Contraseña</a>
             <p>Si no realizaste esta solicitud, ignora este correo.</p>
             <p>Este enlace expirará en 30 minutos.</p>";
 
