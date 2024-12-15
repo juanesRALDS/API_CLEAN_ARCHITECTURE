@@ -32,7 +32,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
                 new User { Id = "1", Name = "User1", Email = "user1@example.com" },
                 new User { Id = "2", Name = "User2", Email = "user2@example.com" }
             };
-            _userRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(users);
+            _userRepositoryMock.Setup(repo => repo.GetAllUser(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(users);
 
             // Act
             var result = await _useCase.Execute(1, 10);
@@ -70,7 +70,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
         public async Task Login_ShouldThrowInvalidOperationException_WhenRepositoryReturnsNull()
         {
             // Arrange
-            _userRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((List<User>)null);
+            _userRepositoryMock.Setup(repo => repo.GetAllUser(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((List<User>)null);
 
             // Act
             Func<Task> act = async () => await _useCase.Execute(1, 10);

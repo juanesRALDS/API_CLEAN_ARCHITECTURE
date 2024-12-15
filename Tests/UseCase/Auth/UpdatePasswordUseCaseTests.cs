@@ -39,7 +39,7 @@
 //         string hashedPassword = "hashed-password";
 
 //         mockTokenRepository
-//     .Setup(repo => repo.GetByTokenAsync(token))
+//     .Setup(repo => repo.GetByToken(token))
 //     .ReturnsAsync(new Token
 //     {
 //         Tokens = token,
@@ -48,7 +48,7 @@
 //     });
 
 //         mockUserRepository
-//             .Setup(repo => repo.GetByIdAsync("userId"))
+//             .Setup(repo => repo.GetUserById("userId"))
 //             .ReturnsAsync(new User { Id = "userId" });
 
 //         mockPasswordHasher
@@ -62,8 +62,8 @@
 
 //         // Assert
 //         Assert.True(result);
-//         mockUserRepository.Verify(repo => repo.UpdatePasswordAsync("userId", hashedPassword), Times.Once);
-//         mockTokenRepository.Verify(repo => repo.DeleteTokenAsync(token), Times.Once);
+//         mockUserRepository.Verify(repo => repo.UpdatePassword("userId", hashedPassword), Times.Once);
+//         mockTokenRepository.Verify(repo => repo.DeleteToken(token), Times.Once);
 //     }
 
 //     [Fact]
@@ -71,7 +71,7 @@
 //     {
 //         // Arrange
 //         string token = "invalid-token";
-//         _mockTokenRepository.Setup(repo => repo.GetByTokenAsync(token))
+//         _mockTokenRepository.Setup(repo => repo.GetByToken(token))
 //             .ReturnsAsync((Token?)null);
 
 //         // Act & Assert
@@ -92,7 +92,7 @@
 //             UserId = "user-id"
 //         };
 
-//         _mockTokenRepository.Setup(repo => repo.GetByTokenAsync(token))
+//         _mockTokenRepository.Setup(repo => repo.GetByToken(token))
 //             .ReturnsAsync(storedToken);
 
 //         // Act & Assert
@@ -113,10 +113,10 @@
 //             UserId = "nonexistent-user-id"
 //         };
 
-//         _mockTokenRepository.Setup(repo => repo.GetByTokenAsync(token))
+//         _mockTokenRepository.Setup(repo => repo.GetByToken(token))
 //             .ReturnsAsync(storedToken);
 
-//         _mockUserRepository.Setup(repo => repo.GetByIdAsync(storedToken.UserId))
+//         _mockUserRepository.Setup(repo => repo.GetUserById(storedToken.UserId))
 //             .ReturnsAsync((User?)null);
 
 //         // Act & Assert

@@ -27,7 +27,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
             // Arrange
             var userId = "validUserId";
             var user = new User { Id = userId, Name = "User1", Email = "user1@example.com" };
-            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+            _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(user);
 
             // Act
             var result = await _useCase.Execute(userId);
@@ -50,7 +50,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(act);
-            _userRepositoryMock.Verify(repo => repo.GetByIdAsync(It.IsAny<string>()), Times.Never);
+            _userRepositoryMock.Verify(repo => repo.GetUserById(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
-            _userRepositoryMock.Verify(repo => repo.GetByIdAsync(It.IsAny<string>()), Times.Never);
+            _userRepositoryMock.Verify(repo => repo.GetUserById(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
         {
             // Arrange
             var userId = "nonExistentUserId";
-            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User?)null);
+            _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
 
             // Act
             var result = await _useCase.Execute(userId);

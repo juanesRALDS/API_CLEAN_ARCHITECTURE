@@ -23,14 +23,14 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
         {
             // Arrange
             var userId = "validUserId";
-            _userRepositoryMock.Setup(repo => repo.DeleteAsync(userId))
+            _userRepositoryMock.Setup(repo => repo.DeleteUser(userId))
                 .Returns(Task.CompletedTask);
 
             // Act
             await _useCase.Execute(userId);
 
             // Assert
-            _userRepositoryMock.Verify(repo => repo.DeleteAsync(userId), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.DeleteUser(userId), Times.Once);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(act);
-            _userRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<string>()), Times.Never);
+            _userRepositoryMock.Verify(repo => repo.DeleteUser(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Users
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
-            _userRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<string>()), Times.Never);
+            _userRepositoryMock.Verify(repo => repo.DeleteUser(It.IsAny<string>()), Times.Never);
         }
     }
 }

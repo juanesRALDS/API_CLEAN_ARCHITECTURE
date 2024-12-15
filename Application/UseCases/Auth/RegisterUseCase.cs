@@ -42,7 +42,7 @@ public class RegisterUseCase : IRegisterUseCase
             throw new ArgumentException("la contraseña no puede  estar vacia o ser nula ", nameof(userDto.Password));
 
 
-        User? existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
+        User? existingUser = await _userRepository.GetUserByEmail(userDto.Email);
         if (existingUser != null)
         {
             throw new InvalidOperationException("Ya existe un usuario registrado con este correo.");
@@ -62,7 +62,7 @@ public class RegisterUseCase : IRegisterUseCase
             Password = hashedPassword
         };
 
-        await _userRepository.CreateAsync(newUser);
+        await _userRepository.CreateNewUser(newUser);
 
         return "User registered successfully";
     }

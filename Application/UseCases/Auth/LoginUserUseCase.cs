@@ -44,15 +44,12 @@ public class LoginUserUseCase : ILoginUseCase
         }
 
         // Validación de usuario en la base de datos
-        User? user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
+        User? user = await _userRepository.GetUserByEmail(loginDto.Email);
         if (user is null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
         {
             throw new UnauthorizedAccessException("Credenciales inválidas.");
         }
 
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        // Generación del token
         return JwtHelper.GenerateToken(_jwtConfig, user, DateTime.UtcNow.AddHours(1));
     }
 }

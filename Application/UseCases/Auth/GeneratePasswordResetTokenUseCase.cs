@@ -35,7 +35,7 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
     public async Task<string> Execute(string email)
     {
 
-        User? user = await _userRepository.GetUserByEmailAsync(email)
+        User? user = await _userRepository.GetUserByEmail(email)
 ?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
 
 
@@ -77,7 +77,7 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
             throw new InvalidOperationException($"Error al enviar el correo {ex.Message}", ex);
         }
 
-        await _tokenRepository.SaveTokenAsync(token);
+        await _tokenRepository.SaveToken(token);
 
         return "El enlace para restablecer la contraseña ha sido enviado a tu correo electrónico.";
     }

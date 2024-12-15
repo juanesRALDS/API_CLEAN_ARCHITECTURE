@@ -23,7 +23,7 @@ public class GetAllUsersUseCase : IGetAllUsersUseCase
         if (pageSize <= 0)
             throw new ArgumentException("Page size must be greater than 0.", nameof(pageSize));
 
-        List<User>? users = await _userRepository.GetAllAsync(pageNumber, pageSize)
+        List<User>? users = await _userRepository.GetAllUser(pageNumber, pageSize)
             ?? throw new InvalidOperationException("The repository returned null users list.");
 
         return users.Select(ToUserDto).ToList();

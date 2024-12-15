@@ -39,7 +39,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases
                 Email = "john.doe@example.com"
             };
 
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+            _mockUserRepository.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(user);
 
             // Act
             UserDto? result = await _useCase.Execute(validToken);
@@ -74,7 +74,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases
             string userId = "user123";
 
             _mockTokenService.Setup(ts => ts.ValidateToken(validToken)).Returns(userId);
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User?)null);
+            _mockUserRepository.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
 
             // Act
             UserDto? result = await _useCase.Execute(validToken);

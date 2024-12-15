@@ -15,7 +15,7 @@ public class GetUserByIdUseCase : IGetUserByIdUseCase
 
     public async Task<UserDto> Execute(string userId)
     {
-        User? user = await _userRepository.GetByIdAsync(userId);
+        User? user = await _userRepository.GetUserById(userId);
         if (user == null)
         {   
             throw new InvalidOperationException("User not found.");

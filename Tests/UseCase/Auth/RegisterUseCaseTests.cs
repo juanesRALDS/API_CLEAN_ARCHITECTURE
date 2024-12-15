@@ -51,13 +51,13 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
                 Password = "Password123"
             };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email))
+            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
                 .ReturnsAsync((User?)null);
 
             _passwordHasherMock.Setup(hasher => hasher.HashPassword(userDto.Password))
                 .Returns("hashedPassword");
 
-            _userRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+            _userRepositoryMock.Setup(repo => repo.CreateNewUser(It.IsAny<User>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -66,9 +66,9 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
             // Assert
             result.Should().Be("User registered successfully");
 
-            _userRepositoryMock.Verify(repo => repo.GetUserByEmailAsync(userDto.Email), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
             _passwordHasherMock.Verify(hasher => hasher.HashPassword(userDto.Password), Times.Once);
-            _userRepositoryMock.Verify(repo => repo.CreateAsync(It.IsAny<User>()), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.CreateNewUser(It.IsAny<User>()), Times.Once);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
                 Password = "Password123"
             };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmailAsync(userDto.Email))
+            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
                 .ReturnsAsync(new User());
 
             // Act
@@ -160,7 +160,7 @@ namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
             await act.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Ya existe un usuario registrado con este correo.");
 
-            _userRepositoryMock.Verify(repo => repo.GetUserByEmailAsync(userDto.Email), Times.Once);
+            _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
         }
 
         [Fact]

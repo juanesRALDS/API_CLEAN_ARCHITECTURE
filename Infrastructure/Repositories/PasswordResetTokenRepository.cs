@@ -11,27 +11,22 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public PasswordResetTokenRepository(MongoDbContext database)
         {
-            // Nombre de la colección donde se guardarán los tokens
             _tokensCollection = database.GetCollection<Token>("Token");
         }
 
-        public async Task SaveTokenAsync(Token tokens)
+        public async Task SaveToken(Token tokens)
         {
-            // Inserta el token en la colección
             await _tokensCollection.InsertOneAsync(tokens);
         }
 
-        public async Task<Token> GetByTokenAsync(string Tokens)
+        public async Task<Token> GetByToken(string Tokens)
         {
-
             return await _tokensCollection
                 .Find(t => t.Tokens == Tokens)
                 .FirstOrDefaultAsync();
-
-            
         }
 
-        public async Task DeleteTokenAsync(string tokenValue)
+        public async Task DeleteToken(string tokenValue)
         {
             await _tokensCollection.DeleteOneAsync(t => t.Tokens == tokenValue);
         }

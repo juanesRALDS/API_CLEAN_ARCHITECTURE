@@ -32,14 +32,14 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
             var user = new User { Id = userId, Name = "OldName", Email = "old@example.com", Password = "oldpassword" };
 
-            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+            _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(user);
             _passwordHasherMock.Setup(hasher => hasher.HashPassword(updateUserDto.Password)).Returns("hashedpassword");
 
             // Act
             await _useCase.Execute(userId, updateUserDto);
 
             // Assert
-            _userRepositoryMock.Verify(repo => repo.UpdateAsync(userId,It.Is<User>(u => 
+            _userRepositoryMock.Verify(repo => repo.UpdateUser(userId,It.Is<User>(u => 
                 u.Id == userId && 
                 u.Name == updateUserDto.Name && 
                 u.Email == updateUserDto.Email && 
@@ -80,7 +80,7 @@ namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users
             var userId = "1";
             var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
 
-            _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User?)null);
+            _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
 
             // Act
             Func<Task> act = async () => await _useCase.Execute(userId, updateUserDto);

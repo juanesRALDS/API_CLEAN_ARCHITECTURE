@@ -37,7 +37,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
         }
 
         // Obtener usuario existente
-        User? existingUser = await _userRepository.GetByIdAsync(id)
+        User? existingUser = await _userRepository.GetUserById(id)
             ?? throw new KeyNotFoundException($"Usuario con ID {id} no encontrado.");
 
         // Hashear la nueva contraseña
@@ -53,7 +53,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
             Password = hashedPassword
         };
 
-        await _userRepository.UpdateAsync(id, updatedUser);
+        await _userRepository.UpdateUser(id, updatedUser);
 
         return new UpdateUserResponseDto
         {
