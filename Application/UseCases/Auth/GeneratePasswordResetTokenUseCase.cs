@@ -11,51 +11,51 @@ namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 
 public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseCase
 {
-
     private readonly IUserRepository _userRepository;
     private readonly IPasswordResetTokenRepository _tokenRepository;
     private readonly JwtConfig _jwtConfig;
     private readonly IEmailService _emailService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     public GeneratePasswordResetTokenUseCase(
         IUserRepository userRepository,
         IPasswordResetTokenRepository tokenRepository,
         IEmailService emailService,
         IOptions<JwtConfig> jwtconfig,
-        IHttpContextAccessor httpContextAccessor
-        )
+        IHttpContextAccessor httpContextAccessor)
     {
-        _userRepository = userRepository;
-        _tokenRepository = tokenRepository;
-        _emailService = emailService;
-        _jwtConfig = jwtconfig.Value;
-        _httpContextAccessor = httpContextAccessor;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _tokenRepository = tokenRepository ?? throw new ArgumentNullException(nameof(tokenRepository));
+        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        _jwtConfig = jwtconfig?.Value ?? throw new ArgumentNullException(nameof(jwtconfig));
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
+
 
     public async Task<string> Execute(string email)
     {
-
         User? user = await _userRepository.GetUserByEmail(email)
-?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
-
+            ?? throw new Exception("Usuario no encontrado con el correo proporcionado.");
 
         DateTime expiration = DateTime.UtcNow.AddMinutes(30);
-        string? tokenValue = JwtHelper.GenerateToken(
+        string tokenValue = JwtHelper.GenerateToken(
             jwtConfig: _jwtConfig,
             user: user,
             expiration: expiration
         );
 
-        Token? token = new()
+        var token = new Token
         {
             Tokens = tokenValue,
             Expiration = expiration,
             UserId = user.Id
         };
 
-        HttpContext? httpContext = _httpContextAccessor.HttpContext;
-        string scheme = httpContext?.Request.Scheme;
-        string host = httpContext?.Request.Host.Value;
+        var httpContext = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("HttpContext no disponible");
+
+        string scheme = httpContext.Request.Scheme ?? "https";
+        string host = httpContext.Request.Host.Value ?? "localhost";
         string callbackUrl = $"{scheme}://{host}/reset-password?token={tokenValue}";
 
         string subject = "Restablecimiento de contraseña";

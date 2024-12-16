@@ -10,16 +10,20 @@ public class GetUserByIdUseCase : IGetUserByIdUseCase
 
     public GetUserByIdUseCase(IUserRepository userRepository)
     {
-        _userRepository = userRepository;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
     public async Task<UserDto> Execute(string userId)
     {
-        User? user = await _userRepository.GetUserById(userId);
-        if (user == null)
-        {   
-            throw new InvalidOperationException("User not found.");
-        }
+        if (userId == null)
+            throw new ArgumentNullException(nameof(userId), "User ID cannot be null");
+            
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("user ID cannot be empty", nameof(userId));
+
+        User? user = await _userRepository.GetUserById(userId) 
+            ?? throw new InvalidOperationException("user not found");
+
         return new UserDtoResponse
         {
             Id = user.Id,

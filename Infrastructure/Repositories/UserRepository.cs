@@ -16,6 +16,10 @@ namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
 
         public async Task<User?> GetUserByEmail(string email)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentException("mail cannot be null or emply", nameof(email));   
+            }
             return await _UserCollection.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
 

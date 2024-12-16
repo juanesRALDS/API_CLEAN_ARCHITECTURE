@@ -2,6 +2,7 @@ using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using FluentAssertions;
@@ -12,174 +13,174 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth
+namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth;
+
+public class RegisterUseCaseTests
 {
-    public class RegisterUseCaseTests
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IPasswordHasher> _passwordHasherMock;
+    private readonly IOptions<JwtConfig> _jwtConfig;
+    private readonly IRegisterUseCase _useCase;
+
+    public RegisterUseCaseTests()
     {
-        private readonly Mock<IUserRepository> _userRepositoryMock;
-        private readonly Mock<IPasswordHasher> _passwordHasherMock;
-        private readonly IOptions<JwtConfig> _jwtConfig;
-        private readonly RegisterUseCase _useCase;
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _passwordHasherMock = new Mock<IPasswordHasher>();
 
-        public RegisterUseCaseTests()
+        _jwtConfig = Options.Create(new JwtConfig
         {
-            _userRepositoryMock = new Mock<IUserRepository>();
-            _passwordHasherMock = new Mock<IPasswordHasher>();
+            SecretKey = "SuperSecretKeyForTestinlsadklaslkdsallg",
+            Issuer = "TestIssuer",
+            Audience = "TestAudience"
+        });
 
-            _jwtConfig = Options.Create(new JwtConfig
-            {
-                SecretKey = "SuperSecretKeyForTestinlsadklaslkdsallg",
-                Issuer = "TestIssuer",
-                Audience = "TestAudience"
-            });
+        _useCase = new RegisterUseCase(
+            _userRepositoryMock.Object,
+            _jwtConfig,
+            _passwordHasherMock.Object
+        );
+    }
 
-            _useCase = new RegisterUseCase(
-                _userRepositoryMock.Object,
-                _jwtConfig,
-                _passwordHasherMock.Object
-            );
-        }
-
-        [Fact]
-        public async Task Execute_ShouldRegisterUserSuccessfully()
+    [Fact]
+    public async Task ShouldRegisterUserSuccessfully()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                Password = "Password123"
-            };
+            Name = "Test User",
+            Email = "test@example.com",
+            Password = "Password123"
+        };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
-                .ReturnsAsync((User?)null);
+        _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
+            .ReturnsAsync((User?)null);
 
-            _passwordHasherMock.Setup(hasher => hasher.HashPassword(userDto.Password))
-                .Returns("hashedPassword");
+        _passwordHasherMock.Setup(hasher => hasher.HashPassword(userDto.Password))
+            .Returns("hashedPassword");
 
-            _userRepositoryMock.Setup(repo => repo.CreateNewUser(It.IsAny<User>()))
-                .Returns(Task.CompletedTask);
+        _userRepositoryMock.Setup(repo => repo.CreateNewUser(It.IsAny<User>()))
+            .Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _useCase.Execute(userDto);
+        // Act
+        var result = await _useCase.Execute(userDto);
 
-            // Assert
-            result.Should().Be("User registered successfully");
+        // Assert
+        result.Should().Be("User registered successfully");
 
-            _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
-            _passwordHasherMock.Verify(hasher => hasher.HashPassword(userDto.Password), Times.Once);
-            _userRepositoryMock.Verify(repo => repo.CreateNewUser(It.IsAny<User>()), Times.Once);
-        }
+        _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
+        _passwordHasherMock.Verify(hasher => hasher.HashPassword(userDto.Password), Times.Once);
+        _userRepositoryMock.Verify(repo => repo.CreateNewUser(It.IsAny<User>()), Times.Once);
+    }
 
-        [Fact]
-        public async Task Execute_ShouldThrowArgumentNullException_WhenUserDtoIsNull()
+    [Fact]
+    public async Task WhenUserDtoIsNull()
+    {
+        // Act
+        CreateUserDto? nullDto = null;
+        Func<Task> act = async () => await _useCase.Execute(nullDto);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'userDto')");
+    }
+
+    [Fact]
+    public async Task WhenNameIsEmpty()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(null);
+            Name = "",
+            Email = "test@example.com",
+            Password = "Password123"
+        };
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentNullException>()
-                .WithMessage("Value cannot be null. (Parameter 'userDto')");
-        }
+        // Act
+        Func<Task> act = async () => await _useCase.Execute(userDto);
 
-        [Fact]
-        public async Task Execute_ShouldThrowArgumentException_WhenNameIsEmpty()
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("the name cannot be empty or null (Parameter 'Name')");
+    }
+
+    [Fact]
+    public async Task WhenEmailIsEmpty()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "",
-                Email = "test@example.com",
-                Password = "Password123"
-            };
+            Name = "Test User",
+            Email = "",
+            Password = "Password123"
+        };
 
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(userDto);
+        // Act
+        Func<Task> act = async () => await _useCase.Execute(userDto);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>()
-                .WithMessage("El nombre no puede estar vacío o nulo. (Parameter 'userDto.Name')");
-        }
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Email (parameter 'the email cannot be empty or null')");
+    }
 
-        [Fact]
-        public async Task Execute_ShouldThrowArgumentNullException_WhenEmailIsEmpty()
+    [Fact]
+    public async Task WhenPasswordIsEmpty()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "Test User",
-                Email = "",
-                Password = "Password123"
-            };
+            Name = "Test User",
+            Email = "test@example.com",
+            Password = ""
+        };
 
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(userDto);
+        // Act
+        Func<Task> act = async () => await _useCase.Execute(userDto);
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>()
-                .WithMessage("el correo no puede ser nulo (Parameter 'userDto.Email')");
-        }
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("the password cannot be empty or null (Parameter 'Password')");
+    }
 
-        [Fact]
-        public async Task Execute_ShouldThrowArgumentException_WhenPasswordIsEmpty()
+    [Fact]
+    public async Task WhenEmailAlreadyExists()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                Password = ""
-            };
+            Name = "Test User",
+            Email = "test@example.com",
+            Password = "Password123"
+        };
 
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(userDto);
+        _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
+            .ReturnsAsync(new User());
 
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>()
-                .WithMessage("la contraseña no puede  estar vacia o ser nula  (Parameter 'userDto.Password')");
-        }
+        // Act
+        Func<Task> act = async () => await _useCase.Execute(userDto);
 
-        [Fact]
-        public async Task Execute_ShouldThrowInvalidOperationException_WhenEmailAlreadyExists()
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("A user with this email already exists.");
+
+        _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
+    }
+
+    [Fact]
+    public async Task WhenEmailIsInvalid()
+    {
+        // Arrange
+        var userDto = new CreateUserDto
         {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                Password = "Password123"
-            };
+            Name = "Test User",
+            Email = "invalid-email",
+            Password = "Password123"
+        };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(userDto.Email))
-                .ReturnsAsync(new User());
+        // Act
+        Func<Task> act = async () => await _useCase.Execute(userDto);
 
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(userDto);
-
-            // Assert
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("Ya existe un usuario registrado con este correo.");
-
-            _userRepositoryMock.Verify(repo => repo.GetUserByEmail(userDto.Email), Times.Once);
-        }
-
-        [Fact]
-        public async Task Execute_ShouldThrowFormatException_WhenEmailIsInvalid()
-        {
-            // Arrange
-            var userDto = new CreateUserDto
-            {
-                Name = "Test User",
-                Email = "invalid-email",
-                Password = "Password123"
-            };
-
-            // Act
-            Func<Task> act = async () => await _useCase.Execute(userDto);
-
-            // Assert
-            await act.Should().ThrowAsync<FormatException>()
-                .WithMessage("El correo electrónico no tiene un formato válido.");
-        }
+        // Assert
+        await act.Should().ThrowAsync<FormatException>()
+            .WithMessage("The email format is invalid.");
     }
 }

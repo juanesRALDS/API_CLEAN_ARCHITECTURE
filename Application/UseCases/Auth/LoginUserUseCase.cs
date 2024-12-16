@@ -17,18 +17,15 @@ public class LoginUserUseCase : ILoginUseCase
     private readonly JwtConfig _jwtConfig;
     private readonly IPasswordHasher _passwordHasher;
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
     public LoginUserUseCase(
         IUserRepository userRepository,
         IOptions<JwtConfig> jwtConfig,
-        IPasswordHasher passwordHasher,
-        IHttpContextAccessor httpContentAcecesor
+        IPasswordHasher passwordHasher
         )
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _jwtConfig = jwtConfig.Value;
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
-        _httpContextAccessor = httpContentAcecesor ?? throw new ArgumentNullException(nameof(httpContentAcecesor));
     }
 
     public async Task<string> Execute(LoginUserDto loginDto)

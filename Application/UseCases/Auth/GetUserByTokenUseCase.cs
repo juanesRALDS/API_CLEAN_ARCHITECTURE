@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 using api_completa_mongodb_net_6_0.Infrastructure.Services;
 
 
 namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth
 {
-    public class GetUserByTokenUseCase
+    public class GetUserByTokenUseCase : IGetUserByTokenUseCase
     {
         private readonly ITokenService _tokenServices;
         private readonly IUserRepository _userRepository;
