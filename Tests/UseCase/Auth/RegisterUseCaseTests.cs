@@ -45,7 +45,7 @@ public class RegisterUseCaseTests
     public async Task ShouldRegisterUserSuccessfully()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "Test User",
             Email = "test@example.com",
@@ -62,7 +62,7 @@ public class RegisterUseCaseTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _useCase.Execute(userDto);
+        string? result = await _useCase.Execute(userDto);
 
         // Assert
         result.Should().Be("User registered successfully");
@@ -88,7 +88,7 @@ public class RegisterUseCaseTests
     public async Task WhenNameIsEmpty()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "",
             Email = "test@example.com",
@@ -107,7 +107,7 @@ public class RegisterUseCaseTests
     public async Task WhenEmailIsEmpty()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "Test User",
             Email = "",
@@ -126,7 +126,7 @@ public class RegisterUseCaseTests
     public async Task WhenPasswordIsEmpty()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "Test User",
             Email = "test@example.com",
@@ -145,7 +145,7 @@ public class RegisterUseCaseTests
     public async Task WhenEmailAlreadyExists()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "Test User",
             Email = "test@example.com",
@@ -169,7 +169,7 @@ public class RegisterUseCaseTests
     public async Task WhenEmailIsInvalid()
     {
         // Arrange
-        var userDto = new CreateUserDto
+        CreateUserDto? userDto = new()
         {
             Name = "Test User",
             Email = "invalid-email",

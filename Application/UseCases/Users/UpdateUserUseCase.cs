@@ -11,7 +11,10 @@ public class UpdateUserUseCase : IUpdateUserUseCase
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
 
-    public UpdateUserUseCase(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public UpdateUserUseCase(
+        IUserRepository userRepository, 
+        IPasswordHasher passwordHasher
+    )
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;

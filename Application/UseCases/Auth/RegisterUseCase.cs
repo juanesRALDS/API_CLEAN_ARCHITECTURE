@@ -20,10 +20,14 @@ public class RegisterUseCase : IRegisterUseCase
     private readonly JwtConfig _jwtConfig;
     private readonly IPasswordHasher _passwordHasher;
 
-    public RegisterUseCase(IUserRepository userRepository, IOptions<JwtConfig> jwtConfig, IPasswordHasher passwordHasher)
+    public RegisterUseCase(
+        IUserRepository userRepository,
+        IOptions<JwtConfig> jwtConfig,
+        IPasswordHasher passwordHasher
+    )
     {
-        _userRepository = userRepository ?? throw new ArgumentOutOfRangeException(nameof(userRepository));
-        _passwordHasher = passwordHasher ?? throw new ArgumentOutOfRangeException(nameof(passwordHasher)); 
+        _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
         _jwtConfig = jwtConfig.Value;
     }
 

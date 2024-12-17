@@ -12,7 +12,7 @@ public class GetAllUsersUseCase : IGetAllUsersUseCase
 
     public GetAllUsersUseCase(IUserRepository userRepository)
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _userRepository = userRepository;
     }
 
     public async Task<List<UserDto>> Execute(int pageNumber, int pageSize)

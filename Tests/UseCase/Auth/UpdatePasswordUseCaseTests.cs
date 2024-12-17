@@ -58,10 +58,14 @@ public class UpdatePasswordUseCaseTests
             .Setup(hasher => hasher.HashPassword(newPassword))
             .Returns(hashedPassword);
 
-        var useCase = new UpdatePasswordUseCase(mockTokenRepository.Object, mockUserRepository.Object, mockPasswordHasher.Object);
+        UpdatePasswordUseCase useCase = new(
+            mockTokenRepository.Object,
+            mockUserRepository.Object,
+            mockPasswordHasher.Object
+            );
 
         // Act
-        var result = await useCase.Execute(token, newPassword);
+        bool result = await useCase.Execute(token, newPassword);
 
         // Assert
         Assert.True(result);
@@ -72,7 +76,7 @@ public class UpdatePasswordUseCaseTests
     [Fact]
     public async Task WhenTokenNotFound()
     {
-        
+
         // Arrange
         string token = "invalid-token";
         _mockTokenRepository.Setup(repo => repo.GetByToken(token))
@@ -91,7 +95,7 @@ public class UpdatePasswordUseCaseTests
     {
         // Arrange
         string token = "expired-token";
-        var expiredToken = new Token
+        Token? expiredToken = new()
         {
             Tokens = token,
             Expiration = DateTime.UtcNow.AddMinutes(-10),
@@ -107,8 +111,8 @@ public class UpdatePasswordUseCaseTests
             .ReturnsAsync(new User { Id = expiredToken.UserId });
 
         // Act & Assert
-        var act = async () => await _useCase.Execute(token, "newPassword123");
-        
+         Func<Task> act = async () => await _useCase.Execute(token, "newPassword123");
+
         await act.Should().ThrowAsync<SecurityTokenExpiredException>()
             .WithMessage($"Token has expired, expiration: {expiredToken.Expiration}, current time: {DateTime.UtcNow}");
     }

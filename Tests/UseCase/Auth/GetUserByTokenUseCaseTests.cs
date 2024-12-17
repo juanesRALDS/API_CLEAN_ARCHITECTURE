@@ -15,7 +15,7 @@ public class GetUserByTokenUseCaseTests
 {
     private readonly Mock<ITokenService> _mockTokenService;
     private readonly Mock<IUserRepository> _mockUserRepository;
-    private readonly GetUserByTokenUseCase _useCase;
+    private readonly IGetUserByTokenUseCase _useCase;
 
     public GetUserByTokenUseCaseTests()
     {

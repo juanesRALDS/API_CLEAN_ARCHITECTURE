@@ -1,5 +1,6 @@
 using api_completa_mongodb_net_6_0.Application.DTO.Auth;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_completa_mongodb_net_6_0.Controllers.Auth;
@@ -8,9 +9,9 @@ namespace api_completa_mongodb_net_6_0.Controllers.Auth;
 [Route("api/[controller]")]
 public class PasswordController : ControllerBase
 {
-    private readonly UpdatePasswordUseCase _updatePasswordUseCase;
+    private readonly IUpdatePasswordUseCase _updatePasswordUseCase;
 
-    public PasswordController(UpdatePasswordUseCase updatePasswordUseCase)
+    public PasswordController(IUpdatePasswordUseCase updatePasswordUseCase)
     {
         _updatePasswordUseCase = updatePasswordUseCase;
     }

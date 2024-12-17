@@ -24,11 +24,11 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
         IOptions<JwtConfig> jwtconfig,
         IHttpContextAccessor httpContextAccessor)
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        _tokenRepository = tokenRepository ?? throw new ArgumentNullException(nameof(tokenRepository));
-        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-        _jwtConfig = jwtconfig?.Value ?? throw new ArgumentNullException(nameof(jwtconfig));
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        _userRepository = userRepository;
+        _tokenRepository = tokenRepository;
+        _emailService = emailService;
+        _jwtConfig = jwtconfig.Value;
+        _httpContextAccessor = httpContextAccessor;
     }
 
 
@@ -44,15 +44,15 @@ public class GeneratePasswordResetTokenUseCase : IGeneratePasswordResetTokenUseC
             expiration: expiration
         );
 
-        var token = new Token
+        Token? token = new()
         {
             Tokens = tokenValue,
             Expiration = expiration,
             UserId = user.Id
         };
 
-        var httpContext = _httpContextAccessor.HttpContext
-            ?? throw new InvalidOperationException("HttpContext no disponible");
+        HttpContext? httpContext = _httpContextAccessor.HttpContext
+          ?? throw new InvalidOperationException("HttpContext no disponible");
 
         string scheme = httpContext.Request.Scheme ?? "https";
         string host = httpContext.Request.Host.Value ?? "localhost";

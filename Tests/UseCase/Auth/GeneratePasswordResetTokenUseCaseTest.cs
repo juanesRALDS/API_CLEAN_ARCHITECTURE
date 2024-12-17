@@ -2,6 +2,7 @@ using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
 using api_completa_mongodb_net_6_0.Domain.Entities;
 using api_completa_mongodb_net_6_0.Domain.Interfaces;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using api_completa_mongodb_net_6_0.Infrastructure.Config;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@ public class GeneratePasswordResetTokenUseCaseTests
     private readonly Mock<IPasswordResetTokenRepository> _tokenRepositoryMock;
     private readonly Mock<IEmailService> _emailServiceMock;
     private readonly IOptions<JwtConfig> _jwtConfig;
-    private readonly GeneratePasswordResetTokenUseCase _useCase;
+    private readonly IGeneratePasswordResetTokenUseCase _useCase;
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
 
     public GeneratePasswordResetTokenUseCaseTests()
@@ -29,7 +30,7 @@ public class GeneratePasswordResetTokenUseCaseTests
         _emailServiceMock = new Mock<IEmailService>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
-        var httpContext = new DefaultHttpContext();
+        DefaultHttpContext? httpContext = new DefaultHttpContext();
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
         _jwtConfig = Options.Create(new JwtConfig
@@ -58,8 +59,8 @@ public class GeneratePasswordResetTokenUseCaseTests
     public async Task Execute_ShouldGenerateTokenAndSendEmail_WhenUserExists()
     {
         // Arrange
-        var email = "test@example.com";
-        var user = new User { Id = "123", Email = email, Name = "Test User" };
+        string? email = "test@example.com";
+        User? user = new() { Id = "123", Email = email, Name = "Test User" };
 
         _userRepositoryMock.Setup(repo => repo.GetUserByEmail(email))
             .ReturnsAsync(user);
@@ -74,7 +75,7 @@ public class GeneratePasswordResetTokenUseCaseTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _useCase.Execute(email);
+        string? result = await _useCase.Execute(email);
 
         // Assert
         result.Should().Be("El enlace para restablecer la contraseña ha sido enviado a tu correo electrónico.");
@@ -92,7 +93,7 @@ public class GeneratePasswordResetTokenUseCaseTests
     public async Task Execute_ShouldThrowException_WhenUserDoesNotExist()
     {
         // Arrange
-        var email = "nonexistent@example.com";
+        string? email = "nonexistent@example.com";
 
         _userRepositoryMock.Setup(repo => repo.GetUserByEmail(email))
             .ReturnsAsync((User?)null);
@@ -117,8 +118,8 @@ public class GeneratePasswordResetTokenUseCaseTests
     public async Task Execute_ShouldThrowInvalidOperationException_WhenEmailSendingFails()
     {
         // Arrange
-        var email = "test@example.com";
-        var user = new User { Id = "123", Email = email, Name = "Test User" };
+        string? email = "test@example.com";
+        User? user = new() { Id = "123", Email = email, Name = "Test User" };
 
         _userRepositoryMock.Setup(repo => repo.GetUserByEmail(email))
             .ReturnsAsync(user);

@@ -24,10 +24,6 @@ public class LoginController : ControllerBase
         {
             string? tokens = await _loginUserUseCase.Execute(loginDto);
 
-            string callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/reset-password?token={tokens}";
-
-            Console.WriteLine(callbackUrl);
-
             return Ok(new { Tokens = tokens });
         }
         catch (UnauthorizedAccessException)

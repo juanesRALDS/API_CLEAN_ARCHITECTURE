@@ -19,7 +19,7 @@ public class LoginUserUseCaseTests
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IPasswordHasher> _mockPasswordHasher;
     private readonly Mock<IOptions<JwtConfig>> _mockJwtConfig;
-    private readonly LoginUserUseCase _loginUserUseCase;
+    private readonly ILoginUseCase _loginUserUseCase;
 
     public LoginUserUseCaseTests()
     {

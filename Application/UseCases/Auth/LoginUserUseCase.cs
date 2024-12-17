@@ -23,9 +23,9 @@ public class LoginUserUseCase : ILoginUseCase
         IPasswordHasher passwordHasher
         )
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _userRepository = userRepository;
         _jwtConfig = jwtConfig.Value;
-        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<string> Execute(LoginUserDto loginDto)
@@ -40,7 +40,7 @@ public class LoginUserUseCase : ILoginUseCase
             throw new ArgumentException("La contraseña no puede estar vacía.", nameof(loginDto.Password));
         }
 
-        // Validación de usuario en la base de datos
+
         User? user = await _userRepository.GetUserByEmail(loginDto.Email);
         if (user is null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
         {

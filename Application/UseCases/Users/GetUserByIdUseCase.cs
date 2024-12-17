@@ -10,7 +10,7 @@ public class GetUserByIdUseCase : IGetUserByIdUseCase
 
     public GetUserByIdUseCase(IUserRepository userRepository)
     {
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _userRepository = userRepository;
     }
 
     public async Task<UserDto> Execute(string userId)
