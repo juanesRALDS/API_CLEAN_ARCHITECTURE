@@ -32,7 +32,7 @@ public class GetUserByTokenUseCaseTests
         string validToken = "validToken123";
         string userId = "user123";
 
-        var claims = new List<Claim>
+        List<Claim> claims = new()
         {
             new Claim("id", userId)
         };
@@ -43,7 +43,7 @@ public class GetUserByTokenUseCaseTests
             .Setup(ts => ts.ValidateTokenAndGetPrincipal(validToken))
             .Returns(claimsPrincipal);
 
-        var user = new User
+        User? user = new()
         {
             Id = userId,
             Name = "John Doe",
@@ -55,7 +55,7 @@ public class GetUserByTokenUseCaseTests
             .ReturnsAsync(user);
 
         // Act
-        var result = await _useCase.Execute(validToken);
+        UserDto? result = await _useCase.Execute(validToken);
 
         // Assert
         Assert.NotNull(result);
@@ -89,7 +89,7 @@ public class GetUserByTokenUseCaseTests
             .Returns((ClaimsPrincipal?)null);
 
         // Act
-        var result = await _useCase.Execute(invalidToken);
+        UserDto? result = await _useCase.Execute(invalidToken);
 
         // Assert
         Assert.Null(result);
@@ -102,7 +102,7 @@ public class GetUserByTokenUseCaseTests
         string validToken = "validToken123";
         string userId = "user123";
 
-        var claims = new List<Claim>
+        List<Claim>? claims = new List<Claim>
         {
             new Claim("id", userId)
         };
@@ -117,7 +117,7 @@ public class GetUserByTokenUseCaseTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var result = await _useCase.Execute(validToken);
+        UserDto? result = await _useCase.Execute(validToken);
 
         // Assert
         Assert.Null(result);
