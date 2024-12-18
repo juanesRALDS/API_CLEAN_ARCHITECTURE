@@ -1,8 +1,8 @@
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using SagaAserhi.Infrastructure.Config;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Context
+namespace SagaAserhi.Infrastructure.Context
 {
     public class MongoDbContext
     {

@@ -1,4 +1,4 @@
-namespace api_completa_mongodb_net_6_0.Infrastructure.Config
+namespace SagaAserhi.Infrastructure.Config
 {
     public class JwtConfig
     {

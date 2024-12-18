@@ -1,8 +1,8 @@
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using SagaAserhi.Domain.Interfaces;
+using SagaAserhi.Domain.Interfaces.Utils;
 using BCrypt.Net;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
+namespace SagaAserhi.Infrastructure.Services;
 public class PasswordHasher : IPasswordHasher
     {
         public string HashPassword(string password)

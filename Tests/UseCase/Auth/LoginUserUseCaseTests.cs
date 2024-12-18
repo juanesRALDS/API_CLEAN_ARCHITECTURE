@@ -1,19 +1,19 @@
 using Xunit;
 using Moq;
 using FluentAssertions;
-using api_completa_mongodb_net_6_0.Application.DTO.Auth;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
-using api_completa_mongodb_net_6_0.Infrastructure.Utils;
+using SagaAserhi.Application.DTO.Auth;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Infrastructure.Config;
+using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
-using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+using SagaAserhi.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Identity;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using SagaAserhi.Domain.Interfaces.Utils;
 using Microsoft.AspNetCore.Http;
+using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Test.UseCases;
+namespace SagaAserhi.Test.UseCases;
 public class LoginUserUseCaseTests
 {
     private readonly Mock<IUserRepository> _mockUserRepository;

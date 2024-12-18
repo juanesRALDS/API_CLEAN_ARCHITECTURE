@@ -1,6 +1,6 @@
 
 
-namespace api_completa_mongodb_net_6_0.Application.DTO;
+namespace SagaAserhi.Application.DTO;
 
 public class UserDto
 {

@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
-using api_completa_mongodb_net_6_0.Infrastructure.Utils;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
+using SagaAserhi.Infrastructure.Config;
+using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Services;
+namespace SagaAserhi.Infrastructure.Services;
 
 public class TokenServices : ITokenService
 {

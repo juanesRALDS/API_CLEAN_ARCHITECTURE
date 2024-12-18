@@ -1,9 +1,9 @@
-using api_completa_mongodb_net_6_0.Application.DTO;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
+using SagaAserhi.Application.DTO;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Application.Interfaces.UseCaseUsers;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Application.UseCases.Users;
+namespace SagaAserhi.Application.UseCases.Users;
 public class GetUserByIdUseCase : IGetUserByIdUseCase
 {
     private readonly IUserRepository _userRepository;

@@ -1,8 +1,8 @@
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
-using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
+using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.UseCaseUsers;
+using SagaAserhi.Infrastructure.Repositories;
 
-namespace api_completa_mongodb_net_6_0.Application.UseCases.Users;
+namespace SagaAserhi.Application.UseCases.Users;
 public class DeleteUserUseCase : IDeleteUserUseCase
 {
     private readonly IUserRepository _userRepository;

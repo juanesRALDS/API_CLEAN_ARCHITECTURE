@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using api_completa_mongodb_net_6_0.Application.DTO;
-using api_completa_mongodb_net_6_0.Application.UseCases.Users;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using SagaAserhi.Application.DTO;
+using SagaAserhi.Application.UseCases.Users;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Application.Interfaces.UseCaseUsers;
+using SagaAserhi.Domain.Interfaces.Utils;
 using Moq;
 using Xunit;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Tests.UseCase.Users;
+namespace SagaAserhi.Tests.UseCase.Users;
 
 public class UpdateUserUseCaseTests
 {

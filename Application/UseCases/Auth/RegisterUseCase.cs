@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using api_completa_mongodb_net_6_0.Application.DTO.Auth;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using SagaAserhi.Application.DTO.Auth;
+using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
+using SagaAserhi.Domain.Interfaces.Utils;
+using SagaAserhi.Infrastructure.Config;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Application.UseCases.Auth;
+namespace SagaAserhi.Application.UseCases.Auth;
 public class RegisterUseCase : IRegisterUseCase
 {
     private readonly IUserRepository _userRepository;

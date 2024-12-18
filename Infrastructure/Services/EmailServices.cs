@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Mail;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using SagaAserhi.Application.Interfaces.Auth;
 
-namespace api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
+namespace SagaAserhi.MongoApiDemo.Infrastructure.Services;
 
 public class EmailService : IEmailService
 {

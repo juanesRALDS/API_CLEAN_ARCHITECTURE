@@ -1,4 +1,4 @@
-namespace api_completa_mongodb_net_6_0;
+namespace SagaAserhi;
 
 public class WeatherForecast
 {

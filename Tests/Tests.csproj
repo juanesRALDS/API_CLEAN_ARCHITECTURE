@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\api_completa_mongodb_net_6_0.csproj" />
+    <ProjectReference Include="..\SagaAserhi.csproj" />
   </ItemGroup>
 
 </Project>

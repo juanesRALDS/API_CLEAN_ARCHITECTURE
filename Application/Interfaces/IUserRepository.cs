@@ -1,8 +1,8 @@
-using api_completa_mongodb_net_6_0.Domain.Entities;
+using SagaAserhi.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace api_completa_mongodb_net_6_0.Domain.Interfaces
+namespace SagaAserhi.Application.Interfaces
 {
     public interface IUserRepository
     {
@@ -14,4 +14,4 @@ namespace api_completa_mongodb_net_6_0.Domain.Interfaces
         Task DeleteUser(string id);
         Task UpdatePassword(string userId, string hashedPassword);
     }
-}   
+}

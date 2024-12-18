@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Infrastructure.Config;
 using Microsoft.IdentityModel.Tokens;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Utils;
+namespace SagaAserhi.Infrastructure.Utils;
 
 public static class JwtHelper
 {   

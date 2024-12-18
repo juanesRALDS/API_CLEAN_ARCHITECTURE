@@ -1,17 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
+using SagaAserhi.Application.UseCases.Auth;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
 using Microsoft.IdentityModel.Tokens;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using SagaAserhi.Domain.Interfaces.Utils;
 using Moq;
 using Xunit;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
 using FluentAssertions;
+using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Tests.UseCase.Auth;
+namespace SagaAserhi.Tests.UseCase.Auth;
 public class UpdatePasswordUseCaseTests
 {
     private readonly Mock<IPasswordResetTokenRepository> _mockTokenRepository;

@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "api_completa_mongodb_net_6_0": {
+    "SagaAserhi": {
       "commandName": "Project",
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5058",

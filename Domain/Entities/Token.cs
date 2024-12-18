@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace api_completa_mongodb_net_6_0.Domain.Entities;
+namespace SagaAserhi.Domain.Entities;
 
 public class Token
 {

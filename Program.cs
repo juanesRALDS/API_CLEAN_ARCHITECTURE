@@ -1,23 +1,24 @@
-using api_completa_mongodb_net_6_0.Application.UseCases;
-using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
-using api_completa_mongodb_net_6_0.Infrastructure.Utils;
-using api_completa_mongodb_net_6_0.Application.UseCases.Users;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
-using api_completa_mongodb_net_6_0.Infrastructure.Context;
-using api_completa_mongodb_net_6_0.Infrastructure.Repositories;
-using api_completa_mongodb_net_6_0.Infrastructure.Services;
-using api_completa_mongodb_net_6_0.MongoApiDemo.Infrastructure.Services;
+using SagaAserhi.Application.UseCases;
+using SagaAserhi.Application.UseCases.Auth;
+using SagaAserhi.Infrastructure.Utils;
+using SagaAserhi.Application.UseCases.Users;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
+using SagaAserhi.Infrastructure.Config;
+using SagaAserhi.Infrastructure.Context;
+using SagaAserhi.Infrastructure.Repositories;
+using SagaAserhi.Infrastructure.Services;
+using SagaAserhi.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.Text;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
+using SagaAserhi.Domain.Interfaces.Utils;
+using SagaAserhi.Application.Interfaces.UseCaseUsers;
+using SagaAserhi.Application.Interfaces.Auth;
+using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
-builder.Services.AddScoped<IPasswordHasher,api_completa_mongodb_net_6_0.Infrastructure.Services.PasswordHasher>();
+builder.Services.AddScoped<IPasswordHasher,SagaAserhi.Infrastructure.Services.PasswordHasher>();
 
 
 // **4. Configuración de JWT Authentication**

@@ -1,9 +1,9 @@
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
-using api_completa_mongodb_net_6_0.Infrastructure.Context;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
+using SagaAserhi.Infrastructure.Context;
 using MongoDB.Driver;
 
-namespace api_completa_mongodb_net_6_0.Infrastructure.Repositories
+namespace SagaAserhi.Infrastructure.Repositories
 {
     public class PasswordResetTokenRepository : IPasswordResetTokenRepository
     {

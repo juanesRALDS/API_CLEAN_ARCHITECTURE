@@ -1,9 +1,9 @@
-using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
-using api_completa_mongodb_net_6_0.Domain.Entities;
-using api_completa_mongodb_net_6_0.Domain.Interfaces;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth;
-using api_completa_mongodb_net_6_0.Domain.Interfaces.Auth.IAuthUsecases;
-using api_completa_mongodb_net_6_0.Infrastructure.Config;
+using SagaAserhi.Application.Interfaces.Auth;
+using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.UseCases.Auth;
+using SagaAserhi.Domain.Entities;
+using SagaAserhi.Domain.Interfaces.Auth;
+using SagaAserhi.Infrastructure.Config;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -11,8 +11,9 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using SagaAserhi.Application.Interfaces;
 
-namespace api_completa_mongodb_net_6_0.Tests.Application.UseCases.Auth;
+namespace SagaAserhi.Tests.Application.UseCases.Auth;
 
 public class GeneratePasswordResetTokenUseCaseTests
 {
