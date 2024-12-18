@@ -26,8 +26,8 @@ public class GetUserByIdUseCaseTests
     public async Task Execute_ShouldReturnUser_WhenUserIdIsValid()
     {
         // Arrange
-        var userId = "validUserId";
-        var user = new User 
+        string? userId = "validUserId";
+        User user = new()
         { 
             Id = userId, 
             Name = "Test User", 
@@ -37,7 +37,7 @@ public class GetUserByIdUseCaseTests
             .ReturnsAsync(user);
 
         // Act
-        var result = await _useCase.Execute(userId);
+        UserDto? result = await _useCase.Execute(userId);
 
         // Assert
         result.Should().NotBeNull();
@@ -64,7 +64,7 @@ public class GetUserByIdUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenUserIdIsEmpty()
     {
         // Arrange
-        var userId = string.Empty;
+        string? userId = string.Empty;
 
         // Act
         Func<Task> act = () =>  _useCase.Execute(userId);
@@ -78,7 +78,7 @@ public class GetUserByIdUseCaseTests
     public async Task Execute_ShouldReturnNull_WhenUserDoesNotExist()
     {
         // Arrange
-        var userId = "nonExistentUserId";
+        string? userId = "nonExistentUserId";
         _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
 
         // Act

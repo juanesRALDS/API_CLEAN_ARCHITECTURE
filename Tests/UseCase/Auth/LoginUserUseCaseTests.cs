@@ -29,7 +29,7 @@ public class LoginUserUseCaseTests
         _mockJwtConfig = new Mock<IOptions<JwtConfig>>();
 
         // Configurar una instancia simulada de JwtConfig
-        var jwtConfig = new JwtConfig
+        JwtConfig? jwtConfig = new()
         {
             SecretKey = "clave_secreta_muy_segura_y_larga_12dkaslskl345",
             Issuer = "my_app",
@@ -50,7 +50,7 @@ public class LoginUserUseCaseTests
     public async Task Login_ValidCredentials_ReturnsToken()
     {
         // Configurar los mocks para simular el comportamiento esperado
-        var loginDto = new LoginUserDto { Email = "test@example.com", Password = "password123" };
+        LoginUserDto? loginDto = new() { Email = "test@example.com", Password = "password123" };
 
         // Configurar mocks
         _mockUserRepository.Setup(repo => repo.GetUserByEmail(loginDto.Email))
@@ -66,7 +66,7 @@ public class LoginUserUseCaseTests
             .Returns(true);
 
         // Actuar
-        var result = await _loginUserUseCase.Execute(loginDto);
+        string? result = await _loginUserUseCase.Execute(loginDto);
 
         // Verificar los resultados
         result.Should().NotBeNullOrEmpty("el método debería devolver un token válido.");
@@ -78,13 +78,13 @@ public class LoginUserUseCaseTests
     public async void Login_InvalidCredentials_ThrowsUnauthorizedAccessException()
     {
         // Configurar los mocks para simular credenciales inválidas
-        var loginDto = new LoginUserDto { Email = "invalid@example.com", Password = "wrongpassword" };
+        LoginUserDto? loginDto = new() { Email = "invalid@example.com", Password = "wrongpassword" };
 
         _mockUserRepository.Setup(repo => repo.GetUserByEmail(loginDto.Email))
             .ReturnsAsync((User?)null); // Usuario no encontrado
 
         // Actuar
-        var act = async () => await _loginUserUseCase.Execute(loginDto);
+        Func<Task> act = async () => await _loginUserUseCase.Execute(loginDto);
 
         // Verificar que se arroje una excepción
         await act.Should().ThrowAsync<UnauthorizedAccessException>("las credenciales son inválidas.");
@@ -94,10 +94,10 @@ public class LoginUserUseCaseTests
     public async void Login_EmptyEmail_ThrowsArgumentException()
     {
         // Configurar el DTO con un email vacío
-        var loginDto = new LoginUserDto { Email = "", Password = "password123" };
+        LoginUserDto? loginDto = new() { Email = "", Password = "password123" };
 
         // Actuar
-        var act = async () => await _loginUserUseCase.Execute(loginDto);
+        Func<Task> act = async () => await _loginUserUseCase.Execute(loginDto);
 
         // Verificar que se arroje una excepción
         await act.Should().ThrowAsync<ArgumentException>("El email no puede estar vacío.");
@@ -107,10 +107,10 @@ public class LoginUserUseCaseTests
     public async void Login_EmptyPassword_ThrowsArgumentException()
     {
         // Configurar el DTO con una contraseña vacía
-        var loginDto = new LoginUserDto { Email = "test@example.com", Password = "" };
+        LoginUserDto? loginDto = new() { Email = "test@example.com", Password = "" };
 
         // Actuar
-        var act = async () => await _loginUserUseCase.Execute(loginDto);
+        Func<Task> act = async () => await _loginUserUseCase.Execute(loginDto);
 
         // Verificar que se arroje una excepción
         await act.Should().ThrowAsync<ArgumentException>("La contraseña no puede estar vacía.");

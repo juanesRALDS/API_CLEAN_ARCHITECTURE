@@ -36,7 +36,7 @@ public class GetUserByTokenUseCaseTests
         {
             new Claim("id", userId)
         };
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+        ClaimsPrincipal? claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
         // Corregir el setup del mock
         _mockTokenService
@@ -106,7 +106,7 @@ public class GetUserByTokenUseCaseTests
         {
             new Claim("id", userId)
         };
-        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+        ClaimsPrincipal? claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
         _mockTokenService
             .Setup(ts => ts.ValidateTokenAndGetPrincipal(validToken))

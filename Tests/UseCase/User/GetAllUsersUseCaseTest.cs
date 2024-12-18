@@ -24,7 +24,7 @@ public class GetAllUsersUseCaseTests
     public async Task Execute_ShouldReturnUsers_WhenUsersExist()
     {
         // Arrange
-        var users = new List<User>
+        List<User>? users = new List<User>
         {
             new User { Id = "1", Name = "User1", Email = "user1@example.com" },
             new User { Id = "2", Name = "User2", Email = "user2@example.com" }
@@ -33,7 +33,7 @@ public class GetAllUsersUseCaseTests
             .ReturnsAsync(users);
 
         // Act
-        var result = await _useCase.Execute(1, 10);
+        List<UserDto>? result = await _useCase.Execute(1, 10);
 
         // Assert
         result.Should().NotBeNull();
@@ -48,7 +48,7 @@ public class GetAllUsersUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenPageNumberIsInvalid()
     {
         // Act
-        var act = () => _useCase.Execute(0, 10);
+        Func<Task<List<UserDto>>>? act = () => _useCase.Execute(0, 10);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
@@ -59,7 +59,7 @@ public class GetAllUsersUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenPageSizeIsInvalid()
     {
         // Act
-        var act = () => _useCase.Execute(1, 0);
+        Func<Task<List<UserDto>>>? act = () => _useCase.Execute(1, 0);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>()
@@ -74,7 +74,7 @@ public class GetAllUsersUseCaseTests
             .ReturnsAsync((List<User>?)null!);
 
         // Act
-        var act = () => _useCase.Execute(1, 10);
+        Func<Task<List<UserDto>>>? act = () => _useCase.Execute(1, 10);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()

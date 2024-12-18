@@ -21,7 +21,7 @@ public class DeleteUserUseCaseTests
     public async Task Execute_ShouldDeleteUser_WhenIdIsValid()
     {
         // Arrange
-        var userId = "validUserId";
+        string? userId = "validUserId";
         _userRepositoryMock.Setup(repo => repo.DeleteUser(userId))
             .Returns(Task.CompletedTask);
 
@@ -51,7 +51,7 @@ public class DeleteUserUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenIdIsEmpty()
     {
         // Arrange
-        var userId = string.Empty;
+        string? userId = string.Empty;
 
         // Act
         Func<Task> act = () => _useCase.Execute(userId);

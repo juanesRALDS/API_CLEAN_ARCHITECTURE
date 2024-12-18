@@ -28,9 +28,9 @@ public class UpdateUserUseCaseTests
     public async Task Execute_ShouldUpdateUser_WhenDataIsValid()
     {
         // Arrange
-        var userId = "1";
-        var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
-        var user = new User { Id = userId, Name = "OldName", Email = "old@example.com", Password = "oldpassword" };
+        string? userId = "1";
+        UpdateUserDto? updateUserDto = new() { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
+        User? user = new() { Id = userId, Name = "OldName", Email = "old@example.com", Password = "oldpassword" };
 
         _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(user);
         _passwordHasherMock.Setup(hasher => hasher.HashPassword(updateUserDto.Password)).Returns("hashedpassword");
@@ -41,7 +41,7 @@ public class UpdateUserUseCaseTests
         // Assert
         _userRepositoryMock.Verify(repo => repo.UpdateUser(userId,It.Is<User>(u => 
             u.Id == userId && 
-            u.Name == updateUserDto.Name && 
+            u.Name == updateUserDto.Name &&
             u.Email == updateUserDto.Email && 
             u.Password == "hashedpassword")), Times.Once);
     }
@@ -50,7 +50,7 @@ public class UpdateUserUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenIdIsEmpty()
     {
         // Arrange
-        var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
+        UpdateUserDto? updateUserDto = new() { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
 
         // Act
         Func<Task> act = async () => await _useCase.Execute("", updateUserDto);
@@ -63,8 +63,8 @@ public class UpdateUserUseCaseTests
     public async Task Execute_ShouldThrowArgumentException_WhenAnyFieldIsEmpty()
     {
         // Arrange
-        var userId = "1";
-        var updateUserDto = new UpdateUserDto { Name = "", Email = "updated@example.com", Password = "newpassword" };
+        string? userId = "1";
+        UpdateUserDto? updateUserDto = new() { Name = "", Email = "updated@example.com", Password = "newpassword" };
 
         // Act
         Func<Task> act = async () => await _useCase.Execute(userId, updateUserDto);
@@ -77,8 +77,8 @@ public class UpdateUserUseCaseTests
     public async Task Execute_ShouldThrowKeyNotFoundException_WhenUserNotFound()
     {
         // Arrange
-        var userId = "1";
-        var updateUserDto = new UpdateUserDto { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
+        string? userId = "1";
+        UpdateUserDto? updateUserDto = new() { Name = "UpdatedName", Email = "updated@example.com", Password = "newpassword" };
 
         _userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
 

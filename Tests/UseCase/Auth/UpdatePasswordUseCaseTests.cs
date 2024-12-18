@@ -30,9 +30,9 @@ public class UpdatePasswordUseCaseTests
     [Fact]
     public async Task WhenTokenIsValid()
     {
-        var mockTokenRepository = new Mock<IPasswordResetTokenRepository>();
-        var mockUserRepository = new Mock<IUserRepository>();
-        var mockPasswordHasher = new Mock<IPasswordHasher>();
+        Mock<IPasswordResetTokenRepository>? mockTokenRepository = new();
+        Mock<IUserRepository>? mockUserRepository = new();
+        Mock<IPasswordHasher>? mockPasswordHasher = new();
 
         // Arrange
         string token = "valid-token";
