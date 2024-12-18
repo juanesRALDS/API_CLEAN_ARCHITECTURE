@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api_completa_mongodb_net_6_0.Application.DTO;
 using api_completa_mongodb_net_6_0.Application.UseCases.Auth;
@@ -31,19 +32,30 @@ public class GetUserByTokenUseCaseTests
         string validToken = "validToken123";
         string userId = "user123";
 
-        _mockTokenService.Setup(ts => ts.ValidateToken(validToken)).Returns(userId);
+        var claims = new List<Claim>
+        {
+            new Claim("id", userId)
+        };
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
-        User user = new User
+        // Corregir el setup del mock
+        _mockTokenService
+            .Setup(ts => ts.ValidateTokenAndGetPrincipal(validToken))
+            .Returns(claimsPrincipal);
+
+        var user = new User
         {
             Id = userId,
             Name = "John Doe",
             Email = "john.doe@example.com"
         };
 
-        _mockUserRepository.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(user);
+        _mockUserRepository
+            .Setup(repo => repo.GetUserById(userId))
+            .ReturnsAsync(user);
 
         // Act
-        UserDto? result = await _useCase.Execute(validToken);
+        var result = await _useCase.Execute(validToken);
 
         // Assert
         Assert.NotNull(result);
@@ -53,15 +65,31 @@ public class GetUserByTokenUseCaseTests
     }
 
     [Fact]
+    public async Task Execute_ShouldThrowException_WhenTokenValidationFails()
+    {
+        // Arrange
+        string token = "tokenWithError";
+
+        _mockTokenService
+            .Setup(ts => ts.ValidateTokenAndGetPrincipal(token))
+            .Throws(new Exception("Token validation failed"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => _useCase.Execute(token));
+    }
+
+    [Fact]
     public async Task Execute_ShouldReturnNull_WhenTokenIsInvalid()
     {
         // Arrange
         string invalidToken = "invalidToken123";
 
-        _mockTokenService.Setup(ts => ts.ValidateToken(invalidToken)).Returns((string?)null);
+        _mockTokenService
+            .Setup(ts => ts.ValidateTokenAndGetPrincipal(invalidToken))
+            .Returns((ClaimsPrincipal?)null);
 
         // Act
-        UserDto? result = await _useCase.Execute(invalidToken);
+        var result = await _useCase.Execute(invalidToken);
 
         // Assert
         Assert.Null(result);
@@ -74,25 +102,24 @@ public class GetUserByTokenUseCaseTests
         string validToken = "validToken123";
         string userId = "user123";
 
-        _mockTokenService.Setup(ts => ts.ValidateToken(validToken)).Returns(userId);
-        _mockUserRepository.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((User?)null);
+        var claims = new List<Claim>
+        {
+            new Claim("id", userId)
+        };
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+
+        _mockTokenService
+            .Setup(ts => ts.ValidateTokenAndGetPrincipal(validToken))
+            .Returns(claimsPrincipal);
+
+        _mockUserRepository
+            .Setup(repo => repo.GetUserById(userId))
+            .ReturnsAsync((User?)null);
 
         // Act
-        UserDto? result = await _useCase.Execute(validToken);
+        var result = await _useCase.Execute(validToken);
 
         // Assert
         Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task Execute_ShouldThrowException_WhenTokenValidationFails()
-    {
-        // Arrange
-        string token = "tokenWithError";
-
-        _mockTokenService.Setup(ts => ts.ValidateToken(token)).Throws(new Exception("Token validation failed"));
-
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _useCase.Execute(token));
     }
 }

@@ -22,7 +22,7 @@ public class TokenController : ControllerBase
     }
 
 
-    [HttpGet("user")]
+    [HttpGet("GetUserFromToken")]
     [Authorize]
     public async Task<IActionResult> GetUserFromToken()
     {

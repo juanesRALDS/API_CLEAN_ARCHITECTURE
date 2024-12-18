@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.Text;
 using api_completa_mongodb_net_6_0.Domain.Interfaces.Utils;
+using api_completa_mongodb_net_6_0.Domain.Interfaces.UseCaseUsers;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -39,22 +40,23 @@ builder.Services.AddSingleton(resolver =>
 
 // **3. Registro de dependencias**  
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IUserRepository, UserRepository>();  
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<ITokenService, TokenServices>();
-builder.Services.AddScoped<GetUserByIdUseCase>();
-builder.Services.AddScoped<GetUserByTokenUseCase>();
-builder.Services.AddScoped<RegisterUseCase>();
-builder.Services.AddScoped<GetAllUsersUseCase>();
-builder.Services.AddScoped<UpdateUserUseCase>();
-builder.Services.AddScoped<DeleteUserUseCase>();
+builder.Services.AddScoped<IGetUserByTokenUseCase,GetUserByTokenUseCase>();
+builder.Services.AddScoped<IGetAllUsersUseCase,GetAllUsersUseCase>();
+builder.Services.AddScoped<IUpdateUserUseCase,UpdateUserUseCase>();
+builder.Services.AddScoped<IDeleteUserUseCase,DeleteUserUseCase>();
+builder.Services.AddScoped<IGetUserByIdUseCase,GetUserByIdUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
+builder.Services.AddScoped<IUpdatePasswordUseCase,UpdatePasswordUseCase>();
+builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase,GeneratePasswordResetTokenUseCase>();
+
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();  
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITokenService, TokenServices>();
 builder.Services.AddScoped<IPasswordHasher,api_completa_mongodb_net_6_0.Infrastructure.Services.PasswordHasher>();
-builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
-builder.Services.AddScoped<GeneratePasswordResetTokenUseCase>();
-builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
-builder.Services.AddScoped<UpdatePasswordUseCase>();
 
 
 // **4. Configuración de JWT Authentication**

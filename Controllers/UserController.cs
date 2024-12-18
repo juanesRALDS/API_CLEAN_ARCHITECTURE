@@ -60,24 +60,6 @@ public class UsersController : ControllerBase
         }
     }
 
-
-    [HttpGet("get-user-by-token")]
-    public async Task<IActionResult> GetUserByToken([FromHeader] string authorization)
-    {
-        if (string.IsNullOrEmpty(authorization))
-            return BadRequest("Token is missing.");
-
-        string? tokens = authorization.StartsWith("Bearer ") ? authorization.Substring(7) : authorization;
-
-        UserDto? user = await _getUserByTokenUseCase.Execute(tokens);
-
-        if (user == null) return NotFound("User not found.");
-
-        return Ok(user);
-    }
-
-
-
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, UpdateUserDto dto)
     {
