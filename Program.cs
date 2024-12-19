@@ -3,22 +3,22 @@ using SagaAserhi.Application.UseCases.Auth;
 using SagaAserhi.Infrastructure.Utils;
 using SagaAserhi.Application.UseCases.Users;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
 using SagaAserhi.Infrastructure.Config;
 using SagaAserhi.Infrastructure.Context;
 using SagaAserhi.Infrastructure.Repositories;
 using SagaAserhi.Infrastructure.Services;
-using SagaAserhi.MongoApiDemo.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.Text;
-using SagaAserhi.Domain.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
 using SagaAserhi.Application.Interfaces.Auth;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Utils;
+using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -50,10 +50,12 @@ builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
 builder.Services.AddScoped<IUpdatePasswordUseCase,UpdatePasswordUseCase>();
 builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase,GeneratePasswordResetTokenUseCase>();
+builder.Services.AddScoped<IGetAllPotentialClientsUseCase, GetAllPotentialClientsUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
+builder.Services.AddScoped<IPotentialClientRepository, PotentialClientRepository>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();

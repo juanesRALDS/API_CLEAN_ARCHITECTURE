@@ -2,14 +2,14 @@ using System;
 using System.Threading.Tasks;
 using SagaAserhi.Application.UseCases.Auth;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
 using Microsoft.IdentityModel.Tokens;
-using SagaAserhi.Domain.Interfaces.Utils;
 using Moq;
 using Xunit;
 using FluentAssertions;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Auth;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Tests.UseCase.Auth;
 public class UpdatePasswordUseCaseTests

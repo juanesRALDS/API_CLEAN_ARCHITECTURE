@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.DTO.Auth;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 
 namespace SagaAserhi.Controllers;
 
@@ -44,7 +38,7 @@ public class AuthController : Controller
             string? authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
             {
-                return BadRequest(new { Message = "Token no proporcionado o formato incorrecto." });
+                return BadRequest(new { Message = "Token not provided or incorrect format." });
             }
 
             string token = authHeader.Substring("Bearer ".Length).Trim();
@@ -52,14 +46,14 @@ public class AuthController : Controller
             UserDto? user = await _getUserByTokenUseCase.Execute(token);
             if (user == null)
             {
-                return Unauthorized(new { Message = "Token inválido o caducado o usuario no encontrado." });
+                return Unauthorized(new { Message = "Invalid or expired token or user not found." });
             }
 
             return Ok(user);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = "Ocurrió un error al procesar la solicitud.", Error = ex.Message });
+            return StatusCode(500, new { Message = "An error occurred while processing the request.", Error = ex.Message });
         }
     }
 
@@ -74,7 +68,7 @@ public class AuthController : Controller
         }
         catch (UnauthorizedAccessException)
         {
-            return Unauthorized("Credenciales inválidas.");
+            return Unauthorized("Invalid credentials.");
         }
     }
 
@@ -82,14 +76,14 @@ public class AuthController : Controller
     public async Task<IActionResult> ForgotPassword([FromBody] TokenRequestDto request)
     {
         if (string.IsNullOrEmpty(request.Email))
-            return BadRequest(new { Message = "El correo electrónico es obligatorio." });
+            return BadRequest(new { Message = "Email is required." });
 
         try
         {
             string? resetToken = await _GeneratePasswordReset.Execute(request.Email);
             if (string.IsNullOrEmpty(resetToken))
             {
-                return BadRequest(new { Message = "no se pudo generar el token de restablecimiento" });
+                return BadRequest(new { Message = "Failed to generate reset token" });
             }
 
             string resetUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/reset-password?token={resetToken}";
@@ -98,7 +92,7 @@ public class AuthController : Controller
 
             return Ok(new
             {
-                Message = "Token generado con éxito.",
+                Message = "Token generated successfully.",
                 ResetUrl = resetUrl
             }
             );
@@ -115,13 +109,13 @@ public class AuthController : Controller
     {
 
         if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.Tokens))
-            return BadRequest("la nueva contraseña y el token son requeridas");
+            return BadRequest("New password and token are required");
 
         bool result = await _updatePasswordUseCase.Execute(request.Tokens, request.NewPassword);
 
         if (!result)
-            return BadRequest("El token es inválido o ha expirado.");
+            return BadRequest("The token is invalid or has expired.");
 
-        return Ok("Contraseña actualizada con éxito.");
+        return Ok("Password updated successfully.");
     }
 }

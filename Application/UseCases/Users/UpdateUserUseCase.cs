@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using SagaAserhi.Application.DTO;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Application.UseCases.Users;
 public class UpdateUserUseCase : IUpdateUserUseCase

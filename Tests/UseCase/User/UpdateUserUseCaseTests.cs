@@ -4,10 +4,10 @@ using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.UseCases.Users;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
-using SagaAserhi.Domain.Interfaces.Utils;
 using Moq;
 using Xunit;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Tests.UseCase.Users;
 

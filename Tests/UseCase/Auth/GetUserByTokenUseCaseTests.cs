@@ -2,13 +2,13 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.UseCases.Auth;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
 using Moq;
 using Xunit;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Auth;
 
 namespace SagaAserhi.Tests.Application.UseCases;
 

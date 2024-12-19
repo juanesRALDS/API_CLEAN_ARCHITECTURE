@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using SagaAserhi.Application.Interfaces.Auth;
 
-namespace SagaAserhi.MongoApiDemo.Infrastructure.Services;
+namespace SagaAserhi.Infrastructure.Services;
 
 public class EmailService : IEmailService
 {

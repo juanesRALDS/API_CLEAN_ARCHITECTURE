@@ -1,12 +1,10 @@
-using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.Interfaces.Auth;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
 using SagaAserhi.Infrastructure.Config;
 using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 
 namespace SagaAserhi.Application.UseCases.Auth;
 

@@ -1,13 +1,11 @@
 using SagaAserhi.Application.DTO.Auth;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
-using SagaAserhi.Domain.Interfaces.Utils;
 using SagaAserhi.Infrastructure.Config;
 using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Application.UseCases.Auth;
 

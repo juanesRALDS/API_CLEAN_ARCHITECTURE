@@ -1,6 +1,5 @@
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
-using SagaAserhi.Infrastructure.Repositories;
 
 namespace SagaAserhi.Application.UseCases.Users;
 public class DeleteUserUseCase : IDeleteUserUseCase

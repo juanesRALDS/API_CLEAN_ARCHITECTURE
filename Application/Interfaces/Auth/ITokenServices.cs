@@ -1,8 +1,8 @@
 using System.Security.Claims;
 
-namespace SagaAserhi.Domain.Interfaces.Auth;
+namespace SagaAserhi.Application.Interfaces.Auth;
 public interface ITokenService
 {
     string? ValidateToken(string tokens);
-    ClaimsPrincipal? ValidateTokenAndGetPrincipal(string tokens); 
+    ClaimsPrincipal? ValidateTokenAndGetPrincipal(string tokens);
 }

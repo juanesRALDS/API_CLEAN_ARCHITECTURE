@@ -1,8 +1,6 @@
 using SagaAserhi.Application.DTO.Auth;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.UseCases.Auth;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Utils;
 using SagaAserhi.Infrastructure.Config;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +10,8 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Tests.Application.UseCases.Auth;
 

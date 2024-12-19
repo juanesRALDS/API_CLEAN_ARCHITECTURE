@@ -1,7 +1,6 @@
-namespace SagaAserhi.Application.DTO
+namespace SagaAserhi.Application.DTO.Auth;
+
+public class TokenRequestDto
 {
-    public class TokenRequestDto
-    {
-        public string Email { get; set; } = string.Empty;
-    }
+    public string Email { get; set; } = string.Empty;
 }

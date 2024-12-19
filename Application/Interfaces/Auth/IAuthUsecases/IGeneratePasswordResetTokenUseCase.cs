@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+namespace SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 
-namespace SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases
+public interface IGeneratePasswordResetTokenUseCase
 {
-    public interface IGeneratePasswordResetTokenUseCase
-    {
-        Task<string> Execute(string email);
-    }
+    Task<string> Execute(string email);
 }

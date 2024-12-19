@@ -8,10 +8,10 @@ using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
 using SagaAserhi.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Identity;
-using SagaAserhi.Domain.Interfaces.Utils;
 using Microsoft.AspNetCore.Http;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Test.UseCases;
 public class LoginUserUseCaseTests

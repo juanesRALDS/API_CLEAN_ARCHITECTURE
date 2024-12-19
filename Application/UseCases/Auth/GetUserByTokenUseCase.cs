@@ -1,12 +1,9 @@
 // Application/UseCases/GetUserByTokenUseCase.cs
 using System.Security.Claims;
-using System.Threading.Tasks;
 using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
-using SagaAserhi.Domain.Interfaces.Auth;
-using SagaAserhi.Application.Interfaces.UseCaseUsers;
-using SagaAserhi.Infrastructure.Services;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.Auth;
 
 
 namespace SagaAserhi.Application.UseCases.Auth

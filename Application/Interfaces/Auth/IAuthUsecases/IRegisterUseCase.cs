@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using SagaAserhi.Application.DTO.Auth;
 
-namespace SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases
+namespace SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+
+public interface IRegisterUseCase
 {
-    public interface IRegisterUseCase
-    {
-        Task<string> Execute(CreateUserDto? userDto);
-    }
+    Task<string> Execute(CreateUserDto? userDto);
 }

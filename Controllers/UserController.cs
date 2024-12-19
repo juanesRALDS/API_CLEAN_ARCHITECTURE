@@ -1,12 +1,9 @@
 
 using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.DTO.Auth;
-using SagaAserhi.Application.Application.Interfaces.Auth.IAuthUsecases;
-using SagaAserhi.Application.UseCases.Auth;
-using SagaAserhi.Application.UseCases.Users;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 
 namespace SagaAserhi.Controllers;
 [ApiController]

@@ -3,10 +3,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using SagaAserhi.Domain.Entities;
-using SagaAserhi.Domain.Interfaces.Auth;
 using SagaAserhi.Infrastructure.Config;
 using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
+using SagaAserhi.Application.Interfaces.Auth;
 
 namespace SagaAserhi.Infrastructure.Services;
 

@@ -1,7 +1,5 @@
-using SagaAserhi.Domain.Interfaces;
-using SagaAserhi.Domain.Interfaces.Utils;
-using BCrypt.Net;
-using Microsoft.AspNetCore.Identity;
+
+using SagaAserhi.Application.Interfaces.Utils;
 
 namespace SagaAserhi.Infrastructure.Utils;
 public class PasswordHasher : IPasswordHasher
