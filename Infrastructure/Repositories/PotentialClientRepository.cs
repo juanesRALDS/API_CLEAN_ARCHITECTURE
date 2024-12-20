@@ -22,4 +22,9 @@ public class PotentialClientRepository : IPotentialClientRepository
             .Limit(pageSize)
             .ToListAsync();
     }
+
+    public async Task CreatePotentialClient(PotentialClient client)
+    {
+        await _collection.InsertOneAsync(client);
+    }
 }

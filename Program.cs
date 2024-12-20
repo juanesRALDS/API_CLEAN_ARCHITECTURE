@@ -51,6 +51,7 @@ builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
 builder.Services.AddScoped<IUpdatePasswordUseCase,UpdatePasswordUseCase>();
 builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase,GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IGetAllPotentialClientsUseCase, GetAllPotentialClientsUseCase>();
+builder.Services.AddScoped<ICreatePotentialClientUseCase, CreatePotentialClientUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();

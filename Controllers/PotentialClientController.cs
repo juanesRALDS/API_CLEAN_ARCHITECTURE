@@ -10,9 +10,14 @@ namespace SagaAserhi.Controllers;
 public class PotentialClientController : ControllerBase
 {
     private readonly IGetAllPotentialClientsUseCase _getAllPotentialClientsUseCase;
+    private readonly ICreatePotentialClientUseCase _createPotentialClientUseCase;
 
-    public PotentialClientController(IGetAllPotentialClientsUseCase getAllPotentialClientsUseCase)
+    public PotentialClientController(
+        IGetAllPotentialClientsUseCase getAllPotentialClientsUseCase,
+        ICreatePotentialClientUseCase createPotentialClientUseCase
+    )
     {
+        _createPotentialClientUseCase = createPotentialClientUseCase;
         _getAllPotentialClientsUseCase = getAllPotentialClientsUseCase;
     }
 
@@ -29,6 +34,24 @@ public class PotentialClientController : ControllerBase
         catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreatePotentialClientDto dto)
+    {
+        try
+        {
+            var result = await _createPotentialClientUseCase.Execute(dto);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
         }
     }
 }

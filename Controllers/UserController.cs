@@ -50,7 +50,7 @@ public class UsersController : ControllerBase
         {
             await _registerUseCase.Execute(userDto);
             return Ok("User registered successfully.");
-        }
+        }   
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
