@@ -11,14 +11,20 @@ public class PotentialClientController : ControllerBase
 {
     private readonly IGetAllPotentialClientsUseCase _getAllPotentialClientsUseCase;
     private readonly ICreatePotentialClientUseCase _createPotentialClientUseCase;
+    private readonly IUpdatePotentialClientUseCase _updatePotentialClientUseCase;
+    private readonly IDeletePotentialClientUseCase _deletePotentialClientUseCase;
 
     public PotentialClientController(
         IGetAllPotentialClientsUseCase getAllPotentialClientsUseCase,
-        ICreatePotentialClientUseCase createPotentialClientUseCase
+        ICreatePotentialClientUseCase createPotentialClientUseCase,
+        IUpdatePotentialClientUseCase updatePotentialClientUseCase,
+        IDeletePotentialClientUseCase deletePotentialClientUseCase
     )
     {
         _createPotentialClientUseCase = createPotentialClientUseCase;
         _getAllPotentialClientsUseCase = getAllPotentialClientsUseCase;
+        _updatePotentialClientUseCase = updatePotentialClientUseCase;
+        _deletePotentialClientUseCase = deletePotentialClientUseCase;
     }
 
     [HttpGet]
@@ -54,4 +60,35 @@ public class PotentialClientController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] UpdatePotentialClientDto dto)
+    {
+        try
+        {
+            string result  = await _updatePotentialClientUseCase.Execute(id, dto);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(String Id)
+    {
+        try
+        {
+            var result = await _deletePotentialClientUseCase.Execute(Id); 
+            return Ok(result);
+        }
+        catch (System.Exception ex)
+        {
+            
+            return StatusCode(500, ex.Message);
+        }
+    }
+    
 }

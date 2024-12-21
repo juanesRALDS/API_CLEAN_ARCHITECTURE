@@ -27,4 +27,19 @@ public class PotentialClientRepository : IPotentialClientRepository
     {
         await _collection.InsertOneAsync(client);
     }
+
+    public async Task<PotentialClient?> GetByIdPotencialClient(string id)
+    {
+        return await _collection.Find(client => client.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task UpdatePotentialClient(string id, PotentialClient client)
+    {
+        await _collection.ReplaceOneAsync(client => client.Id == id, client);
+    }
+
+    public async Task DeletePoTencialClient(String Id)
+    {
+        await _collection.DeleteOneAsync(client => client.Id == Id);
+    }
 }
