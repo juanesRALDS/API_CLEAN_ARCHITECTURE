@@ -50,7 +50,7 @@ builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
 builder.Services.AddScoped<IUpdatePasswordUseCase,UpdatePasswordUseCase>();
 builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase,GeneratePasswordResetTokenUseCase>();
-builder.Services.AddScoped<IGetAllPotentialClientsUseCase, GetAllPotentialClientsUseCase>();
+builder.Services.AddScoped<IGetAllPotentialClientsWithProposalsUseCase, GetAllPotentialClientsWithProposalsUseCase>();
 builder.Services.AddScoped<ICreatePotentialClientUseCase, CreatePotentialClientUseCase>();
 builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientUseCase>();
 builder.Services.AddScoped<IDeletePotentialClientUseCase, DeletePotentialClientUseCase>();

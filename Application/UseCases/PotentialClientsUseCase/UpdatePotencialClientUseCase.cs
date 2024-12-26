@@ -1,6 +1,8 @@
+using System.Net.Sockets;
 using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
 {
@@ -13,25 +15,42 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
             _repository = repository;
         }
 
-        public async Task<string> Execute(string id, UpdatePotentialClientDto dto)
+        public async Task<UpdatePotentialClientDto> Execute(string id, UpdatePotentialClientDto dto)
         {
-            var existingClient = await _repository.GetByIdPotencialClient(id) 
-                ?? throw new KeyNotFoundException("Cliente potencial no encontrado");
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException("El ID del cliente potencial es obligatorio.");                 
+            }
 
-            existingClient.IdentificationTypeId = dto.IdentificationTypeId;
-            existingClient.EconomicActivityId = dto.EconomicActivityId;
-            existingClient.PersonType = dto.PersonType;
-            existingClient.PotentialClientSize = dto.PotentialClientSize;
-            existingClient.CompanyBusinessName = dto.CompanyBusinessName;
-            existingClient.RepresentativeNames = dto.RepresentativeNames;
-            existingClient.RepresentativeLastNames = dto.RepresentativeLastNames;
-            existingClient.RepresentativeIdentification = dto.RepresentativeIdentification;
-            existingClient.ContactPhone = dto.ContactPhone;
-            existingClient.ContactEmail = dto.ContactEmail;
+            PotentialClient? existingClient = await _repository.GetByIdPotencialClient(id) 
+                ?? throw new KeyNotFoundException($"Cliente potencial con ID {id} no encontrado.");
 
-            await _repository.UpdatePotentialClient(id, existingClient);
-            return "Cliente potencial actualizado exitosamente";
-        }
+            // mapear dto a entidad
+            PotentialClient? updateClient = new()
+            {
+                Id = id,
+                PersonType = dto.PersonType ?? existingClient.PersonType,
+                CompanyBusinessName = dto.CompanyBusinessName ?? existingClient.CompanyBusinessName,
+                RepresentativeNames = dto.RepresentativeNames ?? existingClient.RepresentativeNames,
+                RepresentativeLastNames = dto.RepresentativeLastNames ?? existingClient.RepresentativeLastNames,
+                ContactPhone = dto.ContactPhone ?? existingClient.ContactPhone,
+                ContactEmail = dto.ContactEmail ?? existingClient.ContactEmail
+            };
+
+            //actualizar en la base de datos
+            await _repository.UpdatePotentialClient(id, updateClient);
+            
+            // retornar cliente  actalizado
+            return new UpdatePotentialClientDto
+            {
+                PersonType = updateClient.PersonType,
+                CompanyBusinessName = updateClient.CompanyBusinessName,
+                RepresentativeNames = updateClient.RepresentativeNames,
+                RepresentativeLastNames = updateClient.RepresentativeLastNames,
+                ContactPhone = updateClient.ContactPhone,
+                ContactEmail = updateClient.ContactEmail
+            };
+        }   
     }
 
 }

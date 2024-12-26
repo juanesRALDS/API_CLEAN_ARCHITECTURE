@@ -4,7 +4,7 @@ namespace SagaAserhi.Application.Interfaces;
 
 public interface IPotentialClientRepository
 {
-    Task<List<PotentialClient>> GetAllPotentialClients(int pageNumber, int pageSize);
+    Task<List<PotentialClient>> GetAllPotentialClientsWithProposals(int pageNumber, int pageSize);
     Task CreatePotentialClient(PotentialClient client);
     Task<PotentialClient?> GetByIdPotencialClient(string id);
     Task DeletePoTencialClient(String Id);

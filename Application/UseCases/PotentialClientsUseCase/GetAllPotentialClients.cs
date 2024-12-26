@@ -5,11 +5,11 @@ using SagaAserhi.Infrastructure.Repositories;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
-public class GetAllPotentialClientsUseCase : IGetAllPotentialClientsUseCase
+public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClientsWithProposalsUseCase
 {
     private readonly IPotentialClientRepository _repository;
 
-    public GetAllPotentialClientsUseCase(IPotentialClientRepository repository)
+    public GetAllPotentialClientsWithProposalsUseCase(IPotentialClientRepository repository)
     {
         _repository = repository;
     }
@@ -22,20 +22,26 @@ public class GetAllPotentialClientsUseCase : IGetAllPotentialClientsUseCase
         if (pageSize <= 0)
             throw new ArgumentException("Page size must be greater than 0.", nameof(pageSize));
 
-        var clients = await _repository.GetAllPotentialClients(pageNumber, pageSize);
+        var clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
         return clients.Select(c => new PotentialClientDto
         {
-            IdentificationTypeId = c.IdentificationTypeId,
-            EconomicActivityId = c.EconomicActivityId,
-            CreationDate = c.CreationDate,
+            Id = c.Id,
             PersonType = c.PersonType,
-            PotentialClientSize = c.PotentialClientSize,
             CompanyBusinessName = c.CompanyBusinessName,
             RepresentativeNames = c.RepresentativeNames,
             RepresentativeLastNames = c.RepresentativeLastNames,
-            RepresentativeIdentification = c.RepresentativeIdentification,
             ContactPhone = c.ContactPhone,
-            ContactEmail = c.ContactEmail
+            ContactEmail = c.ContactEmail,
+            Proposals = c.Proposals?.Select(p => new ProposalDto
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Description = p.Description,
+                Amount = p.Amount,
+                Status = p.Status,
+                CreationDate = p.CreationDate,
+                PotentialClientId = p.PotentialClientId
+            }).ToList() ?? new List<ProposalDto>()
         }).ToList();
     }
 }

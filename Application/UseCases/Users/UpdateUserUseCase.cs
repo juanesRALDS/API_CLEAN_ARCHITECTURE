@@ -27,42 +27,31 @@ public class UpdateUserUseCase : IUpdateUserUseCase
             throw new ArgumentException("El ID del usuario es obligatorio.");
         }
 
-        if (string.IsNullOrWhiteSpace(updatedUserDto.Name) ||
-            string.IsNullOrWhiteSpace(updatedUserDto.Email) ||
-            string.IsNullOrWhiteSpace(updatedUserDto.Password))
-        {
-            throw new ArgumentException("Todos los campos son obligatorios.");
-        }
-
-        if (!Regex.IsMatch(updatedUserDto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-        {
-            throw new FormatException("El formato del correo electrónico no es válido.");
-        }
-
-        // Obtener usuario existente
+        // Obtener usuario existent
         User? existingUser = await _userRepository.GetUserById(id)
             ?? throw new KeyNotFoundException($"Usuario con ID {id} no encontrado.");
 
-        // Hashear la nueva contraseña
-        string hashedPassword = _passwordHasher.HashPassword(updatedUserDto.Password);
-
-
-
+        // Crear usuario actualizado manteniendo datos existentes
         User? updatedUser = new()
         {
             Id = id,
-            Name = updatedUserDto.Name,
-            Email = updatedUserDto.Email,
-            Password = hashedPassword
+            Name = updatedUserDto.Name ??  existingUser.Name,
+            Email = updatedUserDto.Email ?? existingUser.Email
         };
+
+        // Validar email solo si se proporciona
+        if (updatedUserDto.Email != null && !Regex.IsMatch(updatedUserDto.Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
+        {
+            throw new FormatException("El email no es válido.");
+        }
 
         await _userRepository.UpdateUser(id, updatedUser);
 
         return new UpdateUserResponseDto
         {
             Id = id,
-            Name = updatedUserDto.Name,
-            Email = updatedUserDto.Email,
+            Name = updatedUser.Name,
+            Email = updatedUser.Email,
         };
     }
 }

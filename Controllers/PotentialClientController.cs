@@ -9,20 +9,20 @@ namespace SagaAserhi.Controllers;
 [Route("api/[controller]")]
 public class PotentialClientController : ControllerBase
 {
-    private readonly IGetAllPotentialClientsUseCase _getAllPotentialClientsUseCase;
+    private readonly IGetAllPotentialClientsWithProposalsUseCase _GetAllPotentialClientsWithProposalsUseCase;
     private readonly ICreatePotentialClientUseCase _createPotentialClientUseCase;
     private readonly IUpdatePotentialClientUseCase _updatePotentialClientUseCase;
     private readonly IDeletePotentialClientUseCase _deletePotentialClientUseCase;
 
     public PotentialClientController(
-        IGetAllPotentialClientsUseCase getAllPotentialClientsUseCase,
+        IGetAllPotentialClientsWithProposalsUseCase GetAllPotentialClientsWithProposalsUseCase,
         ICreatePotentialClientUseCase createPotentialClientUseCase,
         IUpdatePotentialClientUseCase updatePotentialClientUseCase,
         IDeletePotentialClientUseCase deletePotentialClientUseCase
     )
     {
         _createPotentialClientUseCase = createPotentialClientUseCase;
-        _getAllPotentialClientsUseCase = getAllPotentialClientsUseCase;
+        _GetAllPotentialClientsWithProposalsUseCase = GetAllPotentialClientsWithProposalsUseCase;
         _updatePotentialClientUseCase = updatePotentialClientUseCase;
         _deletePotentialClientUseCase = deletePotentialClientUseCase;
     }
@@ -34,7 +34,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var clients = await _getAllPotentialClientsUseCase.Execute(pageNumber, pageSize);
+            var clients = await _GetAllPotentialClientsWithProposalsUseCase.Execute(pageNumber, pageSize);
             return Ok(clients);
         }
         catch (ArgumentException ex)
@@ -66,7 +66,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            string result  = await _updatePotentialClientUseCase.Execute(id, dto);
+            UpdatePotentialClientDto? result  = await _updatePotentialClientUseCase.Execute(id, dto);
             return Ok(result);
         }
         catch (Exception ex)

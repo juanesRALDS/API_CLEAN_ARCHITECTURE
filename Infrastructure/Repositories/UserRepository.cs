@@ -18,7 +18,7 @@ public class UserRepository : IUserRepository
     {
         if (string.IsNullOrEmpty(email))
         {
-            throw new ArgumentException("mail cannot be null or emply", nameof(email));   
+            throw new ArgumentException("mail cannot be null or emply", nameof(email));
         }
         return await _UserCollection.Find(user => user.Email == email).FirstOrDefaultAsync();
     }
@@ -43,12 +43,17 @@ public class UserRepository : IUserRepository
     public async Task UpdateUser(string id, User user)
     {
         FilterDefinition<User>? filter = Builders<User>.Filter.Eq(u => u.Id, id);
-        UpdateDefinition<User>? update = Builders<User>.Update
-            .Set(u => u.Name, user.Name)
-            .Set(u => u.Email, user.Email)
-            .Set(u => u.Password, user.Password);
+        var updateBuilder = Builders<User>.Update;
+        var updates = new List<UpdateDefinition<User>>();
 
-        await _UserCollection.UpdateOneAsync(filter, update);
+        if (!string.IsNullOrEmpty(user.Name))
+            updates.Add(updateBuilder.Set(u => u.Name, user.Name));
+
+        if (!string.IsNullOrEmpty(user.Email))
+            updates.Add(updateBuilder.Set(u => u.Email, user.Email));
+
+        if (updates.Any())
+            await _UserCollection.UpdateOneAsync(filter, updateBuilder.Combine(updates));
     }
 
     public async Task DeleteUser(string id) =>
