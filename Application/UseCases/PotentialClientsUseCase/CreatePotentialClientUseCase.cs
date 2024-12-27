@@ -24,16 +24,10 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
 
             var potentialClient = new PotentialClient
             {
-                IdentificationTypeId = dto.IdentificationTypeId,
-                EconomicActivityId = dto.EconomicActivityId,
-                PotentialClientStatusId = dto.PotentialClientStatusId,
-                CreationDate = DateTime.UtcNow,
                 PersonType = dto.PersonType,
-                PotentialClientSize = dto.PotentialClientSize,
                 CompanyBusinessName = dto.CompanyBusinessName,
                 RepresentativeNames = dto.RepresentativeNames,
                 RepresentativeLastNames = dto.RepresentativeLastNames,
-                RepresentativeIdentification = dto.RepresentativeIdentification,
                 ContactPhone = dto.ContactPhone,
                 ContactEmail = dto.ContactEmail
             };

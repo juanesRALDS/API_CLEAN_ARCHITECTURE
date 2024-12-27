@@ -1,4 +1,5 @@
 using MongoDB.Bson;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.DTO;
 
@@ -11,9 +12,9 @@ public class PotentialClientDto
     public string RepresentativeLastNames { get; set; } = string.Empty;
     public string ContactPhone { get; set; } = string.Empty;
     public string ContactEmail { get; set; } = string.Empty;
-     public List<ProposalDto> Proposals { get; set; }
+     public List<ProposalDto> Proposals { get; set; } = new List<ProposalDto>();
 }
-}
+
 
 public class UpdatePotentialClientDto : PotentialClientDto
 {

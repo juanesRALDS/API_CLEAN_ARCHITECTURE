@@ -1,15 +1,15 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace SagaAserhi.Domain.Entities
+namespace SagaAserhi.Domain.Entities;
+
+
+public class PotentialClient
 {
-    public class PotentialClient
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("_id")]
-        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+
         [BsonElement("identificationTypeId")]
         public int IdentificationTypeId { get; set; }
 
@@ -51,5 +51,7 @@ namespace SagaAserhi.Domain.Entities
 
         [BsonElement("contactEmail")]
         public string ContactEmail { get; set; } = string.Empty;
-    }
+
+    [BsonElement("proposals")]
+    public List<Proposal> Proposals { get; set; } = new List<Proposal>();
 }

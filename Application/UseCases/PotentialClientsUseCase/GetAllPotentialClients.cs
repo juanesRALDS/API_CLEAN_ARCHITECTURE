@@ -22,26 +22,34 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
         if (pageSize <= 0)
             throw new ArgumentException("Page size must be greater than 0.", nameof(pageSize));
 
-        var clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
-        return clients.Select(c => new PotentialClientDto
+        try
         {
-            Id = c.Id,
-            PersonType = c.PersonType,
-            CompanyBusinessName = c.CompanyBusinessName,
-            RepresentativeNames = c.RepresentativeNames,
-            RepresentativeLastNames = c.RepresentativeLastNames,
-            ContactPhone = c.ContactPhone,
-            ContactEmail = c.ContactEmail,
-            Proposals = c.Proposals?.Select(p => new ProposalDto
+            var clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
+
+            return clients.Select(c => new PotentialClientDto
             {
-                Id = p.Id,
-                Title = p.Title,
-                Description = p.Description,
-                Amount = p.Amount,
-                Status = p.Status,
-                CreationDate = p.CreationDate,
-                PotentialClientId = p.PotentialClientId
-            }).ToList() ?? new List<ProposalDto>()
-        }).ToList();
+                Id = c.Id,
+                PersonType = c.PersonType,
+                CompanyBusinessName = c.CompanyBusinessName,
+                RepresentativeNames = c.RepresentativeNames,
+                RepresentativeLastNames = c.RepresentativeLastNames,
+                ContactPhone = c.ContactPhone,
+                ContactEmail = c.ContactEmail,
+                Proposals = c.Proposals?.Select(p => new ProposalDto
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Description = p.Description,
+                    Amount = p.Amount,
+                    Status = p.Status,
+                    CreationDate = p.CreationDate,
+                    PotentialClientId = p.PotentialClientId
+                }).ToList() ?? new List<ProposalDto>()
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener clientes con propuestas", ex);
+        }
     }
 }

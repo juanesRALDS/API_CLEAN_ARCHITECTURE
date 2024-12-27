@@ -19,6 +19,7 @@ using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
+using SagaAserhi.Application.UseCases.PotentialClientsUseCa;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,7 @@ builder.Services.AddScoped<IGetAllPotentialClientsWithProposalsUseCase, GetAllPo
 builder.Services.AddScoped<ICreatePotentialClientUseCase, CreatePotentialClientUseCase>();
 builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientUseCase>();
 builder.Services.AddScoped<IDeletePotentialClientUseCase, DeletePotentialClientUseCase>();
+builder.Services.AddScoped<IAddProposalToPotentialClientUseCase, AddProposalToPotentialClientUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
