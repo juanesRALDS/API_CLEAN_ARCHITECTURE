@@ -1,10 +1,11 @@
 using Microsoft.IdentityModel.Tokens;
-using SagaAserhi.Application.DTO;
+using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCa;
+
 
 public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClientUseCase
 {
@@ -14,34 +15,46 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
     {
         _potentialClientRepository = potentialClientRepository;
     }
+
     public async Task<string> Execute(string clientId, CreateProposalDto proposalDto)
     {
-        if (string.IsNullOrEmpty(clientId))
+        try
         {
-            throw new ArgumentException("Client Id is required");
-        }
-        if (clientId == null)
-        {
-            throw new ArgumentNullException(nameof(clientId));
-        }
+            // Validar ID del cliente
+            if (string.IsNullOrEmpty(clientId))
+                throw new ArgumentException("El ID del cliente es requerido");
 
-        var proposal = new Proposal
-        {
-            Title = proposalDto.Title,
-            Description = proposalDto.Description,
-            Amount = proposalDto.Amount,
-            Status = proposalDto.Status,
-            PotentialClientId = clientId
-        };
+            // Validar DTO
+            if (proposalDto == null)
+                throw new ArgumentNullException(nameof(proposalDto));
 
-        var result = await _potentialClientRepository.AddProposalToPotentialClient(clientId, proposal);
+            // Verificar si existe el cliente
+            var client = await _potentialClientRepository.GetByIdPotencialClient(clientId);
+            if (client == null)
+                throw new InvalidOperationException($"No se encontró el cliente con ID: {clientId}");
 
-        if (!result)
-        {
-            throw new SecurityTokenException("Proposal could not be added to the potential client");
+            // Crear nueva propuesta
+            var proposal = new Proposal
+            {
+                Title = proposalDto.Title,
+                Description = proposalDto.Description,
+                Amount = proposalDto.Amount,
+                Status = "Pendiente",
+                CreationDate = DateTime.UtcNow,
+                PotentialClientId = clientId
+            };
+
+            // Intentar agregar la propuesta
+            var result = await _potentialClientRepository.AddProposalToPotentialClient(clientId, proposal);
+
+            if (!result)
+                throw new InvalidOperationException("No se pudo agregar la propuesta al cliente");
+
+            return "Propuesta agregada exitosamente";
         }
-        
-        return "proposal added to the potential client";
-        
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error al agregar la propuesta: {ex.Message}", ex);
+        }
     }
 }

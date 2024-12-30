@@ -9,5 +9,5 @@ public interface IPotentialClientRepository
     Task<PotentialClient?> GetByIdPotencialClient(string id);
     Task DeletePoTencialClient(String Id);
     Task UpdatePotentialClient(string Id, PotentialClient client);
-    Task <bool> AddProposalToPotentialClient(string clientId, Proposal proposal);
+    Task <bool> AddProposalToPotentialClient(string clientId, Domain.Entities.Proposal proposal);
 }

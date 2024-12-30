@@ -20,6 +20,9 @@ using SagaAserhi.Application.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCa;
+using SagaAserhi.Application.Interfaces.Proposal.UseCaseProposal;
+using SagaAserhi.Application.UseCases.ProposalsUseCase;
+using SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -56,11 +59,14 @@ builder.Services.AddScoped<ICreatePotentialClientUseCase, CreatePotentialClientU
 builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientUseCase>();
 builder.Services.AddScoped<IDeletePotentialClientUseCase, DeletePotentialClientUseCase>();
 builder.Services.AddScoped<IAddProposalToPotentialClientUseCase, AddProposalToPotentialClientUseCase>();
+builder.Services.AddScoped<IGetAllProposalsUseCase, GetAllProposalsUseCase>();
+builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IPotentialClientRepository, PotentialClientRepository>();
+builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();

@@ -1,4 +1,5 @@
 using SagaAserhi.Application.DTO;
+using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Infrastructure.Repositories;
@@ -28,7 +29,7 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
 
             return clients.Select(c => new PotentialClientDto
             {
-                Id = c.Id.ToString(), // Convertir ObjectId a string
+                Id = c.Id.ToString(), 
 
                 PersonType = c.PersonType,
                 CompanyBusinessName = c.CompanyBusinessName,
@@ -41,10 +42,8 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
                     Id = p.Id.ToString(), // Convertir ObjectId a string
                     Title = p.Title,
                     Description = p.Description,
-                    Amount = p.Amount,
-                    Status = p.Status,
                     CreationDate = p.CreationDate,
-                    PotentialClientId = p.PotentialClientId.ToString() // Convertir ObjectId a string
+                    PotentialClientId = p.PotentialClientId.ToString() 
                 }).ToList() ?? new List<ProposalDto>()
             }).ToList();
 

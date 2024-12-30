@@ -13,14 +13,12 @@ public class PotentialClientController : ControllerBase
     private readonly ICreatePotentialClientUseCase _createPotentialClientUseCase;
     private readonly IUpdatePotentialClientUseCase _updatePotentialClientUseCase;
     private readonly IDeletePotentialClientUseCase _deletePotentialClientUseCase;
-    private readonly IAddProposalToPotentialClientUseCase _addProposalToPotentialClientUseCase;
 
     public PotentialClientController(
         IGetAllPotentialClientsWithProposalsUseCase GetAllPotentialClientsWithProposalsUseCase,
         ICreatePotentialClientUseCase createPotentialClientUseCase,
         IUpdatePotentialClientUseCase updatePotentialClientUseCase,
-        IDeletePotentialClientUseCase deletePotentialClientUseCase,
-        IAddProposalToPotentialClientUseCase addProposalToPotentialClientUseCase
+        IDeletePotentialClientUseCase deletePotentialClientUseCase
 
     )
     {
@@ -28,7 +26,6 @@ public class PotentialClientController : ControllerBase
         _GetAllPotentialClientsWithProposalsUseCase = GetAllPotentialClientsWithProposalsUseCase;
         _updatePotentialClientUseCase = updatePotentialClientUseCase;
         _deletePotentialClientUseCase = deletePotentialClientUseCase;
-        _addProposalToPotentialClientUseCase = addProposalToPotentialClientUseCase;
     }
 
     [HttpGet]
@@ -94,22 +91,6 @@ public class PotentialClientController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-    [HttpPost("{id}/proposals")]
-    public async Task<IActionResult> AddProposal(string id, [FromBody] CreateProposalDto dto)
-    {
-        try
-        {
-            var result = await _addProposalToPotentialClientUseCase.Execute(id, dto);
-            return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
+
 
 }
