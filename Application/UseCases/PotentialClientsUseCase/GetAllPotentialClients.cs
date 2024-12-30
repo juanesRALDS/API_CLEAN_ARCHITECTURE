@@ -28,7 +28,8 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
 
             return clients.Select(c => new PotentialClientDto
             {
-                Id = c.Id,
+                Id = c.Id.ToString(), // Convertir ObjectId a string
+
                 PersonType = c.PersonType,
                 CompanyBusinessName = c.CompanyBusinessName,
                 RepresentativeNames = c.RepresentativeNames,
@@ -37,15 +38,16 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
                 ContactEmail = c.ContactEmail,
                 Proposals = c.Proposals?.Select(p => new ProposalDto
                 {
-                    Id = p.Id,
+                    Id = p.Id.ToString(), // Convertir ObjectId a string
                     Title = p.Title,
                     Description = p.Description,
                     Amount = p.Amount,
                     Status = p.Status,
                     CreationDate = p.CreationDate,
-                    PotentialClientId = p.PotentialClientId
+                    PotentialClientId = p.PotentialClientId.ToString() // Convertir ObjectId a string
                 }).ToList() ?? new List<ProposalDto>()
             }).ToList();
+
         }
         catch (Exception ex)
         {

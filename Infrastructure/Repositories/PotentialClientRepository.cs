@@ -111,10 +111,11 @@ public class PotentialClientRepository : IPotentialClientRepository
 
     public async Task<bool> AddProposalToPotentialClient(string clientId, Proposal proposal)
     {
-        var filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
-        var update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal);
+        await _proposalCollection.InsertOneAsync(proposal);
+        FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
+         UpdateDefinition<PotentialClient>? update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal);
 
-        var result = await _Clientcollection.UpdateOneAsync(filter, update);
+        UpdateResult? result = await _Clientcollection.UpdateOneAsync(filter, update);
         return result.ModifiedCount > 0;
     }
 }
