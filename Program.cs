@@ -60,7 +60,7 @@ builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientU
 builder.Services.AddScoped<IDeletePotentialClientUseCase, DeletePotentialClientUseCase>();
 builder.Services.AddScoped<IAddProposalToPotentialClientUseCase, AddProposalToPotentialClientUseCase>();
 builder.Services.AddScoped<IGetAllProposalsUseCase, GetAllProposalsUseCase>();
-builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
+builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();    
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();

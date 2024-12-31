@@ -104,7 +104,7 @@ public class AuthController : Controller
         }
     }
 
-    [HttpPost("update")]
+    [HttpPost("update-new-password")]
     public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
     {
 
