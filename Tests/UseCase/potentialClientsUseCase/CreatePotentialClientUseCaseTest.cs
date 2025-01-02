@@ -48,10 +48,10 @@ public class CreatePotentialClientUseCaseTest
     public async Task Execute_WithNullDto_ShouldThrowArgumentNullException()
     {
         // Arrange
-        CreatePotentialClientDto dto = null;
+        CreatePotentialClientDto? dto = null;
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _useCase.Execute(dto));
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _useCase.Execute(dto!));
     }
 
     [Fact]

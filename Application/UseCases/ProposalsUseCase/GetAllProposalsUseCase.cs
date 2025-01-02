@@ -30,7 +30,8 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
                 Title = p.Title,
                 Description = p.Description,
                 CreationDate = p.CreationDate,
-                PotentialClientId = p.PotentialClientId
+                PotentialClientId = p.PotentialClientId,
+                CompanybusinessName = p.CompanyBusinessName
             }).ToList();
         }
         catch (Exception ex)

@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Domain.Entities;
@@ -15,13 +16,51 @@ namespace SagaAserhi.Infrastructure.Repositories
             _proposalCollection = context.GetCollection<Proposal>("proposals");
         }
 
+
         public async Task<List<Proposal>> GetAllProposals(int pageNumber, int pageSize)
         {
-            return await _proposalCollection
-                .Find(Builders<Proposal>.Filter.Empty)
-                .Skip((pageNumber - 1) * pageSize)
-                .Limit(pageSize)
-                .ToListAsync();
+            try
+            {
+                var pipeline = new[]
+                {
+                    // Match todos los documentos
+                    new BsonDocument("$match", new BsonDocument()),
+
+                    // Lookup con potentialClients
+                    new BsonDocument("$lookup", new BsonDocument
+                    {
+                        { "from", "potentialClients" },
+                        { "localField", "potentialClientId" },
+                        { "foreignField", "_id" },
+                        { "as", "clientInfo" }
+                    }),
+
+                    // Desempaquetar el array de clientInfo
+                    new BsonDocument("$unwind", new BsonDocument
+                    {
+                        { "path", "$clientInfo" },
+                        { "preserveNullAndEmptyArrays", true }
+                    }),
+
+                    // Agregar el campo companyBusinessName desde clientInfo
+                    new BsonDocument("$addFields", new BsonDocument
+                    {
+                        { "companyBusinessName", "$clientInfo.companyBusinessName" }
+                    }),
+
+                    // Paginación
+                    new BsonDocument("$skip", (pageNumber - 1) * pageSize),
+                    new BsonDocument("$limit", pageSize)
+                };
+
+                return await _proposalCollection
+                    .Aggregate<Proposal>(pipeline)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
+            }
         }
 
         public Task<Proposal> GetProposalById(string id)
