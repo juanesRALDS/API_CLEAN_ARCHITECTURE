@@ -14,7 +14,7 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
 
         public async Task<string> Execute(string Id)
         {
-            var client = await _repository.GetByIdPotencialClient(Id) 
+            Domain.Entities.PotentialClient? client = await _repository.GetByIdPotencialClient(Id)
                 ?? throw new KeyNotFoundException("Cliente potencial no encontrado");
 
             await _repository.DeletePoTencialClient(Id);

@@ -20,16 +20,15 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
                 throw new ArgumentNullException(nameof(dto));
 
             if (string.IsNullOrEmpty(dto.CompanyBusinessName))
-                throw new ArgumentException("Company name cannot be empty", nameof(dto.CompanyBusinessName));
+                throw new ArgumentException("Company name cannot be empty", 
+                    nameof(dto.CompanyBusinessName));
 
-            var potentialClient = new PotentialClient
+            PotentialClient? potentialClient = new PotentialClient
             {
-                PersonType = dto.PersonType,
                 CompanyBusinessName = dto.CompanyBusinessName,
-                RepresentativeNames = dto.RepresentativeNames,
-                RepresentativeLastNames = dto.RepresentativeLastNames,
                 ContactPhone = dto.ContactPhone,
-                ContactEmail = dto.ContactEmail
+                ContactEmail = dto.ContactEmail,
+                Status = dto.Status
             };
 
             await _repository.CreatePotentialClient(potentialClient);

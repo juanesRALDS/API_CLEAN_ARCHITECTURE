@@ -23,32 +23,40 @@ namespace SagaAserhi.Infrastructure.Repositories
             {
                 var pipeline = new[]
                 {
-                    // Match todos los documentos
-                    new BsonDocument("$match", new BsonDocument()),
-
-                    // Lookup con potentialClients
                     new BsonDocument("$lookup", new BsonDocument
                     {
                         { "from", "potentialClients" },
-                        { "localField", "potentialClientId" },
-                        { "foreignField", "_id" },
+                        { "let", new BsonDocument("clientId", "$potentialClientId") },
+                        { "pipeline", new BsonArray
+                            {
+                                new BsonDocument("$match", new BsonDocument
+                                {
+                                    { "$expr", new BsonDocument("$eq", new BsonArray 
+                                        { 
+                                            "$_id",
+                                            new BsonDocument("$toObjectId", "$$clientId")
+                                        })
+                                    }
+                                }),
+                                new BsonDocument("$project", new BsonDocument
+                                {
+                                    { "_id", 1 },
+                                    { "companyBusinessName", 1 }
+                                })
+                            }
+                        },
                         { "as", "clientInfo" }
                     }),
-
-                    // Desempaquetar el array de clientInfo
                     new BsonDocument("$unwind", new BsonDocument
                     {
                         { "path", "$clientInfo" },
                         { "preserveNullAndEmptyArrays", true }
                     }),
-
-                    // Agregar el campo companyBusinessName desde clientInfo
-                    new BsonDocument("$addFields", new BsonDocument
+                    new BsonDocument("$set", new BsonDocument
                     {
-                        { "companyBusinessName", "$clientInfo.companyBusinessName" }
+                        { "companyBusinessName", "$clientInfo.companyBusinessName" },
+                        { "potentialClientId", "$clientInfo._id" }
                     }),
-
-                    // Paginación
                     new BsonDocument("$skip", (pageNumber - 1) * pageSize),
                     new BsonDocument("$limit", pageSize)
                 };
@@ -62,6 +70,7 @@ namespace SagaAserhi.Infrastructure.Repositories
                 throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
             }
         }
+
 
         public Task<Proposal> GetProposalById(string id)
         {

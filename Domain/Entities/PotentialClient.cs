@@ -25,5 +25,5 @@ public class PotentialClient
     public string Status { get; set; } = string.Empty;
 
     [BsonElement("proposals")]
-    public List<string> ProposalIds { get; set; } = new List<string>();
+    public List<string> Proposals { get; set; } = new List<string>();
 }

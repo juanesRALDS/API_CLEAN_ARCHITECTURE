@@ -1,4 +1,5 @@
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Domain.Entities;
@@ -31,23 +32,12 @@ public class PotentialClientRepository : IPotentialClientRepository
             if (!clients.Any())
                 return new List<PotentialClient>();
 
-            var clientIds = clients.Select(c => c.Id).ToList();
-            var proposalsFilter = Builders<Proposal>.Filter.In(p => p.PotentialClientId, clientIds);
+            var proposalIds = clients.SelectMany(c => c.Proposals).ToList();
+            var proposalsFilter = Builders<Proposal>.Filter.In(p => p.Id, proposalIds);
 
             var proposals = await _proposalCollection
                 .Find(proposalsFilter)
                 .ToListAsync();
-
-            var proposalsByClientId = proposals
-                .GroupBy(p => p.PotentialClientId)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-            foreach (var client in clients)
-            {
-                client.Proposals = proposalsByClientId.TryGetValue(client.Id, out var clientProposals)
-                    ? clientProposals
-                    : new List<Proposal>();
-            }
 
             return clients;
         }
@@ -56,7 +46,6 @@ public class PotentialClientRepository : IPotentialClientRepository
             throw new Exception($"Error al obtener clientes con propuestas: {ex.Message}", ex);
         }
     }
-
 
     public async Task CreatePotentialClient(PotentialClient client)
     {
@@ -74,21 +63,10 @@ public class PotentialClientRepository : IPotentialClientRepository
         UpdateDefinitionBuilder<PotentialClient>? FilterBuilder = Builders<PotentialClient>.Update;
         List<UpdateDefinition<PotentialClient>>? updates = new();
 
-        if (string.IsNullOrEmpty(client.PersonType))
-        {
-            updates.Add(FilterBuilder.Set(u => u.PersonType, client.PersonType));
-        }
+        
         if (string.IsNullOrEmpty(client.CompanyBusinessName))
         {
             updates.Add(FilterBuilder.Set(u => u.CompanyBusinessName, client.CompanyBusinessName));
-        }
-        if (string.IsNullOrEmpty(client.RepresentativeNames))
-        {
-            updates.Add(FilterBuilder.Set(u => u.RepresentativeNames, client.RepresentativeNames));
-        }
-        if (string.IsNullOrEmpty(client.RepresentativeLastNames))
-        {
-            updates.Add(FilterBuilder.Set(u => u.RepresentativeLastNames, client.RepresentativeLastNames));
         }
         if (string.IsNullOrEmpty(client.ContactPhone))
         {
@@ -97,6 +75,10 @@ public class PotentialClientRepository : IPotentialClientRepository
         if (string.IsNullOrEmpty(client.ContactEmail))
         {
             updates.Add(FilterBuilder.Set(u => u.ContactEmail, client.ContactEmail));
+        }
+        if (string.IsNullOrEmpty(client.Status))
+        {
+            updates.Add(FilterBuilder.Set(u => u.Status, client.Status));
         }
         if (updates.Any())
         {
@@ -111,11 +93,65 @@ public class PotentialClientRepository : IPotentialClientRepository
 
     public async Task<bool> AddProposalToPotentialClient(string clientId, Proposal proposal)
     {
-        await _proposalCollection.InsertOneAsync(proposal);
-        FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
-         UpdateDefinition<PotentialClient>? update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal);
+        try 
+        {
+            // Primero insertamos la propuesta
+            await _proposalCollection.InsertOneAsync(proposal);
 
-        UpdateResult? result = await _Clientcollection.UpdateOneAsync(filter, update);
-        return result.ModifiedCount > 0;
+            // Actualizamos el cliente con el ID de la propuesta
+            var filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
+            var update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal.Id);
+
+            var result = await _Clientcollection.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al agregar propuesta: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<List<Proposal>> GetAllProposals(int pageNumber, int pageSize)
+    {
+        try
+        {
+            var pipeline = new[]
+            {
+                new BsonDocument("$match", new BsonDocument()),
+                new BsonDocument("$lookup", new BsonDocument
+                {
+                    { "from", "potentialClients" },
+                    { "let", new BsonDocument("localClientId", "$potentialClientId") },
+                    { "pipeline", new BsonArray
+                        {
+                            new BsonDocument("$match", new BsonDocument
+                            {
+                                { "$expr", new BsonDocument("$eq", new BsonArray { "$_id", "$$localClientId" }) }
+                            })
+                        }
+                    },
+                    { "as", "clientInfo" }
+                }),
+                new BsonDocument("$unwind", new BsonDocument
+                {
+                    { "path", "$clientInfo" },
+                    { "preserveNullAndEmptyArrays", true }
+                }),
+                new BsonDocument("$addFields", new BsonDocument
+                {
+                    { "companyBusinessName", "$clientInfo.companyBusinessName" }
+                }),
+                new BsonDocument("$skip", (pageNumber - 1) * pageSize),
+                new BsonDocument("$limit", pageSize)
+            };
+
+            return await _proposalCollection
+                .Aggregate<Proposal>(pipeline)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
+        }
     }
 }

@@ -19,6 +19,8 @@ namespace SagaAserhi.Domain.Entities
         public string Status { get; set; } = string.Empty;
         public DateTime CreationDate { get; set; }
         public string PotentialClientId { get; set; } = string.Empty;
+
+        [BsonElement("companyBusinessName")]
         public string CompanyBusinessName { get; set; }  = string.Empty;
     }
 }

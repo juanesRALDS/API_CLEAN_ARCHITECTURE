@@ -23,20 +23,22 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
 
         try
         {
-            var proposals = await _repository.GetAllProposals(pageNumber, pageSize);
+            List<Domain.Entities.Proposal>? proposals = await _repository.GetAllProposals(pageNumber, pageSize);
             return proposals.Select(p => new ProposalDto
             {
                 Id = p.Id,
                 Title = p.Title,
                 Description = p.Description,
+                Amount = p.Amount,
+                Status = p.Status,
                 CreationDate = p.CreationDate,
                 PotentialClientId = p.PotentialClientId,
-                CompanybusinessName = p.CompanyBusinessName
+                CompanyBusinessName = p.CompanyBusinessName
             }).ToList();
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al obtener propuestas {ex.Message}", ex);
+            throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
         }
     }
 }

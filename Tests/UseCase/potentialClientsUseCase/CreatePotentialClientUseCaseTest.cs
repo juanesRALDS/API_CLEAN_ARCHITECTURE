@@ -24,10 +24,7 @@ public class CreatePotentialClientUseCaseTest
         // Arrange
         var dto = new CreatePotentialClientDto
         {
-            PersonType = "Juridica",
             CompanyBusinessName = "Test Company",
-            RepresentativeNames = "John",
-            RepresentativeLastNames = "Doe",
             ContactPhone = "1234567890",
             ContactEmail = "test@test.com"
         };
@@ -60,10 +57,7 @@ public class CreatePotentialClientUseCaseTest
         // Arrange
         var dto = new CreatePotentialClientDto
         {
-            PersonType = "Juridica",
             CompanyBusinessName = "",
-            RepresentativeNames = "John",
-            RepresentativeLastNames = "Doe",
             ContactPhone = "1234567890",
             ContactEmail = "test@test.com"
         };
@@ -79,10 +73,7 @@ public class CreatePotentialClientUseCaseTest
         // Arrange
         var dto = new CreatePotentialClientDto
         {
-            PersonType = "Juridica",
             CompanyBusinessName = "Test Company",
-            RepresentativeNames = "John",
-            RepresentativeLastNames = "Doe",
             ContactPhone = "1234567890",
             ContactEmail = "test@test.com"
         };

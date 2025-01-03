@@ -15,30 +15,35 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
     public async Task<string> Execute(string id, UpdateProposalDto dto)
     {
+        // Validaciones iniciales fuera del try-catch
+        if (string.IsNullOrEmpty(id))
+            throw new ArgumentException("El ID es requerido");
+
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
+
         try
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("El ID es requerido");
-
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
-
-            var existingProposal = await _repository.GetProposalById(id);
-            if (existingProposal == null)
-                throw new InvalidOperationException($"No se encontró la propuesta con ID: {id}");
-
+            Domain.Entities.Proposal? existingProposal = await _repository.GetProposalById(id) 
+                ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {id}");
             existingProposal.Title = dto.Title;
             existingProposal.Description = dto.Description;
+            existingProposal.Amount = dto.Amount;
+            existingProposal.Status = dto.Status;
 
-            var result = await _repository.UpdateProposal(id, existingProposal);
+            bool result = await _repository.UpdateProposal(id, existingProposal);
             if (!result)
                 throw new InvalidOperationException("No se pudo actualizar la propuesta");
 
             return "Propuesta actualizada exitosamente";
         }
+        catch (InvalidOperationException)
+        {
+            throw; // Re-lanzar excepciones de operación sin envolverlas
+        }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Error al actualizar la propuesta: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error al actualizar la propuesta", ex);
         }
     }
 }

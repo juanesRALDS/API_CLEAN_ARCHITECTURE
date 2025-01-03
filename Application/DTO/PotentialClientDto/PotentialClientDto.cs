@@ -14,7 +14,7 @@ public class PotentialClientDto
 }
 
 
-public class UpdatePotentialClientDto : PotentialClientDto
+public class UpdatePotentialClientDto 
 {
     public string CompanyBusinessName { get; set; } = string.Empty;
     public string ContactPhone { get; set; } = string.Empty;

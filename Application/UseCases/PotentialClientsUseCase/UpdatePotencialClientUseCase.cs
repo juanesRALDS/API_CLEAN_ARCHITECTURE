@@ -29,12 +29,10 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
             PotentialClient? updateClient = new()
             {
                 Id = id,
-                PersonType = dto.PersonType ?? existingClient.PersonType,
                 CompanyBusinessName = dto.CompanyBusinessName ?? existingClient.CompanyBusinessName,
-                RepresentativeNames = dto.RepresentativeNames ?? existingClient.RepresentativeNames,
-                RepresentativeLastNames = dto.RepresentativeLastNames ?? existingClient.RepresentativeLastNames,
                 ContactPhone = dto.ContactPhone ?? existingClient.ContactPhone,
-                ContactEmail = dto.ContactEmail ?? existingClient.ContactEmail
+                ContactEmail = dto.ContactEmail ?? existingClient.ContactEmail,
+                Status = dto.Status ?? existingClient.Status
             };
 
             //actualizar en la base de datos
@@ -43,12 +41,10 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
             // retornar cliente  actalizado
             return new UpdatePotentialClientDto
             {
-                PersonType = updateClient.PersonType,
                 CompanyBusinessName = updateClient.CompanyBusinessName,
-                RepresentativeNames = updateClient.RepresentativeNames,
-                RepresentativeLastNames = updateClient.RepresentativeLastNames,
                 ContactPhone = updateClient.ContactPhone,
-                ContactEmail = updateClient.ContactEmail
+                ContactEmail = updateClient.ContactEmail,
+                Status = updateClient.Status
             };
         }   
     }

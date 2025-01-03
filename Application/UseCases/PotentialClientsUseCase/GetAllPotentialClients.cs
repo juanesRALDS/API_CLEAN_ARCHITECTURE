@@ -25,25 +25,19 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
 
         try
         {
-            var clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
+            List<Domain.Entities.PotentialClient>? clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
 
             return clients.Select(c => new PotentialClientDto
             {
-                Id = c.Id.ToString(), 
+                Id = c.Id.ToString(),
 
-                PersonType = c.PersonType,
                 CompanyBusinessName = c.CompanyBusinessName,
-                RepresentativeNames = c.RepresentativeNames,
-                RepresentativeLastNames = c.RepresentativeLastNames,
                 ContactPhone = c.ContactPhone,
                 ContactEmail = c.ContactEmail,
-                Proposals = c.Proposals?.Select(p => new ProposalDto
+                Proposals = c.Proposals?.Select(proposalID => new ProposalDto
                 {
-                    Id = p.Id.ToString(), // Convertir ObjectId a string
-                    Title = p.Title,
-                    Description = p.Description,
-                    CreationDate = p.CreationDate,
-                    PotentialClientId = p.PotentialClientId.ToString() 
+                    Id = proposalID, 
+                    CompanyBusinessName = c.CompanyBusinessName
                 }).ToList() ?? new List<ProposalDto>()
             }).ToList();
 
