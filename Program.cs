@@ -23,6 +23,7 @@ using SagaAserhi.Application.UseCases.PotentialClientsUseCa;
 using SagaAserhi.Application.Interfaces.Proposal.UseCaseProposal;
 using SagaAserhi.Application.UseCases.ProposalsUseCase;
 using SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
+using SagaAserhi.Application.Interfaces.Services;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -60,7 +61,9 @@ builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientU
 builder.Services.AddScoped<IDeletePotentialClientUseCase, DeletePotentialClientUseCase>();
 builder.Services.AddScoped<IAddProposalToPotentialClientUseCase, AddProposalToPotentialClientUseCase>();
 builder.Services.AddScoped<IGetAllProposalsUseCase, GetAllProposalsUseCase>();
-builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();    
+builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
+builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUseCase>();
+builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();   
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();

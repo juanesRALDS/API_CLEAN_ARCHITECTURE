@@ -13,12 +13,14 @@ public class PotentialClientController : ControllerBase
     private readonly ICreatePotentialClientUseCase _createPotentialClientUseCase;
     private readonly IUpdatePotentialClientUseCase _updatePotentialClientUseCase;
     private readonly IDeletePotentialClientUseCase _deletePotentialClientUseCase;
+    private readonly IExcelPotentialClientUseCase _exportExcelUseCase;
 
     public PotentialClientController(
         IGetAllPotentialClientsWithProposalsUseCase GetAllPotentialClientsWithProposalsUseCase,
         ICreatePotentialClientUseCase createPotentialClientUseCase,
         IUpdatePotentialClientUseCase updatePotentialClientUseCase,
-        IDeletePotentialClientUseCase deletePotentialClientUseCase
+        IDeletePotentialClientUseCase deletePotentialClientUseCase,
+        IExcelPotentialClientUseCase exportExcelUseCase
 
     )
     {
@@ -26,6 +28,7 @@ public class PotentialClientController : ControllerBase
         _GetAllPotentialClientsWithProposalsUseCase = GetAllPotentialClientsWithProposalsUseCase;
         _updatePotentialClientUseCase = updatePotentialClientUseCase;
         _deletePotentialClientUseCase = deletePotentialClientUseCase;
+        _exportExcelUseCase = exportExcelUseCase;
     }
 
     [HttpGet]
@@ -89,6 +92,26 @@ public class PotentialClientController : ControllerBase
         {
 
             return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ExportToExcel(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var fileContent = await _exportExcelUseCase.ExecuteAsync(cancellationToken);
+            return File(
+                fileContent,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"PotentialClients_{DateTime.Now:yyyyMMdd}.xlsx"
+            );
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "Error al exportar el archivo Excel" });
         }
     }
 

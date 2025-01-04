@@ -63,7 +63,7 @@ public class PotentialClientRepository : IPotentialClientRepository
         UpdateDefinitionBuilder<PotentialClient>? FilterBuilder = Builders<PotentialClient>.Update;
         List<UpdateDefinition<PotentialClient>>? updates = new();
 
-        
+
         if (string.IsNullOrEmpty(client.CompanyBusinessName))
         {
             updates.Add(FilterBuilder.Set(u => u.CompanyBusinessName, client.CompanyBusinessName));
@@ -93,7 +93,7 @@ public class PotentialClientRepository : IPotentialClientRepository
 
     public async Task<bool> AddProposalToPotentialClient(string clientId, Proposal proposal)
     {
-        try 
+        try
         {
             // Primero insertamos la propuesta
             await _proposalCollection.InsertOneAsync(proposal);
@@ -153,5 +153,10 @@ public class PotentialClientRepository : IPotentialClientRepository
         {
             throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
         }
+    }
+    public async Task<IEnumerable<PotentialClient>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _Clientcollection.Find(_ => true)
+                              .ToListAsync(cancellationToken);
     }
 }
