@@ -6,9 +6,9 @@ using SagaAserhi.Application.UseCases.Auth;
 using SagaAserhi.Domain.Entities;
 using Moq;
 using Xunit;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Auth;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.Application.UseCases;
 

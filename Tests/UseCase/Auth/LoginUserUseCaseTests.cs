@@ -9,9 +9,9 @@ using Microsoft.Extensions.Options;
 using SagaAserhi.Application.UseCases.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Utils;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Test.UseCases;
 public class LoginUserUseCaseTests

@@ -5,7 +5,7 @@ using SagaAserhi.Domain.Entities;
 using Moq;
 using Xunit;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.UseCase.Users;
 

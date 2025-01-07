@@ -1,6 +1,5 @@
-using System.Net.Sockets;
 using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Domain.Entities;
 
@@ -25,7 +24,7 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
             PotentialClient? existingClient = await _repository.GetByIdPotencialClient(id) 
                 ?? throw new KeyNotFoundException($"Cliente potencial con ID {id} no encontrado.");
 
-            // mapear dto a entidad
+
             PotentialClient? updateClient = new()
             {
                 Id = id,
@@ -35,10 +34,10 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
                 Status = dto.Status ?? existingClient.Status
             };
 
-            //actualizar en la base de datos
+
             await _repository.UpdatePotentialClient(id, updateClient);
             
-            // retornar cliente  actalizado
+
             return new UpdatePotentialClientDto
             {
                 CompanyBusinessName = updateClient.CompanyBusinessName,

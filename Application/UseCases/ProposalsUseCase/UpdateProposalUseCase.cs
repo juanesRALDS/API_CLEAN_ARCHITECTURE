@@ -1,6 +1,7 @@
 using SagaAserhi.Application.DTO.ProposalDtos;
-using SagaAserhi.Application.Interfaces;
-using SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
+using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.Interfaces.IUseCaseProposal;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
@@ -24,7 +25,7 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
         try
         {
-            Domain.Entities.Proposal? existingProposal = await _repository.GetProposalById(id) 
+            Proposal? existingProposal = await _repository.GetProposalById(id) 
                 ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {id}");
             existingProposal.Title = dto.Title;
             existingProposal.Description = dto.Description;

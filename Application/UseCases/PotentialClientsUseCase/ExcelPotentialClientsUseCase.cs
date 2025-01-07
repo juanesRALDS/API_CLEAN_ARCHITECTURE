@@ -1,7 +1,6 @@
 
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
-using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 

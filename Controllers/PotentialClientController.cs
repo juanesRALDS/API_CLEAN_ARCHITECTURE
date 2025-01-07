@@ -38,7 +38,8 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var clients = await _GetAllPotentialClientsWithProposalsUseCase.Execute(pageNumber, pageSize);
+            List<PotentialClientDto>? clients = 
+                await _GetAllPotentialClientsWithProposalsUseCase.Execute(pageNumber, pageSize);
             return Ok(clients);
         }
         catch (ArgumentException ex)
@@ -52,7 +53,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var result = await _createPotentialClientUseCase.Execute(dto);
+            string? result = await _createPotentialClientUseCase.Execute(dto);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -85,7 +86,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var result = await _deletePotentialClientUseCase.Execute(Id);
+             string? result = await _deletePotentialClientUseCase.Execute(Id);
             return Ok(result);
         }
         catch (System.Exception ex)
@@ -102,7 +103,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var fileContent = await _exportExcelUseCase.ExecuteAsync(cancellationToken);
+            byte[]? fileContent = await _exportExcelUseCase.ExecuteAsync(cancellationToken);
             return File(
                 fileContent,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

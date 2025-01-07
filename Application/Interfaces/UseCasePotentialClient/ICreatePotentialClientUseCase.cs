@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using SagaAserhi.Application.DTO;
 
-namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient
+namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+
+public interface ICreatePotentialClientUseCase
 {
-    public interface ICreatePotentialClientUseCase
-    {
-        Task<string> Execute(CreatePotentialClientDto dto);
-    }
+    Task<string> Execute(CreatePotentialClientDto dto);
 }

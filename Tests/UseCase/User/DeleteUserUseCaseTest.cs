@@ -2,7 +2,7 @@ using FluentAssertions;
 using SagaAserhi.Application.UseCases.Users;
 using Moq;
 using Xunit;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.Application.UseCases.Users;
 

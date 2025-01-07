@@ -1,5 +1,5 @@
 using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Domain.Entities;
 

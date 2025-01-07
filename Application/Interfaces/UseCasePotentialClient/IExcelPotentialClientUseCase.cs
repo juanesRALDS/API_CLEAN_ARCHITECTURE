@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient
+namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+
+public interface IExcelPotentialClientUseCase
 {
-    public interface IExcelPotentialClientUseCase
-    {
-        Task<byte[]> ExecuteAsync(CancellationToken cancellationToken);
-    }
+    Task<byte[]> ExecuteAsync(CancellationToken cancellationToken);
 }

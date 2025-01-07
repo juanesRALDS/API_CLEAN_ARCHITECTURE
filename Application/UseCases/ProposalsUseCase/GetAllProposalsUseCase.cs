@@ -1,6 +1,7 @@
 using SagaAserhi.Application.DTO.ProposalDtos;
-using SagaAserhi.Application.Interfaces;
-using SagaAserhi.Application.Interfaces.Proposal.UseCaseProposal;
+using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.Interfaces.IUseCaseProposal;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
@@ -23,7 +24,7 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
 
         try
         {
-            List<Domain.Entities.Proposal>? proposals = await _repository.GetAllProposals(pageNumber, pageSize);
+            List<Proposal>? proposals = await _repository.GetAllProposals(pageNumber, pageSize);
             return proposals.Select(p => new ProposalDto
             {
                 Id = p.Id,

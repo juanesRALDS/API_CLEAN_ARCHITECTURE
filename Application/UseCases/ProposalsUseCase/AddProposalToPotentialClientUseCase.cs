@@ -1,7 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using SagaAserhi.Application.DTO.ProposalDtos;
-using SagaAserhi.Application.Interfaces;
-using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCa;

@@ -1,7 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Context;
 
@@ -22,7 +22,7 @@ public class PotentialClientRepository : IPotentialClientRepository
     {
         try
         {
-            var filter = Builders<PotentialClient>.Filter.Empty;
+            FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Empty;
             var clients = await _Clientcollection
                 .Find(filter)
                 .Skip((pageNumber - 1) * pageSize)

@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SagaAserhi.Application.DTO.ProposalDtos;
-using SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
-using SagaAserhi.Application.Interfaces.Proposal.UseCaseProposal;
-using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 
 namespace SagaAserhi.Controllers;
 
@@ -13,17 +11,20 @@ public class ProposalController : ControllerBase
     private readonly IGetAllProposalsUseCase _getAllProposalsUseCase;
     private readonly IAddProposalToPotentialClientUseCase _addProposalToPotentialClientUseCase;
     private readonly IUpdateProposalUseCase _updateProposalUseCase;
+    private readonly IExcelProposalUseCase _exportProposalUseCase;
 
     public ProposalController(
         IGetAllProposalsUseCase getAllProposalsUseCase,
         IAddProposalToPotentialClientUseCase addProposalToPotentialClientUseCase,
-        IUpdateProposalUseCase updateProposalUseCase
+        IUpdateProposalUseCase updateProposalUseCase,
+        IExcelProposalUseCase exportProposalUseCase
     )
     {
         _getAllProposalsUseCase = getAllProposalsUseCase;
         _addProposalToPotentialClientUseCase = addProposalToPotentialClientUseCase;
         _updateProposalUseCase = updateProposalUseCase;
-        
+        _exportProposalUseCase = exportProposalUseCase;
+
     }
 
     [HttpGet]
@@ -33,7 +34,8 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var result = await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
+            List<ProposalDto>? result =
+                await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -51,7 +53,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var result = await _addProposalToPotentialClientUseCase.Execute(id, dto);
+            string? result = await _addProposalToPotentialClientUseCase.Execute(id, dto);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -68,7 +70,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var result = await _updateProposalUseCase.Execute(id, dto);
+            string? result = await _updateProposalUseCase.Execute(id, dto);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -82,6 +84,27 @@ public class ProposalController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, ex.Message);
+        }
+    }
+
+    // Agregar en el controlador existente
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ExportToExcel(CancellationToken cancellationToken)
+    {
+        try
+        {
+            byte[]? fileContent = await _exportProposalUseCase.ExecuteAsync(cancellationToken);
+            return File(
+                fileContent,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Proposals_{DateTime.Now:yyyyMMdd}.xlsx"
+            );
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "Error al exportar el archivo Excel" });
         }
     }
 }

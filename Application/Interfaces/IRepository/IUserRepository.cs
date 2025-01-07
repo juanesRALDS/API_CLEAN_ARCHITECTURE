@@ -1,6 +1,6 @@
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.Interfaces;
+namespace SagaAserhi.Application.Interfaces.IRepository;
 
 public interface IUserRepository
 {

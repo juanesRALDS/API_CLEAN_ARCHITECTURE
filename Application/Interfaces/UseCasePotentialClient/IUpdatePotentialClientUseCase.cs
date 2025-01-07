@@ -1,9 +1,8 @@
 using SagaAserhi.Application.DTO;
 
-namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient
+namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+
+public interface IUpdatePotentialClientUseCase
 {
-    public interface IUpdatePotentialClientUseCase
-    {
-        Task<UpdatePotentialClientDto> Execute(string id, UpdatePotentialClientDto dto);
-    }
+    Task<UpdatePotentialClientDto> Execute(string id, UpdatePotentialClientDto dto);
 }

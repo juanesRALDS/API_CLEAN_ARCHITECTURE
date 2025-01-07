@@ -14,16 +14,15 @@ using MongoDB.Driver;
 using System.Text;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
 using SagaAserhi.Application.Interfaces.Auth;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCa;
-using SagaAserhi.Application.Interfaces.Proposal.UseCaseProposal;
 using SagaAserhi.Application.UseCases.ProposalsUseCase;
-using SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
 using SagaAserhi.Application.Interfaces.Services;
+using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +62,7 @@ builder.Services.AddScoped<IAddProposalToPotentialClientUseCase, AddProposalToPo
 builder.Services.AddScoped<IGetAllProposalsUseCase, GetAllProposalsUseCase>();
 builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
 builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUseCase>();
-builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();   
+builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -74,6 +73,8 @@ builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
 builder.Services.AddScoped<IPasswordHasher,SagaAserhi.Infrastructure.Services.PasswordHasher>();
+builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();
+builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();   
 
 
 // **4. Configuración de JWT Authentication**

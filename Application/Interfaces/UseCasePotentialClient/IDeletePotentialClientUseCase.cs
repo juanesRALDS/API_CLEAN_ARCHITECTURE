@@ -1,7 +1,6 @@
-namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient
+namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+
+public interface IDeletePotentialClientUseCase
 {
-    public interface IDeletePotentialClientUseCase
-    {
-        Task<string> Execute(string id);
-    }
+    Task<string> Execute(string id);
 }

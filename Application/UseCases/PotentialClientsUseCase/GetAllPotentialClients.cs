@@ -1,8 +1,8 @@
 using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.DTO.ProposalDtos;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
-using SagaAserhi.Infrastructure.Repositories;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
@@ -25,7 +25,7 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
 
         try
         {
-            List<Domain.Entities.PotentialClient>? clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
+            List<PotentialClient>? clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
 
             return clients.Select(c => new PotentialClientDto
             {

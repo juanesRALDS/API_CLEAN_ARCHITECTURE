@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Context;
 using ZstdSharp.Unsafe;
@@ -31,8 +31,8 @@ namespace SagaAserhi.Infrastructure.Repositories
                             {
                                 new BsonDocument("$match", new BsonDocument
                                 {
-                                    { "$expr", new BsonDocument("$eq", new BsonArray 
-                                        { 
+                                    { "$expr", new BsonDocument("$eq", new BsonArray
+                                        {
                                             "$_id",
                                             new BsonDocument("$toObjectId", "$$clientId")
                                         })
@@ -88,6 +88,12 @@ namespace SagaAserhi.Infrastructure.Repositories
 
             var result = await _proposalCollection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
+        }
+
+        public async Task<IEnumerable<Proposal>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _proposalCollection.Find(_ => true)
+                                  .ToListAsync(cancellationToken);
         }
     }
 }

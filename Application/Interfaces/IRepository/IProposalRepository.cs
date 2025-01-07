@@ -1,10 +1,11 @@
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.Interfaces;
+namespace SagaAserhi.Application.Interfaces.IRepository;
 
 public interface IProposalRepository
 {
-    Task<List<Domain.Entities.Proposal>> GetAllProposals(int pageNumber, int pageSize);
-    Task<bool> UpdateProposal(string id, Domain.Entities.Proposal proposal);
-    Task <Domain.Entities.Proposal> GetProposalById(string id);
+    Task<List<Proposal>> GetAllProposals(int pageNumber, int pageSize);
+    Task<bool> UpdateProposal(string id, Proposal proposal);
+    Task<Proposal> GetProposalById(string id);
+    Task<IEnumerable<Proposal>> GetAllAsync(CancellationToken cancellationToken);
 }

@@ -3,8 +3,8 @@ using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Config;
 using SagaAserhi.Infrastructure.Utils;
 using Microsoft.Extensions.Options;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Application.UseCases.Auth;
 

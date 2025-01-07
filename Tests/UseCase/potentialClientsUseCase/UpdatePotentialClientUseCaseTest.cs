@@ -1,9 +1,9 @@
 using Moq;
 using Xunit;
 using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
 {

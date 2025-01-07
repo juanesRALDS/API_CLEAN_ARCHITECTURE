@@ -1,4 +1,4 @@
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCaseUsers;
 
 namespace SagaAserhi.Application.UseCases.Users;

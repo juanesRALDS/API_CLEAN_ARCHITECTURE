@@ -6,10 +6,10 @@ using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
 using FluentAssertions;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Auth;
 using SagaAserhi.Application.Interfaces.Utils;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.UseCase.Auth;
 public class UpdatePasswordUseCaseTests

@@ -3,9 +3,9 @@ using SagaAserhi.Application.DTO.Auth;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Config;
 using Microsoft.Extensions.Options;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Utils;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Application.UseCases.Auth;
 public class RegisterUseCase : IRegisterUseCase

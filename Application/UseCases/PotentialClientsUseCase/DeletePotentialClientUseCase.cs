@@ -1,5 +1,6 @@
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
 {
@@ -14,8 +15,12 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase
 
         public async Task<string> Execute(string Id)
         {
-            Domain.Entities.PotentialClient? client = await _repository.GetByIdPotencialClient(Id)
-                ?? throw new KeyNotFoundException("Cliente potencial no encontrado");
+            PotentialClient? client = await _repository.GetByIdPotencialClient(Id);
+
+            if (client == null)
+            {
+                throw new KeyNotFoundException($"No se encontró el cliente potencial con id: {Id}");
+            }
 
             await _repository.DeletePoTencialClient(Id);
             return "Cliente potencial eliminado exitosamente";

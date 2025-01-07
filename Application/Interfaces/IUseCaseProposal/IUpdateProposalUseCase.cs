@@ -1,6 +1,6 @@
 using SagaAserhi.Application.DTO.ProposalDtos;
 
-namespace SagaAserhi.Application.Interfaces.Iproposal.IUseCaseProposal;
+namespace SagaAserhi.Application.Interfaces.IUseCaseProposal;
 
 public interface IUpdateProposalUseCase
 {

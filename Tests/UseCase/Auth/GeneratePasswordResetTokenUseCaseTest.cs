@@ -9,8 +9,8 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.Application.UseCases.Auth;
 

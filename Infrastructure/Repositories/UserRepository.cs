@@ -1,7 +1,7 @@
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Context;
 using MongoDB.Driver;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Infrastructure.Repositories;
 

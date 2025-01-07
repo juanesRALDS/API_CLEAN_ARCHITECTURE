@@ -1,8 +1,8 @@
 using Moq;
 using Xunit;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Domain.Entities;
+using SagaAserhi.Application.Interfaces.IRepository;
 
 namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
 {
@@ -46,7 +46,12 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
                 .ReturnsAsync((PotentialClient)null!);
 
             // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => _useCase.Execute(invalidId));
+            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
+                () => _useCase.Execute(invalidId)
+            );
+
+            Assert.Contains(invalidId, exception.Message);
+            _mockRepository.Verify(repo => repo.GetByIdPotencialClient(invalidId), Times.Once);
             _mockRepository.Verify(repo => repo.DeletePoTencialClient(invalidId), Times.Never);
         }
     }
