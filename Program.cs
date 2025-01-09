@@ -18,7 +18,6 @@ using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
 using SagaAserhi.Application.Interfaces.Utils;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
-using SagaAserhi.Application.UseCases.PotentialClientsUseCa;
 using SagaAserhi.Application.UseCases.ProposalsUseCase;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.IRepository;
@@ -74,7 +73,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
 builder.Services.AddScoped<IPasswordHasher,SagaAserhi.Infrastructure.Services.PasswordHasher>();
 builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();
-builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();   
+builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();
+builder.Services.AddScoped<ISiteRepository, SiteRepository>();   
 
 
 // **4. Configuración de JWT Authentication**

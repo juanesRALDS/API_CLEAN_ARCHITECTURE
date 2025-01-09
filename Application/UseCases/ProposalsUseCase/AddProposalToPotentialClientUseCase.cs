@@ -4,7 +4,7 @@ using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.UseCases.PotentialClientsUseCa;
+namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
 
 public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClientUseCase
@@ -27,7 +27,7 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
             throw new ArgumentNullException(nameof(proposalDto));
 
         // Verificar si existe el cliente
-        PotentialClient? client = await _potentialClientRepository.GetByIdPotencialClient(clientId) 
+        _ = await _potentialClientRepository.GetByIdPotencialClient(clientId)
             ?? throw new InvalidOperationException($"No se encontró el cliente con ID: {clientId}");
 
         // Crear nueva propuesta
