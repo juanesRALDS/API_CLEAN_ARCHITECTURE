@@ -22,7 +22,7 @@ public class CreatePotentialClientUseCaseTest
     public async Task Execute_WithValidDto_ShouldReturnSuccessMessage()
     {
         // Arrange
-        var dto = new CreatePotentialClientDto
+        CreatePotentialClientDto? dto = new()
         {
             CompanyBusinessName = "Test Company",
             ContactPhone = "1234567890",
@@ -34,7 +34,7 @@ public class CreatePotentialClientUseCaseTest
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _useCase.Execute(dto);
+        string? result = await _useCase.Execute(dto);
 
         // Assert
         Assert.Equal("Potential client created successfully", result);
@@ -55,7 +55,7 @@ public class CreatePotentialClientUseCaseTest
     public async Task Execute_WithEmptyCompanyName_ShouldThrowArgumentException()
     {
         // Arrange
-        var dto = new CreatePotentialClientDto
+        CreatePotentialClientDto? dto = new()
         {
             CompanyBusinessName = "",
             ContactPhone = "1234567890",
@@ -63,7 +63,7 @@ public class CreatePotentialClientUseCaseTest
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dto));
+        ArgumentException? exception = await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dto));
         Assert.Equal("Company name cannot be empty (Parameter 'CompanyBusinessName')", exception.Message);
     }
 
@@ -71,7 +71,7 @@ public class CreatePotentialClientUseCaseTest
     public async Task Execute_WhenRepositoryThrows_ShouldPropagateException()
     {
         // Arrange
-        var dto = new CreatePotentialClientDto
+        CreatePotentialClientDto? dto = new()
         {
             CompanyBusinessName = "Test Company",
             ContactPhone = "1234567890",

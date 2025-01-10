@@ -23,11 +23,12 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("companyBusinessName")]
         public string CompanyBusinessName { get; set; } = string.Empty;
 
-        // Nueva propiedad para tracking de sitio
+        [BsonElement("siteId")]
+        public string? SiteId { get; set; }
+
         [BsonElement("hasSite")]
         public bool HasSite { get; set; } = false;
 
-        // Fecha de última modificación
         [BsonElement("lastModified")]
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
     }

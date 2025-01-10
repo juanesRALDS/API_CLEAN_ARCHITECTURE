@@ -22,6 +22,8 @@ using SagaAserhi.Application.UseCases.ProposalsUseCase;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
+using SagaAserhi.Application.Interfaces.ISiteUseCase;
+using SagaAserhi.Application.UseCases.SiteUseCase;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +33,7 @@ builder.Services.AddScoped<MongoDbContext>();
 builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 {
     MongoDBSettings? settings = sp.GetRequiredService<IOptions<MongoDBSettings>>().Value;
-    MongoClient? client = new MongoClient(settings.ConnectionString);
+    MongoClient? client = new(settings.ConnectionString);
     IMongoDatabase? database = client.GetDatabase(settings.DatabaseName);
     return database.GetCollection<User>(settings.CollectionName);
 });
@@ -62,6 +64,8 @@ builder.Services.AddScoped<IGetAllProposalsUseCase, GetAllProposalsUseCase>();
 builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
 builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUseCase>();
 builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
+builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
+builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();

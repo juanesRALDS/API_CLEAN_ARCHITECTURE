@@ -9,14 +9,13 @@ namespace SagaAserhi.Application.DTO.SiteDto;
 public class CreateSiteDto
 {
     [Required]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     [Required]
-    public string Address { get; set; }
+    public string Address { get; set; } = string.Empty;
     [Required]
-    public string City { get; set; }
+    public string City { get; set; } = string.Empty;
     [Phone]
-    public string Phone { get; set; }
-    public string ProposalId { get; set; }
+    public string Phone { get; set; } = string.Empty;
 
     public void Validate()
     {
@@ -27,4 +26,10 @@ public class CreateSiteDto
         if (string.IsNullOrWhiteSpace(City))
             throw new ArgumentException("La ciudad es requerida");
     }
+}
+
+public class SiteRequestDto
+{
+    public string ProposalId { get; set; } = string.Empty;
+    public CreateSiteDto SiteInfo { get; set; } = null!;
 }

@@ -21,7 +21,7 @@ namespace SagaAserhi.Infrastructure.Repositories
         {
             try
             {
-                var pipeline = new[]
+                BsonDocument[]? pipeline = new[]
                 {
                     new BsonDocument("$lookup", new BsonDocument
                     {
@@ -77,16 +77,14 @@ namespace SagaAserhi.Infrastructure.Repositories
             return _proposalCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
 
-
-
         public async Task<bool> UpdateProposal(string id, Proposal proposal)
         {
-            var filter = Builders<Proposal>.Filter.Eq(p => p.Id, id);
-            var update = Builders<Proposal>.Update
+            FilterDefinition<Proposal>? filter = Builders<Proposal>.Filter.Eq(p => p.Id, id);
+            UpdateDefinition<Proposal>? update = Builders<Proposal>.Update
                 .Set(p => p.Title, proposal.Title)
                 .Set(p => p.Description, proposal.Description);
 
-            var result = await _proposalCollection.UpdateOneAsync(filter, update);
+            UpdateResult? result = await _proposalCollection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
 
@@ -94,6 +92,24 @@ namespace SagaAserhi.Infrastructure.Repositories
         {
             return await _proposalCollection.Find(_ => true)
                                   .ToListAsync(cancellationToken);
+        }
+
+        public async Task<bool> UpdateProposalSite(string proposalId, string siteId)
+        {
+            FilterDefinition<Proposal>? filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
+            UpdateDefinition<Proposal>? update = Builders<Proposal>.Update
+                .Set(p => p.SiteId, siteId)
+                .Set(p => p.HasSite, true)
+                .Set(p => p.LastModified, DateTime.UtcNow);
+
+            UpdateResult? result = await _proposalCollection.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> HasExistingSite(string proposalId)
+        {
+            Proposal? proposal = await GetProposalById(proposalId);
+            return proposal?.HasSite ?? false;
         }
     }
 }

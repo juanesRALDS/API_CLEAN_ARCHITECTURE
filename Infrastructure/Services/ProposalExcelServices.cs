@@ -3,13 +3,14 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
-using System.Collections.Generic;
 
 namespace SagaAserhi.Infrastructure.Services
 {
-    public class ProposalExcelServices : IProposalExcelService
+    public sealed class ProposalExcelServices : IProposalExcelService
     {
         private readonly IProposalRepository _repository;
+        private const string SHEET_NAME = "Proposals";
+        private static readonly string[] Headers = { "Title", "Description", "Amount", "Status", "Creation Date", "Company Name" };
 
         public ProposalExcelServices(IProposalRepository repository)
         {
@@ -18,55 +19,71 @@ namespace SagaAserhi.Infrastructure.Services
 
         public async Task<byte[]> ExportToExcel(CancellationToken cancellationToken)
         {
-            IEnumerable<Proposal> proposals = await _repository.GetAllAsync(cancellationToken);
+            IEnumerable<Proposal> proposals = await _repository.GetAllAsync(cancellationToken) 
+                ?? throw new InvalidOperationException("No se pudieron obtener las propuestas");
 
             MemoryStream memoryStream = new();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
-            {
-                WorkbookPart workbookPart = spreadsheetDocument.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
+            SpreadsheetDocument document = CreateSpreadsheetDocument(memoryStream);
+            SheetData worksheet = CreateWorksheet(document);
+            
+            AddHeaders(worksheet);
+            AddProposalsData(worksheet, proposals);
 
-                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                SheetData sheetData = new();
-                worksheetPart.Worksheet = new Worksheet(sheetData);
-
-                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-                Sheet sheet = new()
-                {
-                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
-                    SheetId = 1,
-                    Name = "Proposals"
-                };
-                sheets.Append(sheet);
-
-                // Headers
-                Row headerRow = new();
-                headerRow.Append(
-                    CreateCell("Title"),
-                    CreateCell("Description"),
-                    CreateCell("Amount"),
-                    CreateCell("Status"),
-                    CreateCell("Creation Date"),
-                    CreateCell("Company Name")
-                );
-                sheetData.Append(headerRow);
-
-                // Data
-                foreach (Proposal proposal in proposals)
-                {
-                    Row dataRow = new();
-                    dataRow.Append(
-                        CreateCell(proposal.Title),
-                        CreateCell(proposal.Description),
-                        CreateCell(proposal.Amount.ToString("N2")),
-                        CreateCell(proposal.Status),
-                        CreateCell(proposal.CreationDate.ToString("yyyy-MM-dd")),
-                        CreateCell(proposal.CompanyBusinessName)
-                    );
-                    sheetData.Append(dataRow);
-                }
-            }
+            document.Close();
             return memoryStream.ToArray();
+        }
+
+        private static SpreadsheetDocument CreateSpreadsheetDocument(MemoryStream stream)
+        {
+            SpreadsheetDocument document = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook);
+            WorkbookPart workbookPart = document.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+            return document;
+        }
+
+        private static SheetData CreateWorksheet(SpreadsheetDocument document)
+        {
+            WorksheetPart worksheetPart = document.WorkbookPart!.AddNewPart<WorksheetPart>();
+            SheetData sheetData = new();
+            worksheetPart.Worksheet = new Worksheet(sheetData);
+
+            Sheets sheets = document.WorkbookPart.Workbook.AppendChild(new Sheets());
+            Sheet sheet = new()
+            {
+                Id = document.WorkbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = SHEET_NAME
+            };
+            sheets.Append(sheet);
+
+            return sheetData;
+        }
+
+        private static void AddHeaders(SheetData sheetData)
+        {
+            Row headerRow = new();
+            IEnumerable<Cell> headerCells = Headers.Select(header => CreateCell(header));
+            headerRow.Append(headerCells);
+            sheetData.Append(headerRow);
+        }
+
+        private static void AddProposalsData(SheetData sheetData, IEnumerable<Proposal> proposals)
+        {
+            foreach (Proposal proposal in proposals)
+            {
+                Row dataRow = new();
+                IEnumerable<Cell> cells = new[]
+                {
+                    CreateCell(proposal.Title ?? string.Empty),
+                    CreateCell(proposal.Description ?? string.Empty),
+                    CreateCell(proposal.Amount.ToString("N2")),
+                    CreateCell(proposal.Status ?? string.Empty),
+                    CreateCell(proposal.CreationDate.ToString("yyyy-MM-dd")),
+                    CreateCell(proposal.CompanyBusinessName ?? string.Empty)
+                };
+                dataRow.Append(cells);
+                sheetData.Append(dataRow);
+            }
         }
 
         private static Cell CreateCell(string text)

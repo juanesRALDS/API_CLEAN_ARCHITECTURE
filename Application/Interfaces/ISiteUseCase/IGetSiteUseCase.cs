@@ -6,8 +6,8 @@ using SagaAserhi.Application.DTO.SiteDto;
 
 namespace SagaAserhi.Application.Interfaces.ISiteUseCase
 {
-    public interface ICreateSiteUseCase
+    public interface IGetSiteUseCase
     {
-        Task<SiteDtos> Execute(SiteRequestDto request);
+        Task<List<SiteDtos>> Execute(string proposalId);
     }
 }

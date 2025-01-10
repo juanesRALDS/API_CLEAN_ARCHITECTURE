@@ -17,22 +17,22 @@ public class PotentialClientExcelService : IPotentialClientExcelService
     }
     public async Task<byte[]> ExportToExcel(CancellationToken cancellationToken)
     {
-        var clients = await _repository.GetAllAsync(cancellationToken);
+        IEnumerable<PotentialClient>? clients = await _repository.GetAllAsync(cancellationToken);
 
-        using var memoryStream = new MemoryStream();
-        using (var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
+        using MemoryStream? memoryStream = new MemoryStream();
+        using ( SpreadsheetDocument? spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
         {
-            var workbookPart = spreadsheetDocument.AddWorkbookPart();
+             WorkbookPart? workbookPart = spreadsheetDocument.AddWorkbookPart();
             workbookPart.Workbook = new Workbook();
 
-            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-            var sheetData = new SheetData();
+            WorksheetPart? worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+            SheetData? sheetData = new SheetData();
             worksheetPart.Worksheet = new Worksheet(sheetData);
 
-            var workbook = spreadsheetDocument.WorkbookPart?.Workbook ?? new Workbook();
-            var sheets = workbook.AppendChild(new Sheets());
+            Workbook? workbook = spreadsheetDocument.WorkbookPart?.Workbook ?? new Workbook();
+            Sheets? sheets = workbook.AppendChild(new Sheets());
 
-            var sheet = new Sheet()
+            Sheet? sheet = new()
             {
                 Id = spreadsheetDocument.WorkbookPart!.GetIdOfPart(worksheetPart),
                 SheetId = 1,
@@ -41,7 +41,7 @@ public class PotentialClientExcelService : IPotentialClientExcelService
             sheets.Append(sheet);
 
             // Headers
-            var headerRow = new Row();
+            Row? headerRow = new();
             headerRow.Append(
                 CreateCell("Company Name"),
                 CreateCell("Phone"),
@@ -52,9 +52,9 @@ public class PotentialClientExcelService : IPotentialClientExcelService
             sheetData.AppendChild(headerRow);
 
             // Data rows
-            foreach (var client in clients)
+            foreach (PotentialClient? client in clients)
             {
-                var dataRow = new Row();
+                Row? dataRow = new();
                 dataRow.Append(
                     CreateCell(client.CompanyBusinessName),
                     CreateCell(client.ContactPhone),

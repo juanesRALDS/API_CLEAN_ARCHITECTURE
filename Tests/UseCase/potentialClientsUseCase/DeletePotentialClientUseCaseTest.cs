@@ -46,7 +46,7 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
                 .ReturnsAsync((PotentialClient)null!);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
+            KeyNotFoundException? exception = await Assert.ThrowsAsync<KeyNotFoundException>(
                 () => _useCase.Execute(invalidId)
             );
 

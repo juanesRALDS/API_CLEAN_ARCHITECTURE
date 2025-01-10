@@ -43,8 +43,8 @@ public class UserRepository : IUserRepository
     public async Task UpdateUser(string id, User user)
     {
         FilterDefinition<User>? filter = Builders<User>.Filter.Eq(u => u.Id, id);
-        var updateBuilder = Builders<User>.Update;
-        var updates = new List<UpdateDefinition<User>>();
+        UpdateDefinitionBuilder<User>? updateBuilder = Builders<User>.Update;
+        List<UpdateDefinition<User>>? updates = new List<UpdateDefinition<User>>();
 
         if (!string.IsNullOrEmpty(user.Name))
             updates.Add(updateBuilder.Set(u => u.Name, user.Name));

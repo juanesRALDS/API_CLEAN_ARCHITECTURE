@@ -10,4 +10,5 @@ public class ProposalDto
         public DateTime CreationDate { get; set; }
         public string PotentialClientId { get; set; } = string.Empty;
         public string CompanyBusinessName { get; set; }  = string.Empty;
+        
 }

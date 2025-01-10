@@ -23,19 +23,19 @@ public class PotentialClientRepository : IPotentialClientRepository
         try
         {
             FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Empty;
-            var clients = await _Clientcollection
-                .Find(filter)
-                .Skip((pageNumber - 1) * pageSize)
-                .Limit(pageSize)
-                .ToListAsync();
+            List<PotentialClient>? clients = await _Clientcollection
+               .Find(filter)
+               .Skip((pageNumber - 1) * pageSize)
+               .Limit(pageSize)
+               .ToListAsync();
 
             if (!clients.Any())
                 return new List<PotentialClient>();
 
-            var proposalIds = clients.SelectMany(c => c.Proposals).ToList();
-            var proposalsFilter = Builders<Proposal>.Filter.In(p => p.Id, proposalIds);
+            List<string>? proposalIds = clients.SelectMany(c => c.Proposals).ToList();
+            FilterDefinition<Proposal>? proposalsFilter = Builders<Proposal>.Filter.In(p => p.Id, proposalIds);
 
-            var proposals = await _proposalCollection
+            List<Proposal>? proposals = await _proposalCollection
                 .Find(proposalsFilter)
                 .ToListAsync();
 
@@ -99,10 +99,10 @@ public class PotentialClientRepository : IPotentialClientRepository
             await _proposalCollection.InsertOneAsync(proposal);
 
             // Actualizamos el cliente con el ID de la propuesta
-            var filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
-            var update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal.Id);
+            FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
+            UpdateDefinition<PotentialClient>? update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal.Id);
 
-            var result = await _Clientcollection.UpdateOneAsync(filter, update);
+            UpdateResult? result = await _Clientcollection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
         catch (Exception ex)
@@ -115,7 +115,7 @@ public class PotentialClientRepository : IPotentialClientRepository
     {
         try
         {
-            var pipeline = new[]
+            BsonDocument[]? pipeline = new[]
             {
                 new BsonDocument("$match", new BsonDocument()),
                 new BsonDocument("$lookup", new BsonDocument
