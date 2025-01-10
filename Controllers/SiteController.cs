@@ -34,7 +34,7 @@ public class SitesController : ControllerBase
         try
         {
             string? proposalId = (string)RouteData.Values["proposalId"]!;
-            SiteRequestDto? siteRequest = new SiteRequestDto
+            SiteRequestDto? siteRequest = new()
             {
                 ProposalId = proposalId,
                 SiteInfo = dto

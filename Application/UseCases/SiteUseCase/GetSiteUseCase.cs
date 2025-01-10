@@ -20,7 +20,7 @@ public class GetSiteUseCase : IGetSiteUseCase
 
     public async Task<List<SiteDtos>> Execute(string proposalId)
     {
-        if (string.IsNullOrEmpty(proposalId))
+        if (string.IsNullOrWhiteSpace(proposalId))
             throw new ArgumentException("El ID de propuesta es requerido");
         
         IEnumerable<Site>? sites = await _siteRepository.GetByProposalIdAsync(proposalId);

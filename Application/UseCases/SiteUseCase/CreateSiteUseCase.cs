@@ -17,10 +17,11 @@ public class CreateSiteUseCase : ICreateSiteUseCase
     }
     public async Task<SiteDtos> Execute(SiteRequestDto request)
     {
+        if (request?.SiteInfo == null)
+            throw new ArgumentNullException(nameof(request));
+
         try
         {
-            if (request?.SiteInfo == null)
-                throw new ArgumentNullException(nameof(request));
 
             Proposal? proposal = await _proposalRepository.GetProposalById(request.ProposalId)
                ?? throw new Exception($"Propuesta no encontrada con ID: {request.ProposalId}");
@@ -28,8 +29,8 @@ public class CreateSiteUseCase : ICreateSiteUseCase
             if (await _proposalRepository.HasExistingSite(request.ProposalId))
                 throw new InvalidOperationException("Esta propuesta ya tiene un sitio asignado");
 
-             Site? site = new()
-             {
+            Site? site = new()
+            {
                 Name = request.SiteInfo.Name.Trim(),
                 Address = request.SiteInfo.Address.Trim(),
                 City = request.SiteInfo.City.Trim(),
@@ -54,7 +55,8 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 ProposalId = site.ProposalId
             };
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not ArgumentNullException
+                                  && ex is not InvalidOperationException)
         {
             throw new ApplicationException($"Error al crear la sede: {ex.Message}", ex);
         }
