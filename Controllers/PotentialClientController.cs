@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SagaAserhi.Application.DTO;
+using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
@@ -14,13 +15,15 @@ public class PotentialClientController : ControllerBase
     private readonly IUpdatePotentialClientUseCase _updatePotentialClientUseCase;
     private readonly IDeletePotentialClientUseCase _deletePotentialClientUseCase;
     private readonly IExcelPotentialClientUseCase _exportExcelUseCase;
+    private readonly IExportPotentialClientPdfUseCase _exportPdfUseCase;
 
     public PotentialClientController(
         IGetAllPotentialClientsWithProposalsUseCase GetAllPotentialClientsWithProposalsUseCase,
         ICreatePotentialClientUseCase createPotentialClientUseCase,
         IUpdatePotentialClientUseCase updatePotentialClientUseCase,
         IDeletePotentialClientUseCase deletePotentialClientUseCase,
-        IExcelPotentialClientUseCase exportExcelUseCase
+        IExcelPotentialClientUseCase exportExcelUseCase,
+        IExportPotentialClientPdfUseCase exportPdfUseCase
 
     )
     {
@@ -29,6 +32,7 @@ public class PotentialClientController : ControllerBase
         _updatePotentialClientUseCase = updatePotentialClientUseCase;
         _deletePotentialClientUseCase = deletePotentialClientUseCase;
         _exportExcelUseCase = exportExcelUseCase;
+        _exportPdfUseCase = exportPdfUseCase;
     }
 
     [HttpGet]
@@ -103,11 +107,11 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            byte[]? fileContent = await _exportExcelUseCase.ExecuteAsync(cancellationToken);
+            byte[]? fileContent = await _exportPdfUseCase.ExecuteAsync(cancellationToken);
             return File(
                 fileContent,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"PotentialClients_{DateTime.Now:yyyyMMdd}.xlsx"
+                "application/pdf",
+                $"PotentialClients_{DateTime.Now:yyyyMMdd}.pdf"
             );
         }
         catch (Exception)
@@ -115,6 +119,8 @@ public class PotentialClientController : ControllerBase
             return StatusCode(500, new { message = "Error al exportar el archivo Excel" });
         }
     }
+
+    
 
 
 }

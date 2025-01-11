@@ -24,6 +24,7 @@ using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 using SagaAserhi.Application.Interfaces.ISiteUseCase;
 using SagaAserhi.Application.UseCases.SiteUseCase;
+using SagaAserhi.Application.Interfaces;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,8 @@ builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUse
 builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
 builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
 builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
+builder.Services.AddScoped<IExportPotentialClientPdfUseCase,ExportPotentialClientPdfUseCase >();
+
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -79,6 +82,8 @@ builder.Services.AddScoped<IPasswordHasher,SagaAserhi.Infrastructure.Services.Pa
 builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();
 builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();   
+builder.Services.AddScoped<IPotentialClientPdfService, PotentialClientPdfService>();   
+
 
 
 // **4. Configuración de JWT Authentication**
