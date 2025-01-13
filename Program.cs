@@ -25,6 +25,8 @@ using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 using SagaAserhi.Application.Interfaces.ISiteUseCase;
 using SagaAserhi.Application.UseCases.SiteUseCase;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.Interfaces.AttachmentUseCase;
+using SagaAserhi.Application.UseCases.AttachmentUseCase;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +70,8 @@ builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
 builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
 builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
 builder.Services.AddScoped<IExportPotentialClientPdfUseCase,ExportPotentialClientPdfUseCase >();
+builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
+
 
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -75,6 +79,8 @@ builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepo
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IPotentialClientRepository, PotentialClientRepository>();
 builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
+builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
