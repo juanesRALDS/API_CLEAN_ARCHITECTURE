@@ -1,35 +1,68 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
 
 namespace SagaAserhi.Domain.Entities
 {
-    [BsonIgnoreExtraElements]
+
+
+
+
+    public class ProposalStatus
+    {
+        [BsonElement("proposal")]
+        public string Proposal { get; set; } = string.Empty;
+
+        [BsonElement("sending")]
+        public string Sending { get; set; } = string.Empty;
+
+        [BsonElement("review")]
+        public string Review { get; set; } = string.Empty;
+    }
+
+    public class ProposalHistory
+    {
+        [BsonElement("action")]
+        public string Action { get; set; } = string.Empty;
+
+        [BsonElement("date")]
+        public DateTime Date { get; set; }
+
+        [BsonElement("potentialClientId")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string PotentialClientId { get; set; } = string.Empty;
+    }
+
     public class Proposal
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public decimal Amount { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public DateTime CreationDate { get; set; }
-        public string PotentialClientId { get; set; } = string.Empty;
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-        [BsonElement("companyBusinessName")]
-        public string CompanyBusinessName { get; set; } = string.Empty;
+        [BsonElement("clientId")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ClientId { get; set; } = string.Empty;
 
-        [BsonElement("siteId")]
-        public string? SiteId { get; set; }
+        [BsonElement("number")]
+        public string Number { get; set; } = string.Empty;
 
-        [BsonElement("hasSite")]
-        public bool HasSite { get; set; } = false;
+        [BsonElement("status")]
+        public ProposalStatus Status { get; set; } = new ProposalStatus();
 
-        [BsonElement("lastModified")]
-        public DateTime LastModified { get; set; } = DateTime.UtcNow;
+        [BsonElement("sites")]
+        public List<Site> Sites { get; set; } = new List<Site>();
+
+        [BsonElement("history")]
+        public List<ProposalHistory> History { get; set; } = new List<ProposalHistory>();
+
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; }
+
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; }
+
+        [BsonIgnore]
+        public virtual PotentialClient PotentialClient { get; set; } = new PotentialClient();
     }
 }

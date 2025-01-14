@@ -13,6 +13,7 @@ public class GetSiteUseCase : IGetSiteUseCase
 {
     private readonly ISiteRepository _siteRepository;
 
+
     public GetSiteUseCase(ISiteRepository siteRepository)
     {
         _siteRepository = siteRepository;
