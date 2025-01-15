@@ -8,62 +8,90 @@ using iText.Kernel.Font;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Infrastructure.Services
+namespace SagaAserhi.Infrastructure.Services;
+public class PotentialClientPdfService : IPotentialClientPdfService
 {
-    public class PotentialClientPdfService : IPotentialClientPdfService
+    public async Task<byte[]> GeneratePdf(IEnumerable<PotentialClient> clients)
     {
-        private readonly IPotentialClientRepository _repository;
+        using var memoryStream = new MemoryStream();
+        var writer = new PdfWriter(memoryStream);
+        var pdf = new PdfDocument(writer);
+        var document = new Document(pdf);
 
-        public PotentialClientPdfService(IPotentialClientRepository repository)
+        // Título del documento
+        document.Add(new Paragraph("Reporte de Clientes Potenciales")
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetFontSize(20)
+            .SetBold());
+
+        // Fecha del reporte
+        document.Add(new Paragraph($"Fecha de generación: {DateTime.Now:dd/MM/yyyy HH:mm}")
+            .SetTextAlignment(TextAlignment.RIGHT)
+            .SetFontSize(10));
+
+        // Tabla
+        var table = new Table(6).UseAllAvailableWidth();
+        
+        // Encabezados
+        string[] headers = { 
+            "Identificación", 
+            "Nombre Comercial", 
+            "Actividad Económica",
+            "Contacto",
+            "Ubicación",
+            "Estado" 
+        };
+        
+        foreach (var header in headers)
         {
-            _repository = repository;
-        }
-
-        public async Task<byte[]> ExportToPdf(CancellationToken cancellationToken)
-        {
-            var clients = await _repository.GetAllAsync(cancellationToken);
-
-            using var memoryStream = new MemoryStream();
-            var writer = new PdfWriter(memoryStream);
-            var pdf = new PdfDocument(writer);
-            var document = new Document(pdf);
-
-            // Título
-            document.Add(new Paragraph("Listado de Clientes Potenciales")
+            table.AddCell(new Cell()
+                .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(18)
                 .SetBold()
-                .SetMarginBottom(20));
-
-            // Tabla
-            var table = new Table(5).UseAllAvailableWidth();
-            
-            // Encabezados
-            string[] headers = { "Empresa", "Teléfono", "Email", "Fecha", "Estado" };
-            foreach (var header in headers)
-            {
-                table.AddCell(new Cell()
-                    .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
-                    .SetTextAlignment(TextAlignment.CENTER)
-                    .SetBold()
-                    .Add(new Paragraph(header)));
-            }
-
-            // Datos
-            foreach (var client in clients)
-            {
-                table.AddCell(new Cell().Add(new Paragraph(client.CompanyBusinessName)));
-                table.AddCell(new Cell().Add(new Paragraph(client.ContactPhone)));
-                table.AddCell(new Cell().Add(new Paragraph(client.ContactEmail)));
-                table.AddCell(new Cell().Add(new Paragraph(client.CreationDate.ToString("dd/MM/yyyy"))));
-                table.AddCell(new Cell().Add(new Paragraph(client.Status)));
-            }
-
-            document.Add(table);
-            document.Close();
-
-            return memoryStream.ToArray();
+                .Add(new Paragraph(header)));
         }
+
+        // Datos
+        foreach (var client in clients)
+        {
+            // Columna Identificación
+            table.AddCell(new Cell().Add(new Paragraph(
+                $"{client.Identification.Type}: {client.Identification.Number}")));
+
+            // Columna Nombre Comercial
+            table.AddCell(new Cell().Add(new Paragraph(
+                client.BusinessInfo.TradeName)));
+
+            // Columna Actividad Económica
+            table.AddCell(new Cell().Add(new Paragraph(
+                client.BusinessInfo.EconomicActivity)));
+
+            // Columna Contacto
+            table.AddCell(new Cell().Add(new Paragraph(
+                $"Email: {client.BusinessInfo.Email}\n" +
+                $"Tel: {client.BusinessInfo.Phone}")));
+
+            // Columna Ubicación
+            table.AddCell(new Cell().Add(new Paragraph(
+                $"{client.Location.City}, {client.Location.Department}\n" +
+                $"{client.Location.Address}")));
+
+            // Columna Estado
+            table.AddCell(new Cell().Add(new Paragraph(
+                $"Estado: {client.Status.Current}\n" +
+                $"Actualizado: {client.UpdatedAt:dd/MM/yyyy}")));
+        }
+
+        document.Add(table);
+
+        // Pie de página
+        document.Add(new Paragraph($"Total de clientes: {clients.Count()}")
+            .SetTextAlignment(TextAlignment.RIGHT)
+            .SetFontSize(10));
+
+        document.Close();
+        return memoryStream.ToArray();
     }
 }

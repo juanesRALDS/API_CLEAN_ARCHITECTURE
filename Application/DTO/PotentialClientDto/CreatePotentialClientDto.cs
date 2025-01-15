@@ -1,10 +1,11 @@
-namespace SagaAserhi.Application.DTO
+using SagaAserhi.Domain.Entities;
+
+namespace SagaAserhi.Application.DTO.PotentialClientDto;
+
+public class CreatePotentialClientDto
 {
-    public class CreatePotentialClientDto
-    {
-        public string CompanyBusinessName { get; set; } = string.Empty;
-        public string ContactPhone { get; set; } = string.Empty;
-        public string ContactEmail { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
-    }
+    public Identification Identification { get; set; } = new();
+    public BusinessInfo BusinessInfo { get; set; } = new();
+    public Location Location { get; set; } = new();
+    public string Status { get; set; } = string.Empty;
 }

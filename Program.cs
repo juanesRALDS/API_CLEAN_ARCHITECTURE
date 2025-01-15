@@ -24,7 +24,6 @@ using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
 using SagaAserhi.Application.Interfaces.ISiteUseCase;
 using SagaAserhi.Application.UseCases.SiteUseCase;
-using SagaAserhi.Application.Interfaces;
 using SagaAserhi.Application.Interfaces.AttachmentUseCase;
 using SagaAserhi.Application.UseCases.AttachmentUseCase;
 

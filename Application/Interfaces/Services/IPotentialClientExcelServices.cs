@@ -1,9 +1,8 @@
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.Interfaces.Services
+namespace SagaAserhi.Application.Interfaces.Services;
+
+public interface IPotentialClientExcelServices
 {
-    public interface IPotentialClientExcelService
-    {
-        Task<byte[]> ExportToExcel(CancellationToken cancellationToken);
-    }
+    Task<byte[]> GenerateExcel(IEnumerable<PotentialClient> clients);
 }

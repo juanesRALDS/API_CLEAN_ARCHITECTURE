@@ -29,16 +29,6 @@ public class PotentialClientRepository : IPotentialClientRepository
                .Limit(pageSize)
                .ToListAsync();
 
-            if (!clients.Any())
-                return new List<PotentialClient>();
-
-            List<string>? proposalIds = clients.SelectMany(c => c.Proposals).ToList();
-            FilterDefinition<Proposal>? proposalsFilter = Builders<Proposal>.Filter.In(p => p.Id, proposalIds);
-
-            List<Proposal>? proposals = await _proposalCollection
-                .Find(proposalsFilter)
-                .ToListAsync();
-
             return clients;
         }
         catch (Exception ex)
@@ -60,30 +50,7 @@ public class PotentialClientRepository : IPotentialClientRepository
     public async Task UpdatePotentialClient(string id, PotentialClient client)
     {
         FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Eq(client => client.Id, id);
-        UpdateDefinitionBuilder<PotentialClient>? FilterBuilder = Builders<PotentialClient>.Update;
-        List<UpdateDefinition<PotentialClient>>? updates = new();
-
-
-        if (string.IsNullOrEmpty(client.CompanyBusinessName))
-        {
-            updates.Add(FilterBuilder.Set(u => u.CompanyBusinessName, client.CompanyBusinessName));
-        }
-        if (string.IsNullOrEmpty(client.ContactPhone))
-        {
-            updates.Add(FilterBuilder.Set(u => u.ContactPhone, client.ContactPhone));
-        }
-        if (string.IsNullOrEmpty(client.ContactEmail))
-        {
-            updates.Add(FilterBuilder.Set(u => u.ContactEmail, client.ContactEmail));
-        }
-        if (string.IsNullOrEmpty(client.Status))
-        {
-            updates.Add(FilterBuilder.Set(u => u.Status, client.Status));
-        }
-        if (updates.Any())
-        {
-            await _Clientcollection.UpdateOneAsync(filter, FilterBuilder.Combine(updates));
-        }
+        await _Clientcollection.ReplaceOneAsync(filter, client);
     }
 
     public async Task DeletePoTencialClient(String Id)
@@ -91,25 +58,6 @@ public class PotentialClientRepository : IPotentialClientRepository
         await _Clientcollection.DeleteOneAsync(client => client.Id == Id);
     }
 
-    public async Task<bool> AddProposalToPotentialClient(string clientId, Proposal proposal)
-    {
-        try
-        {
-            // Primero insertamos la propuesta
-            await _proposalCollection.InsertOneAsync(proposal);
-
-            // Actualizamos el cliente con el ID de la propuesta
-            FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Eq(x => x.Id, clientId);
-            UpdateDefinition<PotentialClient>? update = Builders<PotentialClient>.Update.Push(x => x.Proposals, proposal.Id);
-
-            UpdateResult? result = await _Clientcollection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error al agregar propuesta: {ex.Message}", ex);
-        }
-    }
 
     public async Task<List<Proposal>> GetAllProposals(int pageNumber, int pageSize)
     {

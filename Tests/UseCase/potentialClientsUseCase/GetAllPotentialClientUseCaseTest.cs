@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.DTO.PotentialClientDto;
 
 namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
 {

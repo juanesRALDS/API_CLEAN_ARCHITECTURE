@@ -9,7 +9,6 @@ public interface IPotentialClientRepository
     Task<PotentialClient?> GetByIdPotencialClient(string id);
     Task DeletePoTencialClient(string Id);
     Task UpdatePotentialClient(string Id, PotentialClient client);
-    Task<bool> AddProposalToPotentialClient(string clientId, Proposal proposal);
 
     Task<IEnumerable<PotentialClient>> GetAllAsync(CancellationToken cancellationToken);
 

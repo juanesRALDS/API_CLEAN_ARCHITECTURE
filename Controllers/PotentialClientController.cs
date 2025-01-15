@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.Interfaces;
+using SagaAserhi.Application.DTO.PotentialClientDto;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
@@ -107,7 +106,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            byte[]? fileContent = await _exportPdfUseCase.ExecuteAsync(cancellationToken);
+            byte[]? fileContent = await _exportPdfUseCase.Execute(cancellationToken);
             return File(
                 fileContent,
                 "application/pdf",

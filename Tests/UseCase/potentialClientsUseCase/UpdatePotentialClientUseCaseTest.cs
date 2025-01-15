@@ -4,6 +4,7 @@ using SagaAserhi.Application.DTO;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Application.DTO.PotentialClientDto;
 
 namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
 {

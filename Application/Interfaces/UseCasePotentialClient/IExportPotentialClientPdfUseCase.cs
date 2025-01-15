@@ -1,7 +1,7 @@
 // Application/Interfaces/UseCasePotentialClient/IExportPotentialClientPdfUseCase.cs
-namespace SagaAserhi.Application.Interfaces;
+namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 
 public interface IExportPotentialClientPdfUseCase
 {
-    Task<byte[]> ExecuteAsync(CancellationToken cancellationToken);
+    Task<byte[]> Execute(CancellationToken cancellationToken);
 }
