@@ -33,19 +33,27 @@ public class SitesController : ControllerBase
     {
         try
         {
-            string? proposalId = (string)RouteData.Values["proposalId"]!;
-            SiteRequestDto? siteRequest = new()
+            string proposalId = (string)RouteData.Values["proposalId"]!;
+            var siteRequest = new SiteRequestDto
             {
                 ProposalId = proposalId,
                 SiteInfo = dto
             };
 
-            SiteDtos? result = await _createSiteUseCase.Execute(siteRequest);
+            var result = await _createSiteUseCase.Execute(siteRequest);
             return Created($"/api/proposals/{proposalId}/sites/{result.Id}", result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
         }
     }
 
@@ -58,7 +66,7 @@ public class SitesController : ControllerBase
     {
         try
         {
-            List<SiteDtos>? sites = await _GetSiteUseCase.Execute(proposalId);
+            List<SiteDtos>? sites = await _getSiteUseCase.Execute(proposalId);
             return Ok(sites);
         }
         catch (Exception ex)

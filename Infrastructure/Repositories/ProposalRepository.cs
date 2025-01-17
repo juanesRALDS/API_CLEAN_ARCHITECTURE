@@ -99,9 +99,10 @@ namespace SagaAserhi.Infrastructure.Repositories
             {
                 var filter = Builders<Proposal>.Filter.Eq(p => p.Id, id);
                 var update = Builders<Proposal>.Update
-                    .Set(p => p.Status, proposal.Status)
-                    .Set(p => p.Sites, proposal.Sites)
-                    .Set(p => p.UpdatedAt, DateTime.UtcNow);
+                    .Set(p => p.Status.Proposal, proposal.Status.Proposal)
+                    .Set(p => p.Status.Sending, proposal.Status.Sending)
+                    .Set(p => p.Status.Review, proposal.Status.Review)
+                    .Set(p => p.UpdatedAt, proposal.UpdatedAt);
 
                 var result = await _proposalCollection.UpdateOneAsync(filter, update);
                 return result.ModifiedCount > 0;
@@ -118,21 +119,27 @@ namespace SagaAserhi.Infrastructure.Repositories
                                           .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> UpdateProposalSite(string proposalId, string siteId)
-        {
-            var filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
-            var update = Builders<Proposal>.Update
-                .Push(p => p.Sites, siteId)
-                .Set(p => p.UpdatedAt, DateTime.UtcNow);
-
-            var result = await _proposalCollection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
-        }
 
         public async Task<bool> HasExistingSite(string proposalId)
         {
             var proposal = await GetProposalById(proposalId);
             return proposal?.Sites.Any() ?? false;
+        }
+
+        public async Task<bool> UpdateProposalSite(string proposalId, string siteId)
+        {
+            try
+            {
+                var filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
+                var update = Builders<Proposal>.Update.Push(p => p.Sites, new Site { Id = siteId });
+
+                var result = await _proposalCollection.UpdateOneAsync(filter, update);
+                return result.ModifiedCount > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

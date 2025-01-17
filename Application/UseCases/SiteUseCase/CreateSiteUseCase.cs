@@ -15,32 +15,32 @@ public class CreateSiteUseCase : ICreateSiteUseCase
         _siteRepository = siteRepository;
         _proposalRepository = proposalRepository;
     }
+
     public async Task<SiteDtos> Execute(SiteRequestDto request)
     {
         if (request?.SiteInfo == null)
             throw new ArgumentNullException(nameof(request));
 
+        request.SiteInfo.Validate();
+
         try
         {
+            var proposal = await _proposalRepository.GetProposalById(request.ProposalId)
+                ?? throw new InvalidOperationException($"Propuesta no encontrada con ID: {request.ProposalId}");
 
-            Proposal? proposal = await _proposalRepository.GetProposalById(request.ProposalId)
-               ?? throw new Exception($"Propuesta no encontrada con ID: {request.ProposalId}");
-
-            if (await _proposalRepository.HasExistingSite(request.ProposalId))
-                throw new InvalidOperationException("Esta propuesta ya tiene un sitio asignado");
-
-            Site? site = new()
+            var site = new Site
             {
-                Name = request.SiteInfo.Name.Trim(),
-                Address = request.SiteInfo.Address.Trim(),
-                City = request.SiteInfo.City.Trim(),
-                Phone = request.SiteInfo.Phone?.Trim() ?? string.Empty,
+                Name = request.SiteInfo.Name,
+                Address = request.SiteInfo.Address,
+                City = request.SiteInfo.City,
+                Phone = request.SiteInfo.Phone,
                 ProposalId = request.ProposalId,
-                Status = true,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _siteRepository.CreateAsync(site);
+
+            // Actualizar la propuesta con el nuevo sitio
             await _proposalRepository.UpdateProposalSite(request.ProposalId, site.Id);
 
             return new SiteDtos
@@ -50,15 +50,12 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 Address = site.Address,
                 City = site.City,
                 Phone = site.Phone,
-                Status = site.Status,
-                CreatedAt = site.CreatedAt,
-                ProposalId = site.ProposalId
+                CreatedAt = site.CreatedAt
             };
         }
-        catch (Exception ex) when (ex is not ArgumentNullException
-                                  && ex is not InvalidOperationException)
+        catch (Exception ex)
         {
-            throw new ApplicationException($"Error al crear la sede: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error al crear el sitio: {ex.Message}", ex);
         }
     }
 }

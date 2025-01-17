@@ -24,7 +24,6 @@ public class ProposalController : ControllerBase
         _addProposalToPotentialClientUseCase = addProposalToPotentialClientUseCase;
         _updateProposalUseCase = updateProposalUseCase;
         _exportProposalUseCase = exportProposalUseCase;
-
     }
 
     [HttpGet]
@@ -34,17 +33,16 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            List<ProposalDto>? result =
-                await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
+            var result = await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
             return Ok(result);
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
         }
     }
 
@@ -64,36 +62,34 @@ public class ProposalController : ControllerBase
         {
             return NotFound(new { Error = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, new { Error = "Error interno del servidor" });
+            return StatusCode(500, new { Error = "Error interno del servidor", error = ex.Message });
         }
     }
 
-    
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateProposalDto dto)
     {
         try
         {
-            string? result = await _updateProposalUseCase.Execute(id, dto);
-            return Ok(result);
+            var result = await _updateProposalUseCase.Execute(id, dto);
+            return Ok(new { Message = result });
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { Error = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(ex.Message);
+            return NotFound(new { Error = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new { Error = "Error interno del servidor", error = ex.Message });
         }
     }
 
-    // Agregar en el controlador existente
     [HttpGet("export")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -101,16 +97,16 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            byte[]? fileContent = await _exportProposalUseCase.ExecuteAsync(cancellationToken);
+            var fileContent = await _exportProposalUseCase.ExecuteAsync(cancellationToken);
             return File(
                 fileContent,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 $"Proposals_{DateTime.Now:yyyyMMdd}.xlsx"
             );
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Error al exportar el archivo Excel" });
+            return StatusCode(500, new { message = "Error al exportar el archivo Excel", error = ex.Message });
         }
     }
 }

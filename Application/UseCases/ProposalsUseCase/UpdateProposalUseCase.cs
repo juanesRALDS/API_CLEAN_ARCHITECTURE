@@ -1,7 +1,6 @@
 using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
-using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
@@ -16,7 +15,6 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
     public async Task<string> Execute(string id, UpdateProposalDto dto)
     {
-        // Validaciones iniciales fuera del try-catch
         if (string.IsNullOrEmpty(id))
             throw new ArgumentException("El ID es requerido");
 
@@ -25,26 +23,31 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
         try
         {
-            Proposal? existingProposal = await _repository.GetProposalById(id) 
+            var existingProposal = await _repository.GetProposalById(id)
                 ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {id}");
-            existingProposal.Title = dto.Title;
-            existingProposal.Description = dto.Description;
-            existingProposal.Amount = dto.Amount;
-            existingProposal.Status = dto.Status;
 
-            bool result = await _repository.UpdateProposal(id, existingProposal);
+            // Actualizar estado
+            if (dto.Status != null)
+            {
+                if (!string.IsNullOrEmpty(dto.Status.Proposal))
+                    existingProposal.Status.Proposal = dto.Status.Proposal;
+                if (!string.IsNullOrEmpty(dto.Status.Sending))
+                    existingProposal.Status.Sending = dto.Status.Sending;
+                if (!string.IsNullOrEmpty(dto.Status.Review))
+                    existingProposal.Status.Review = dto.Status.Review;
+            }
+
+            existingProposal.UpdatedAt = DateTime.UtcNow;
+
+            var result = await _repository.UpdateProposal(id, existingProposal);
             if (!result)
                 throw new InvalidOperationException("No se pudo actualizar la propuesta");
 
             return "Propuesta actualizada exitosamente";
         }
-        catch (InvalidOperationException)
-        {
-            throw; // Re-lanzar excepciones de operación sin envolverlas
-        }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Error al actualizar la propuesta", ex);
+            throw new InvalidOperationException($"Error al actualizar la propuesta: {ex.Message}", ex);
         }
     }
 }
