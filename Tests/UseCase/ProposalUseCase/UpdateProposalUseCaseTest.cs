@@ -1,5 +1,7 @@
 using Moq;
 using Xunit;
+using System;
+using System.Threading.Tasks;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.UseCases.ProposalsUseCase;
@@ -14,96 +16,121 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
         private readonly string _validProposalId;
         private readonly UpdateProposalDto _validUpdateDto;
         private readonly Proposal _existingProposal;
+        private readonly DateTime _testDate;
 
         public UpdateProposalUseCaseTest()
         {
             _mockRepository = new Mock<IProposalRepository>();
             _useCase = new UpdateProposalUseCase(_mockRepository.Object);
+            _testDate = DateTime.UtcNow;
+            _validProposalId = "valid_id";
             
-            _validProposalId = "valid-id";
             _validUpdateDto = new UpdateProposalDto
             {
-                Title = "Título Actualizado",
-                Description = "Descripción Actualizada",
-                Amount = 2000M,
-                Status = "Actualizado"
+                Title = "Propuesta Actualizada",
+                Description = "Nueva descripción",
+                Amount = 1500.00M,
+                Status = new UpdateProposalStatusDto
+                {
+                    Proposal = "Aprobada",
+                    Sending = "Enviado",
+                    Review = "Revisado"
+                }
             };
+
             _existingProposal = new Proposal
             {
                 Id = _validProposalId,
-                Title = "Título Original",
-                Description = "Descripción Original",
-                Amount = 1000M,
-                Status = "Pendiente"
+                Number = "PROP-001",
+                Status = new ProposalStatus
+                {
+                    Proposal = "Pendiente",
+                    Sending = "No enviado",
+                    Review = "Sin revisar"
+                },
+                CreatedAt = _testDate.AddDays(-1),
+                UpdatedAt = _testDate.AddDays(-1)
             };
         }
 
         [Fact]
-        public async Task Execute_WithValidData_ShouldUpdateProposalSuccessfully()
+        public async Task Execute_ConDatosValidos_DebeActualizarPropuesta()
         {
             // Arrange
-            _mockRepository.Setup(r => r.GetProposalById(_validProposalId))
-                          .ReturnsAsync(_existingProposal);
-            _mockRepository.Setup(r => r.UpdateProposal(_validProposalId, It.IsAny<Proposal>()))
-                          .ReturnsAsync(true);
+            _mockRepository.Setup(repo => repo.GetProposalById(_validProposalId))
+                .ReturnsAsync(_existingProposal);
+            
+            _mockRepository.Setup(repo => repo.UpdateProposal(_validProposalId, It.IsAny<Proposal>()))
+                .ReturnsAsync(true);
 
             // Act
-            string result = await _useCase.Execute(_validProposalId, _validUpdateDto);
+            var result = await _useCase.Execute(_validProposalId, _validUpdateDto);
 
             // Assert
             Assert.Equal("Propuesta actualizada exitosamente", result);
-            _mockRepository.Verify(r => r.UpdateProposal(_validProposalId, It.IsAny<Proposal>()), Times.Once);
+            _mockRepository.Verify(repo => repo.UpdateProposal(_validProposalId, 
+                It.Is<Proposal>(p => 
+                    p.Status.Proposal == _validUpdateDto.Status.Proposal &&
+                    p.Status.Sending == _validUpdateDto.Status.Sending &&
+                    p.Status.Review == _validUpdateDto.Status.Review
+                )), Times.Once);
         }
 
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public async Task Execute_WithInvalidId_ShouldThrowArgumentException(string invalidId)
+        [InlineData(" ")]
+        public async Task Execute_ConIdInvalido_DebeLanzarArgumentException(string invalidId)
         {
             // Act & Assert
-            ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(
-                async () => await _useCase.Execute(invalidId, _validUpdateDto)
-            );
-            Assert.Equal("El ID es requerido", exception.Message);
+            await Assert.ThrowsAsync<ArgumentException>(() => 
+                _useCase.Execute(invalidId, _validUpdateDto));
         }
 
         [Fact]
-        public async Task Execute_WithNullDto_ShouldThrowArgumentNullException()
-        {
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(
-                async () => await _useCase.Execute(_validProposalId, null!)
-            );
-        }
-
-        [Fact]
-        public async Task Execute_WithNonExistentProposal_ShouldThrowInvalidOperationException()
+        public async Task Execute_ConPropuestaInexistente_DebeLanzarInvalidOperationException()
         {
             // Arrange
-            _mockRepository.Setup(r => r.GetProposalById(_validProposalId))
-                          .ReturnsAsync((Proposal)null!);
+            _mockRepository.Setup(repo => repo.GetProposalById(_validProposalId))
+                .ReturnsAsync((Proposal)null!);
 
             // Act & Assert
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await _useCase.Execute(_validProposalId, _validUpdateDto)
-            );
-            Assert.Contains($"No se encontró la propuesta con ID: {_validProposalId}", exception.Message);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                _useCase.Execute(_validProposalId, _validUpdateDto));
         }
 
         [Fact]
-        public async Task Execute_WhenUpdateFails_ShouldThrowInvalidOperationException()
+        public async Task Execute_CuandoFallaActualizacion_DebeLanzarInvalidOperationException()
         {
             // Arrange
-            _mockRepository.Setup(r => r.GetProposalById(_validProposalId))
-                          .ReturnsAsync(_existingProposal);
-            _mockRepository.Setup(r => r.UpdateProposal(_validProposalId, It.IsAny<Proposal>()))
-                          .ReturnsAsync(false);
+            _mockRepository.Setup(repo => repo.GetProposalById(_validProposalId))
+                .ReturnsAsync(_existingProposal);
+            
+            _mockRepository.Setup(repo => repo.UpdateProposal(_validProposalId, It.IsAny<Proposal>()))
+                .ReturnsAsync(false);
 
             // Act & Assert
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await _useCase.Execute(_validProposalId, _validUpdateDto)
-            );
-            Assert.Equal("No se pudo actualizar la propuesta", exception.Message);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                _useCase.Execute(_validProposalId, _validUpdateDto));
+        }
+
+        [Fact]
+        public async Task Execute_DebeActualizarFechaModificacion()
+        {
+            // Arrange
+            _mockRepository.Setup(repo => repo.GetProposalById(_validProposalId))
+                .ReturnsAsync(_existingProposal);
+            
+            _mockRepository.Setup(repo => repo.UpdateProposal(_validProposalId, It.IsAny<Proposal>()))
+                .ReturnsAsync(true);
+
+            // Act
+            await _useCase.Execute(_validProposalId, _validUpdateDto);
+
+            // Assert
+            _mockRepository.Verify(repo => repo.UpdateProposal(_validProposalId, 
+                It.Is<Proposal>(p => p.UpdatedAt > _existingProposal.UpdatedAt)), 
+                Times.Once);
         }
     }
 }

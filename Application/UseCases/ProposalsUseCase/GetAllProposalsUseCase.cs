@@ -9,6 +9,11 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
 {
     private readonly IProposalRepository _repository;
 
+    public GetAllProposalsUseCase(IProposalRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<(List<ProposalDto> Proposals, int TotalCount)> Execute(int pageNumber, int pageSize)
     {
         if (pageNumber <= 0)

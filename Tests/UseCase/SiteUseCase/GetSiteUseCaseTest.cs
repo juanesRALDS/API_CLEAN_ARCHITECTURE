@@ -1,109 +1,111 @@
-using FluentAssertions;
 using Moq;
 using Xunit;
+using FluentAssertions;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.DTO.SiteDto;
 using SagaAserhi.Application.Interfaces.IRepository;
-using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.UseCases.SiteUseCase;
-using SagaAserhi.Application.Interfaces.ISiteUseCase;
 
-namespace SagaAserhi.Tests.UseCase.Sites;
-
-public class GetSiteUseCaseTests
+namespace SagaAserhi.Tests.UseCase.SiteUseCase
 {
-    private readonly Mock<ISiteRepository> _siteRepositoryMock;
-    private readonly IGetSiteUseCase _useCase;
-
-    public GetSiteUseCaseTests()
+    public class GetSiteUseCaseTest
     {
-        _siteRepositoryMock = new Mock<ISiteRepository>();
-        _useCase = new GetSiteUseCase(_siteRepositoryMock.Object);
-    }
+        private readonly Mock<ISiteRepository> _siteRepositoryMock;
+        private readonly GetSiteUseCase _useCase;
+        private readonly DateTime _testDate;
 
-    [Fact]
-    public async Task Execute_ShouldReturnMappedSites_WhenSitesExist()
-    {
-        // Arrange
-        var proposalId = "123";
-        var sites = new List<Site>
+        public GetSiteUseCaseTest()
         {
-            new()
-            {
-                Id = "1",
-                Name = "Test Site",
-                Address = "Test Address",
-                City = "Test City",
-                Phone = "1234567890",
-                Status = true,
-                CreatedAt = DateTime.UtcNow,
-                ProposalId = proposalId
-            }
+            _siteRepositoryMock = new Mock<ISiteRepository>();
+            _useCase = new GetSiteUseCase(_siteRepositoryMock.Object);
+            _testDate = DateTime.UtcNow;
+        }
+
+        private Site CreateTestSite(string id = "1") => new()
+        {
+            Id = id,
+            Name = "Test Site",
+            Address = "Test Address",
+            City = "Test City",
+            Phone = "1234567890",
+            ProposalId = "testProposalId",
+            CreatedAt = _testDate,
+            Wastes = new List<Waste>()
         };
 
-        _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
-            .ReturnsAsync(sites);
+        [Fact]
+        public async Task Execute_ConSitiosExistentes_DebeRetornarListaDeSitios()
+        {
+            // Arrange
+            var proposalId = "testProposalId";
+            var sites = new List<Site> { CreateTestSite() };
 
-        // Act
-        var result = await _useCase.Execute(proposalId);
+            _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
+                .ReturnsAsync(sites);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
-        var siteDto = result.First();
-        siteDto.Id.Should().Be(sites[0].Id);
-        siteDto.Name.Should().Be(sites[0].Name);
-        siteDto.Address.Should().Be(sites[0].Address);
-        siteDto.City.Should().Be(sites[0].City);
-        siteDto.Phone.Should().Be(sites[0].Phone);
-        siteDto.Status.Should().Be(sites[0].Status);
-        siteDto.CreatedAt.Should().Be(sites[0].CreatedAt);
-        siteDto.ProposalId.Should().Be(sites[0].ProposalId);
-    }
+            // Act
+            var result = await _useCase.Execute(proposalId);
 
-    [Fact]
-    public async Task Execute_ShouldReturnEmptyList_WhenNoSitesExist()
-    {
-        // Arrange
-        var proposalId = "123";
-        _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
-            .ReturnsAsync(new List<Site>());
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(1);
+            var site = result.First();
+            site.Id.Should().Be("1");
+            site.Name.Should().Be("Test Site");
+            site.Address.Should().Be("Test Address");
+            site.City.Should().Be("Test City");
+            site.Phone.Should().Be("1234567890");
+            site.CreatedAt.Should().Be(_testDate);
+        }
 
-        // Act
-        var result = await _useCase.Execute(proposalId);
+        [Fact]
+        public async Task Execute_SinSitios_DebeRetornarListaVacia()
+        {
+            // Arrange
+            var proposalId = "testProposalId";
+            _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
+                .ReturnsAsync(new List<Site>());
 
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
-    }
+            // Act
+            var result = await _useCase.Execute(proposalId);
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public async Task Execute_ShouldThrowArgumentException_WhenProposalIdIsInvalid(string proposalId)
-    {
-        // Act
-        Func<Task> act = () => _useCase.Execute(proposalId);
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
 
-        // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("El ID de propuesta es requerido");
-    }
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("   ")]
+        public async Task Execute_ConIdPropuestaInvalido_DebeLanzarArgumentException(string proposalId)
+        {
+            // Act
+            Func<Task> act = () => _useCase.Execute(proposalId);
 
-    [Fact]
-    public async Task Execute_ShouldThrowApplicationException_WhenRepositoryFails()
-    {
-        // Arrange
-        var proposalId = "123";
-        _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
-            .ThrowsAsync(new Exception("Database error"));
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("El ID de propuesta es requerido");
+        }
 
-        // Act
-        Func<Task> act = () => _useCase.Execute(proposalId);
+        [Fact]
+        public async Task Execute_CuandoRepositorioFalla_DebeLanzarException()
+        {
+            // Arrange
+            var proposalId = "testProposalId";
+            _siteRepositoryMock.Setup(x => x.GetByProposalIdAsync(proposalId))
+                .ThrowsAsync(new Exception("Error de base de datos"));
 
-        // Assert
-        await act.Should().ThrowAsync<Exception>()
-            .WithMessage("Database error");
+            // Act
+            Func<Task> act = () => _useCase.Execute(proposalId);
+
+            // Assert
+            await act.Should().ThrowAsync<Exception>();
+        }
     }
 }

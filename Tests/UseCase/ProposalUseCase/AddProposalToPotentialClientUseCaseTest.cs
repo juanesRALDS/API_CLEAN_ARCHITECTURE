@@ -1,5 +1,7 @@
 using Moq;
 using Xunit;
+using System;
+using System.Threading.Tasks;
 using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.Interfaces.IRepository;
@@ -9,68 +11,83 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
 {
     public class AddProposalToPotentialClientUseCaseTest
     {
-        private readonly Mock<IPotentialClientRepository> _mockRepository;
+        private readonly Mock<IPotentialClientRepository> _mockPotentialClientRepository;
+        private readonly Mock<IProposalRepository> _mockProposalRepository;
         private readonly AddProposalToPotentialClientUseCase _useCase;
+        private readonly DateTime _testDate;
         
         private const string VALID_CLIENT_ID = "valid_client_id";
-        private const string PROPOSAL_TITLE = "Test Proposal";
-        private const string PROPOSAL_DESCRIPTION = "Test Description";
-        private const decimal PROPOSAL_AMOUNT = 1000.00M;
 
         public AddProposalToPotentialClientUseCaseTest()
         {
-            _mockRepository = new Mock<IPotentialClientRepository>();
-            _useCase = new AddProposalToPotentialClientUseCase(_mockRepository.Object);
+            _mockPotentialClientRepository = new Mock<IPotentialClientRepository>();
+            _mockProposalRepository = new Mock<IProposalRepository>();
+            _useCase = new AddProposalToPotentialClientUseCase(
+                _mockPotentialClientRepository.Object,
+                _mockProposalRepository.Object
+            );
+            _testDate = DateTime.UtcNow;
         }
 
         [Fact]
-        public async Task Execute_WithValidData_ShouldAddProposalSuccessfully()
+        public async Task Execute_ConDatosValidos_DebeCrearPropuestaExitosamente()
         {
             // Arrange
-            PotentialClient existingClient = new()
+            var client = new PotentialClient
             {
                 Id = VALID_CLIENT_ID,
-                CompanyBusinessName = "Test Company"
+                BusinessInfo = new BusinessInfo { TradeName = "Test Company" }
             };
 
-            CreateProposalDto proposalDto = new()
+            var proposalDto = new CreateProposalDto
             {
-                Title = PROPOSAL_TITLE,
-                Description = PROPOSAL_DESCRIPTION,
-                Amount = PROPOSAL_AMOUNT
+                ClientId = VALID_CLIENT_ID,
+                Status = new ProposalStatus
+                {
+                    Proposal = "Pendiente",
+                    Sending = "No enviado",
+                    Review = "Sin revisar"
+                },
+                CreatedAt = _testDate
             };
 
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(VALID_CLIENT_ID))
-                .ReturnsAsync(existingClient);
-            _mockRepository.Setup(repo => repo.AddProposalToPotentialClient(VALID_CLIENT_ID, It.IsAny<Proposal>()))
+            _mockPotentialClientRepository.Setup(repo => 
+                repo.GetByIdPotencialClient(VALID_CLIENT_ID))
+                .ReturnsAsync(client);
+
+            _mockProposalRepository.Setup(repo => 
+                repo.CreateProposal(It.IsAny<Proposal>()))
                 .ReturnsAsync(true);
 
             // Act
-            string result = await _useCase.Execute(VALID_CLIENT_ID, proposalDto);
+            var result = await _useCase.Execute(VALID_CLIENT_ID, proposalDto);
 
             // Assert
-            Assert.Equal("Propuesta agregada exitosamente", result);
-            _mockRepository.Verify(repo => repo.AddProposalToPotentialClient(VALID_CLIENT_ID, 
-                It.Is<Proposal>(p => 
-                    p.Title == PROPOSAL_TITLE && 
-                    p.Description == PROPOSAL_DESCRIPTION && 
-                    p.Amount == PROPOSAL_AMOUNT &&
-                    p.Status == "Pendiente")), 
-                Times.Once);
+            Assert.Equal("Propuesta creada exitosamente", result);
+            _mockProposalRepository.Verify(repo => 
+                repo.CreateProposal(It.Is<Proposal>(p =>
+                    p.ClientId == VALID_CLIENT_ID &&
+                    p.Number.StartsWith("PROP-") &&
+                    p.Status.Proposal == "Pendiente" &&
+                    p.Status.Sending == "No enviado" &&
+                    p.Status.Review == "Sin revisar" &&
+                    p.History.Count == 1 &&
+                    p.History[0].Action == "Creación de propuesta" &&
+                    p.History[0].PotentialClientId == VALID_CLIENT_ID
+                )), Times.Once);
         }
 
         [Theory]
         [InlineData("")]
         [InlineData(null)]
         [InlineData(" ")]
-        public async Task Execute_WithInvalidClientId_ShouldThrowArgumentException(string invalidClientId)
+        public async Task Execute_ConClienteIdInvalido_DebeLanzarArgumentException(string invalidClientId)
         {
             // Arrange
-            CreateProposalDto proposalDto = new()
+            var proposalDto = new CreateProposalDto
             {
-                Title = PROPOSAL_TITLE,
-                Description = PROPOSAL_DESCRIPTION,
-                Amount = PROPOSAL_AMOUNT
+                ClientId = invalidClientId,
+                Status = new ProposalStatus()
             };
 
             // Act & Assert
@@ -79,7 +96,7 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
         }
 
         [Fact]
-        public async Task Execute_WithNullProposalDto_ShouldThrowArgumentNullException()
+        public async Task Execute_ConDtoNulo_DebeLanzarArgumentNullException()
         {
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => 
@@ -87,18 +104,18 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
         }
 
         [Fact]
-        public async Task Execute_WithNonExistentClient_ShouldThrowInvalidOperationException()
+        public async Task Execute_ConClienteInexistente_DebeLanzarInvalidOperationException()
         {
             // Arrange
-            CreateProposalDto proposalDto = new()
-            {
-                Title = PROPOSAL_TITLE,
-                Description = PROPOSAL_DESCRIPTION,
-                Amount = PROPOSAL_AMOUNT
-            };
-
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(VALID_CLIENT_ID))
+            _mockPotentialClientRepository.Setup(repo => 
+                repo.GetByIdPotencialClient(VALID_CLIENT_ID))
                 .ReturnsAsync((PotentialClient)null!);
+
+            var proposalDto = new CreateProposalDto
+            {
+                ClientId = VALID_CLIENT_ID,
+                Status = new ProposalStatus()
+            };
 
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => 
@@ -106,25 +123,27 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
         }
 
         [Fact]
-        public async Task Execute_WhenAddProposalFails_ShouldThrowInvalidOperationException()
+        public async Task Execute_CuandoFallaCreacionPropuesta_DebeLanzarInvalidOperationException()
         {
             // Arrange
-            PotentialClient existingClient = new()
+            var client = new PotentialClient
             {
                 Id = VALID_CLIENT_ID,
-                CompanyBusinessName = "Test Company"
+                BusinessInfo = new BusinessInfo { TradeName = "Test Company" }
             };
 
-            CreateProposalDto proposalDto = new()
+            var proposalDto = new CreateProposalDto
             {
-                Title = PROPOSAL_TITLE,
-                Description = PROPOSAL_DESCRIPTION,
-                Amount = PROPOSAL_AMOUNT
+                ClientId = VALID_CLIENT_ID,
+                Status = new ProposalStatus()
             };
 
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(VALID_CLIENT_ID))
-                .ReturnsAsync(existingClient);
-            _mockRepository.Setup(repo => repo.AddProposalToPotentialClient(VALID_CLIENT_ID, It.IsAny<Proposal>()))
+            _mockPotentialClientRepository.Setup(repo => 
+                repo.GetByIdPotencialClient(VALID_CLIENT_ID))
+                .ReturnsAsync(client);
+
+            _mockProposalRepository.Setup(repo => 
+                repo.CreateProposal(It.IsAny<Proposal>()))
                 .ReturnsAsync(false);
 
             // Act & Assert

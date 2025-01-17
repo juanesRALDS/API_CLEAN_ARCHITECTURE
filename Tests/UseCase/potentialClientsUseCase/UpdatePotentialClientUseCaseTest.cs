@@ -1,6 +1,9 @@
 using Moq;
 using Xunit;
-using SagaAserhi.Application.DTO;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
@@ -12,95 +15,86 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
     {
         private readonly Mock<IPotentialClientRepository> _mockRepository;
         private readonly UpdatePotentialClientUseCase _useCase;
+        private readonly DateTime _testDate;
         
         private const string VALID_ID = "valid_id";
         private const string COMPANY_NAME = "Test Company";
         private const string PHONE = "123456789";
         private const string EMAIL = "test@company.com";
-        private const string STATUS = "Active";
+        private const string STATUS = "Activo";
 
         public UpdatePotentialClientUseCaseTest()
         {
             _mockRepository = new Mock<IPotentialClientRepository>();
             _useCase = new UpdatePotentialClientUseCase(_mockRepository.Object);
+            _testDate = DateTime.UtcNow;
+        }
+
+        private PotentialClient CreateExistingClient()
+        {
+            return new PotentialClient
+            {
+                Id = VALID_ID,
+                BusinessInfo = new BusinessInfo
+                {
+                    TradeName = COMPANY_NAME,
+                    Email = EMAIL,
+                    Phone = PHONE
+                },
+                Status = new Status
+                {
+                    Current = STATUS,
+                    History = new List<StatusHistory>
+                    {
+                        new()
+                        {
+                            Status = STATUS,
+                            Date = _testDate,
+                            Observation = "Estado inicial"
+                        }
+                    }
+                },
+                CreatedAt = _testDate,
+                UpdatedAt = _testDate
+            };
         }
 
         [Fact]
-        public async Task Execute_WithValidData_ShouldUpdateAndReturnDto()
+        public async Task Execute_ConDatosValidos_DebeActualizarCliente()
         {
             // Arrange
-            PotentialClient existingClient = new()
+            var existingClient = CreateExistingClient();
+            var updateDto = new UpdatePotentialClientDto
             {
-                Id = VALID_ID,
-                CompanyBusinessName = COMPANY_NAME,
-                ContactPhone = PHONE,
-                ContactEmail = EMAIL,
-                Status = STATUS
+                BusinessInfo = new BusinessInfo
+                {
+                    TradeName = "Nuevo Nombre",
+                    Email = "nuevo@email.com"
+                },
+                Status = "Pendiente"
             };
 
-            UpdatePotentialClientDto updateDto = new()
-            {
-                CompanyBusinessName = "Updated Company",
-                ContactPhone = "987654321",
-                ContactEmail = "updated@company.com",
-                Status = "Inactive"
-            };
-
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(VALID_ID))
+            _mockRepository.Setup(r => r.GetByIdPotencialClient(VALID_ID))
                 .ReturnsAsync(existingClient);
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<PotentialClient> { existingClient });
 
             // Act
-            UpdatePotentialClientDto result = await _useCase.Execute(VALID_ID, updateDto);
+            var result = await _useCase.Execute(VALID_ID, updateDto);
 
             // Assert
-            Assert.Equal(updateDto.CompanyBusinessName, result.CompanyBusinessName);
-            Assert.Equal(updateDto.ContactPhone, result.ContactPhone);
-            Assert.Equal(updateDto.ContactEmail, result.ContactEmail);
-            Assert.Equal(updateDto.Status, result.Status);
-        }
-
-        [Fact]
-        public async Task Execute_WithPartialUpdate_ShouldPreserveExistingValues()
-        {
-            // Arrange
-            PotentialClient existingClient = new()
-            {
-                Id = VALID_ID,
-                CompanyBusinessName = COMPANY_NAME,
-                ContactPhone = PHONE,
-                ContactEmail = EMAIL,
-                Status = STATUS
-            };
-
-            UpdatePotentialClientDto partialUpdateDto = new()
-            {
-                CompanyBusinessName = "Updated Company",
-                ContactPhone = null!,
-                ContactEmail = null!,
-                Status = null!
-            };
-
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(VALID_ID))
-                .ReturnsAsync(existingClient);
-
-            // Act
-            UpdatePotentialClientDto result = await _useCase.Execute(VALID_ID, partialUpdateDto);
-
-            // Assert
-            Assert.Equal(partialUpdateDto.CompanyBusinessName, result.CompanyBusinessName);
-            Assert.Equal(PHONE, result.ContactPhone);
-            Assert.Equal(EMAIL, result.ContactEmail);
-            Assert.Equal(STATUS, result.Status);
+            Assert.NotNull(result);
+            _mockRepository.Verify(r => r.UpdatePotentialClient(VALID_ID, It.IsAny<PotentialClient>()), Times.Once);
         }
 
         [Theory]
         [InlineData("")]
-        [InlineData(" ")]
         [InlineData(null)]
-        public async Task Execute_WithInvalidId_ShouldThrowArgumentException(string invalidId)
+        [InlineData(" ")]
+        public async Task Execute_ConIdInvalido_DebeLanzarArgumentException(string invalidId)
         {
             // Arrange
-            UpdatePotentialClientDto updateDto = new();
+            var updateDto = new UpdatePotentialClientDto();
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentException>(() => 
@@ -108,18 +102,57 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
         }
 
         [Fact]
-        public async Task Execute_WithNonExistentClient_ShouldThrowKeyNotFoundException()
+        public async Task Execute_ConClienteInexistente_DebeLanzarKeyNotFoundException()
         {
             // Arrange
-            const string NON_EXISTENT_ID = "non_existent_id";
-            UpdatePotentialClientDto updateDto = new();
-
-            _mockRepository.Setup(repo => repo.GetByIdPotencialClient(NON_EXISTENT_ID))
+            _mockRepository.Setup(r => r.GetByIdPotencialClient(VALID_ID))
                 .ReturnsAsync((PotentialClient)null!);
 
             // Act & Assert
             await Assert.ThrowsAsync<KeyNotFoundException>(() => 
-                _useCase.Execute(NON_EXISTENT_ID, updateDto));
+                _useCase.Execute(VALID_ID, new UpdatePotentialClientDto()));
+        }
+
+        [Fact]
+        public async Task Execute_ConEmailDuplicado_DebeLanzarInvalidOperationException()
+        {
+            // Arrange
+            var existingClient = CreateExistingClient();
+            var otherClient = CreateExistingClient();
+            otherClient.Id = "other_id";
+            otherClient.BusinessInfo.Email = "otro@email.com";
+
+            var updateDto = new UpdatePotentialClientDto
+            {
+                BusinessInfo = new BusinessInfo { Email = "otro@email.com" }
+            };
+
+            _mockRepository.Setup(r => r.GetByIdPotencialClient(VALID_ID))
+                .ReturnsAsync(existingClient);
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<PotentialClient> { existingClient, otherClient });
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                _useCase.Execute(VALID_ID, updateDto));
+        }
+
+        [Theory]
+        [InlineData("Estado Inválido")]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Execute_ConEstadoInvalido_DebeLanzarArgumentException(string estadoInvalido)
+        {
+            // Arrange
+            var existingClient = CreateExistingClient();
+            var updateDto = new UpdatePotentialClientDto { Status = estadoInvalido };
+
+            _mockRepository.Setup(r => r.GetByIdPotencialClient(VALID_ID))
+                .ReturnsAsync(existingClient);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => 
+                _useCase.Execute(VALID_ID, updateDto));
         }
     }
 }

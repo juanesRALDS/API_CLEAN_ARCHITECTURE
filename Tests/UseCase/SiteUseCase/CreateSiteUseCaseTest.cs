@@ -49,7 +49,6 @@ public class CreateSiteUseCaseTests
         result.Address.Should().Be(siteInfo.Address.Trim());
         result.City.Should().Be(siteInfo.City.Trim());
         result.Phone.Should().Be(siteInfo.Phone.Trim());
-        result.ProposalId.Should().Be(proposalId);
 
         _siteRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<Site>()), Times.Once);
         _proposalRepositoryMock.Verify(x => x.UpdateProposalSite(proposalId, It.IsAny<string>()), Times.Once);

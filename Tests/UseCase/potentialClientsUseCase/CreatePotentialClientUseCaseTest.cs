@@ -1,88 +1,188 @@
 using Xunit;
 using Moq;
-using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.DTO.PotentialClientDto;
+using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
-namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase;
-
-public class CreatePotentialClientUseCaseTest
+namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
 {
-    private readonly Mock<IPotentialClientRepository> _mockRepository;
-    private readonly CreatePotentialClientUseCase _useCase;
-
-    public CreatePotentialClientUseCaseTest()
+    public class CreatePotentialClientUseCaseTest
     {
-        _mockRepository = new Mock<IPotentialClientRepository>();
-        _useCase = new CreatePotentialClientUseCase(_mockRepository.Object);
-    }
+        private readonly Mock<IPotentialClientRepository> _mockRepository;
+        private readonly CreatePotentialClientUseCase _useCase;
+        private readonly CreatePotentialClientDto _validDto;
 
-    [Fact]
-    public async Task Execute_WithValidDto_ShouldReturnSuccessMessage()
-    {
-        // Arrange
-        CreatePotentialClientDto? dto = new()
+        public CreatePotentialClientUseCaseTest()
         {
-            CompanyBusinessName = "Test Company",
-            ContactPhone = "1234567890",
-            ContactEmail = "test@test.com"
-        };
+            _mockRepository = new Mock<IPotentialClientRepository>();
+            _useCase = new CreatePotentialClientUseCase(_mockRepository.Object);
+            _validDto = new CreatePotentialClientDto
+            {
+                Identification = new Identification 
+                { 
+                    Type = "NIT",
+                    Number = "123456789" 
+                },
+                BusinessInfo = new BusinessInfo
+                {
+                    TradeName = "Empresa Prueba",
+                    EconomicActivity = "Desarrollo Software",
+                    Email = "test@empresa.com",
+                    Phone = "3001234567"
+                },
+                Location = new Location
+                {
+                    Address = "Calle 123",
+                    City = "Medellín",
+                    Department = "Antioquia"
+                },
+                Status = "Activo"
+            };
+        }
 
-        _mockRepository
-            .Setup(x => x.CreatePotentialClient(It.IsAny<PotentialClient>()))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        string? result = await _useCase.Execute(dto);
-
-        // Assert
-        Assert.Equal("Potential client created successfully", result);
-        _mockRepository.Verify(x => x.CreatePotentialClient(It.IsAny<PotentialClient>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Execute_WithNullDto_ShouldThrowArgumentNullException()
-    {
-        // Arrange
-        CreatePotentialClientDto? dto = null;
-
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _useCase.Execute(dto!));
-    }
-
-    [Fact]
-    public async Task Execute_WithEmptyCompanyName_ShouldThrowArgumentException()
-    {
-        // Arrange
-        CreatePotentialClientDto? dto = new()
+        [Fact]
+        public async Task Execute_ConDatosNulos_DebeLanzarArgumentNullException()
         {
-            CompanyBusinessName = "",
-            ContactPhone = "1234567890",
-            ContactEmail = "test@test.com"
-        };
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _useCase.Execute(null!));
+        }
 
-        // Act & Assert
-        ArgumentException? exception = await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dto));
-        Assert.Equal("Company name cannot be empty (Parameter 'CompanyBusinessName')", exception.Message);
-    }
-
-    [Fact]
-    public async Task Execute_WhenRepositoryThrows_ShouldPropagateException()
-    {
-        // Arrange
-        CreatePotentialClientDto? dto = new()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Execute_ConTipoIdentificacionInvalida_DebeLanzarArgumentException(string tipoInvalido)
         {
-            CompanyBusinessName = "Test Company",
-            ContactPhone = "1234567890",
-            ContactEmail = "test@test.com"
-        };
+            // Arrange
+            var dtoConTipoInvalido = new CreatePotentialClientDto
+            {
+                Identification = new Identification { Type = tipoInvalido, Number = _validDto.Identification.Number },
+                BusinessInfo = _validDto.BusinessInfo,
+                Location = _validDto.Location,
+                Status = _validDto.Status
+            };
 
-        _mockRepository
-            .Setup(x => x.CreatePotentialClient(It.IsAny<PotentialClient>()))
-            .ThrowsAsync(new Exception("Database error"));
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dtoConTipoInvalido));
+        }
 
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _useCase.Execute(dto));
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Execute_ConNumeroIdentificacionInvalido_DebeLanzarArgumentException(string numeroInvalido)
+        {
+            // Arrange
+            var dtoConNumeroInvalido = new CreatePotentialClientDto
+            {
+                Identification = new Identification { Type = _validDto.Identification.Type, Number = numeroInvalido },
+                BusinessInfo = _validDto.BusinessInfo,
+                Location = _validDto.Location,
+                Status = _validDto.Status
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dtoConNumeroInvalido));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("correo-invalido")]
+        public async Task Execute_ConEmailInvalido_DebeLanzarArgumentException(string emailInvalido)
+        {
+            // Arrange
+            var dtoConEmailInvalido = new CreatePotentialClientDto
+            {
+                Identification = _validDto.Identification,
+                BusinessInfo = new BusinessInfo { 
+                    TradeName = _validDto.BusinessInfo.TradeName,
+                    EconomicActivity = _validDto.BusinessInfo.EconomicActivity,
+                    Email = emailInvalido,
+                    Phone = _validDto.BusinessInfo.Phone
+                },
+                Location = _validDto.Location,
+                Status = _validDto.Status
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dtoConEmailInvalido));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("Estado Invalido")]
+        public async Task Execute_ConEstadoInvalido_DebeLanzarArgumentException(string estadoInvalido)
+        {
+            // Arrange
+            var dtoConEstadoInvalido = new CreatePotentialClientDto
+            {
+                Identification = _validDto.Identification,
+                BusinessInfo = _validDto.BusinessInfo,
+                Location = _validDto.Location,
+                Status = estadoInvalido
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _useCase.Execute(dtoConEstadoInvalido));
+        }
+
+        [Fact]
+        public async Task Execute_ConDatosValidos_DebeRetornarMensajeExito()
+        {
+            // Arrange
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<PotentialClient>());
+
+            // Act
+            var resultado = await _useCase.Execute(_validDto);
+
+            // Assert
+            Assert.Equal("Cliente potencial creado exitosamente", resultado);
+            _mockRepository.Verify(r => r.CreatePotentialClient(It.IsAny<PotentialClient>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Execute_ConIdentificacionDuplicada_DebeLanzarInvalidOperationException()
+        {
+            // Arrange
+            var clientesExistentes = new List<PotentialClient>
+            {
+                new() { 
+                    Identification = new Identification { 
+                        Number = "123456789" 
+                    } 
+                }
+            };
+
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(clientesExistentes);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _useCase.Execute(_validDto));
+        }
+
+        [Fact]
+        public async Task Execute_ConEmailDuplicado_DebeLanzarInvalidOperationException()
+        {
+            // Arrange
+            var clientesExistentes = new List<PotentialClient>
+            {
+                new() { 
+                    BusinessInfo = new BusinessInfo { 
+                        Email = "test@empresa.com" 
+                    } 
+                }
+            };
+
+            _mockRepository.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(clientesExistentes);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _useCase.Execute(_validDto));
+        }
     }
 }

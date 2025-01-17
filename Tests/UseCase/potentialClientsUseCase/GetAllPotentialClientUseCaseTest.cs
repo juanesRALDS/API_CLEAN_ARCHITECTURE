@@ -1,112 +1,131 @@
-using Moq;
 using Xunit;
-using SagaAserhi.Application.DTO;
-using SagaAserhi.Domain.Entities;
-using System.Collections.Generic;
+using Moq;
+using System;
 using System.Threading.Tasks;
-using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
+using System.Collections.Generic;
+using SagaAserhi.Domain.Entities;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.DTO.PotentialClientDto;
+using SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
-namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
+namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase;
+
+public class GetAllPotentialClientsUseCaseTest
 {
-    public class GetAllPotentialClientsWithProposalsUseCaseTest
+    private readonly Mock<IPotentialClientRepository> _mockRepository;
+    private readonly GetAllPotentialClientsWithProposalsUseCase _useCase;
+    private readonly DateTime _testDate;
+
+    public GetAllPotentialClientsUseCaseTest()
     {
-        private readonly Mock<IPotentialClientRepository> _mockRepository;
-        private readonly GetAllPotentialClientsWithProposalsUseCase _useCase;
+        _mockRepository = new Mock<IPotentialClientRepository>();
+        _useCase = new GetAllPotentialClientsWithProposalsUseCase(_mockRepository.Object);
+        _testDate = DateTime.UtcNow;
+    }
 
-        public GetAllPotentialClientsWithProposalsUseCaseTest()
+    private PotentialClient CreateTestPotentialClient()
+    {
+        return new PotentialClient
         {
-            _mockRepository = new Mock<IPotentialClientRepository>();
-            _useCase = new GetAllPotentialClientsWithProposalsUseCase(_mockRepository.Object);
-        }
-
-        [Fact]
-        public async Task Execute_WithValidParameters_ShouldReturnClientList()
-        {
-            // Arrange
-            int pageNumber = 1;
-            int pageSize = 10;
-            List<PotentialClient> potentialClients = new List<PotentialClient>
+            Id = "1",
+            Identification = new Identification 
+            { 
+                Type = "NIT", 
+                Number = "123456789" 
+            },
+            BusinessInfo = new BusinessInfo
             {
-                new PotentialClient
-                {
-                    Id = "1",
-                    CompanyBusinessName = "Test Company",
-                    ContactPhone = "123456789",
-                    ContactEmail = "test@test.com",
-                    Proposals = new List<string> { "proposal1", "proposal2" }
-                }
-            };
-
-            _mockRepository.Setup(repo => repo.GetAllPotentialClientsWithProposals(pageNumber, pageSize))
-                .ReturnsAsync(potentialClients);
-
-            // Act
-            List<PotentialClientDto> result = await _useCase.Execute(pageNumber, pageSize);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Single(result);
-            Assert.Equal("1", result[0].Id);
-            Assert.Equal("Test Company", result[0].CompanyBusinessName);
-            Assert.Equal(2, result[0].Proposals.Count);
-        }
-
-        [Theory]
-        [InlineData(0, 10)]
-        [InlineData(1, 0)]
-        [InlineData(-1, 10)]
-        [InlineData(1, -1)]
-        public async Task Execute_WithInvalidParameters_ShouldThrowArgumentException(int pageNumber, int pageSize)
-        {
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => 
-                _useCase.Execute(pageNumber, pageSize));
-        }
-
-        [Fact]
-        public async Task Execute_WhenRepositoryThrowsException_ShouldThrowException()
-        {
-            // Arrange
-            int pageNumber = 1;
-            int pageSize = 10;
-            _mockRepository.Setup(repo => repo.GetAllPotentialClientsWithProposals(pageNumber, pageSize))
-                .ThrowsAsync(new Exception());
-
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => 
-                _useCase.Execute(pageNumber, pageSize));
-        }
-
-        [Fact]
-        public async Task Execute_WithEmptyProposals_ShouldReturnEmptyProposalsList()
-        {
-            // Arrange
-            int pageNumber = 1;
-            int pageSize = 10;
-            List<PotentialClient> potentialClients = new List<PotentialClient>
+                TradeName = "Test Company",
+                EconomicActivity = "Software Development",
+                Email = "test@test.com",
+                Phone = "123456789"
+            },
+            Location = new Location
             {
-                new PotentialClient
+                Address = "Test Address",
+                City = "Test City",
+                Department = "Test Department"
+            },
+            Status = new Status
+            {
+                Current = "Activo",
+                History = new List<StatusHistory>
                 {
-                    Id = "1",
-                    CompanyBusinessName = "Test Company",
-                    ContactPhone = "123456789",
-                    ContactEmail = "test@test.com",
-                    Proposals = null!
+                    new StatusHistory
+                    {
+                        Status = "Activo",
+                        Date = _testDate,
+                        Observation = "Cliente creado"
+                    }
                 }
-            };
+            },
+            CreatedAt = _testDate,
+            UpdatedAt = _testDate
+        };
+    }
 
-            _mockRepository.Setup(repo => repo.GetAllPotentialClientsWithProposals(pageNumber, pageSize))
-                .ReturnsAsync(potentialClients);
+    [Fact]
+    public async Task Execute_ConDatosValidos_DebeRetornarListaClientes()
+    {
+        // Arrange
+        var potentialClients = new List<PotentialClient> { CreateTestPotentialClient() };
+        _mockRepository.Setup(repo => repo.GetAllPotentialClientsWithProposals(1, 10))
+            .ReturnsAsync(potentialClients);
 
-            // Act
-            List<PotentialClientDto> result = await _useCase.Execute(pageNumber, pageSize);
+        // Act
+        var result = await _useCase.Execute(1, 10);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Single(result);
-            Assert.Empty(result[0].Proposals);
-        }
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+        var cliente = result[0];
+        Assert.Equal("1", cliente.Id);
+        Assert.Equal("Test Company", cliente.BusinessInfo.TradeName);
+        Assert.Equal("123456789", cliente.Identification.Number);
+        Assert.Equal("Activo", cliente.Status.Current);
+    }
+
+    [Theory]
+    [InlineData(0, 10)]
+    [InlineData(1, 0)]
+    [InlineData(-1, 10)]
+    [InlineData(1, -1)]
+    public async Task Execute_ConPaginacionInvalida_DebeLanzarArgumentException(int pageNumber, int pageSize)
+    {
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
+            _useCase.Execute(pageNumber, pageSize));
+
+        Assert.Contains(pageNumber <= 0 ? "Page number" : "Page size", exception.Message);
+    }
+
+    [Fact]
+    public async Task Execute_CuandoRepositorioLanzaExcepcion_DebePropagerExcepcion()
+    {
+        // Arrange
+        _mockRepository.Setup(repo => 
+            repo.GetAllPotentialClientsWithProposals(It.IsAny<int>(), It.IsAny<int>()))
+            .ThrowsAsync(new Exception("Error de repositorio"));
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _useCase.Execute(1, 10));
+        Assert.Equal("Error al obtener clientes con propuestas", exception.Message);
+    }
+
+    [Fact]
+    public async Task Execute_CuandoNoHayClientes_DebeRetornarListaVacia()
+    {
+        // Arrange
+        _mockRepository.Setup(repo => 
+            repo.GetAllPotentialClientsWithProposals(It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new List<PotentialClient>());
+
+        // Act
+        var result = await _useCase.Execute(1, 10);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
     }
 }
