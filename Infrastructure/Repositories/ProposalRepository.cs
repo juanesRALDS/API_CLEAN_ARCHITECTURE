@@ -1,9 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Context;
-using ZstdSharp.Unsafe;
 
 namespace SagaAserhi.Infrastructure.Repositories
 {
@@ -16,54 +16,58 @@ namespace SagaAserhi.Infrastructure.Repositories
             _proposalCollection = context.GetCollection<Proposal>("proposals");
         }
 
-
-        public async Task<List<Proposal>> GetAllProposals(int pageNumber, int pageSize)
+        public async Task<(List<Proposal> Proposals, int TotalCount)> GetAllProposals(int pageNumber, int pageSize)
         {
             try
             {
-                BsonDocument[]? pipeline = new[]
+                var countFacet = AggregateFacet.Create("count",
+                    PipelineDefinition<Proposal, AggregateCountResult>.Create(new[]
+                    {
+                        PipelineStageDefinitionBuilder.Count<Proposal>()
+                    }));
+
+                var dataFacet = AggregateFacet.Create("data",
+                    PipelineDefinition<Proposal, Proposal>.Create(new[]
+                    {
+                        PipelineStageDefinitionBuilder.Skip<Proposal>((pageNumber - 1) * pageSize),
+                        PipelineStageDefinitionBuilder.Limit<Proposal>(pageSize)
+                    }));
+
+                var pipeline = new[]
                 {
                     new BsonDocument("$lookup", new BsonDocument
                     {
                         { "from", "potentialClients" },
-                        { "let", new BsonDocument("clientId", "$potentialClientId") },
-                        { "pipeline", new BsonArray
-                            {
-                                new BsonDocument("$match", new BsonDocument
-                                {
-                                    { "$expr", new BsonDocument("$eq", new BsonArray
-                                        {
-                                            "$_id",
-                                            new BsonDocument("$toObjectId", "$$clientId")
-                                        })
-                                    }
-                                }),
-                                new BsonDocument("$project", new BsonDocument
-                                {
-                                    { "_id", 1 },
-                                    { "companyBusinessName", 1 }
-                                })
-                            }
-                        },
-                        { "as", "clientInfo" }
+                        { "localField", "clientId" },
+                        { "foreignField", "_id" },
+                        { "as", "client" }
                     }),
                     new BsonDocument("$unwind", new BsonDocument
                     {
-                        { "path", "$clientInfo" },
+                        { "path", "$client" },
                         { "preserveNullAndEmptyArrays", true }
                     }),
-                    new BsonDocument("$set", new BsonDocument
+                    new BsonDocument("$project", new BsonDocument
                     {
-                        { "companyBusinessName", "$clientInfo.companyBusinessName" },
-                        { "potentialClientId", "$clientInfo._id" }
-                    }),
-                    new BsonDocument("$skip", (pageNumber - 1) * pageSize),
-                    new BsonDocument("$limit", pageSize)
+                        { "_id", 1 },
+                        { "clientId", 1 },
+                        { "number", 1 },
+                        { "status", 1 },
+                        { "sites", 1 },
+                        { "history", 1 },
+                        { "createdAt", 1 },
+                        { "updatedAt", 1 },
+                        { "companyBusinessName", "$client.businessInfo.businessName" }
+                    })
                 };
 
-                return await _proposalCollection
+                var aggregation = await _proposalCollection
                     .Aggregate<Proposal>(pipeline)
                     .ToListAsync();
+
+                var totalCount = await _proposalCollection.CountDocumentsAsync(new BsonDocument());
+
+                return (aggregation, (int)totalCount);
             }
             catch (Exception ex)
             {
@@ -71,45 +75,64 @@ namespace SagaAserhi.Infrastructure.Repositories
             }
         }
 
-
-        public Task<Proposal> GetProposalById(string id)
+        public async Task<bool> CreateProposal(Proposal proposal)
         {
-            return _proposalCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
+            try
+            {
+                await _proposalCollection.InsertOneAsync(proposal);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<Proposal> GetProposalById(string id)
+        {
+            return await _proposalCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<bool> UpdateProposal(string id, Proposal proposal)
         {
-            FilterDefinition<Proposal>? filter = Builders<Proposal>.Filter.Eq(p => p.Id, id);
-            UpdateDefinition<Proposal>? update = Builders<Proposal>.Update
-                .Set(p => p.Title, proposal.Title)
-                .Set(p => p.Description, proposal.Description);
+            try
+            {
+                var filter = Builders<Proposal>.Filter.Eq(p => p.Id, id);
+                var update = Builders<Proposal>.Update
+                    .Set(p => p.Status, proposal.Status)
+                    .Set(p => p.Sites, proposal.Sites)
+                    .Set(p => p.UpdatedAt, DateTime.UtcNow);
 
-            UpdateResult? result = await _proposalCollection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
+                var result = await _proposalCollection.UpdateOneAsync(filter, update);
+                return result.ModifiedCount > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<IEnumerable<Proposal>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _proposalCollection.Find(_ => true)
-                                  .ToListAsync(cancellationToken);
+                                          .ToListAsync(cancellationToken);
         }
 
         public async Task<bool> UpdateProposalSite(string proposalId, string siteId)
         {
-            FilterDefinition<Proposal>? filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
-            UpdateDefinition<Proposal>? update = Builders<Proposal>.Update
-                .Set(p => p.SiteId, siteId)
-                .Set(p => p.HasSite, true)
-                .Set(p => p.LastModified, DateTime.UtcNow);
+            var filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
+            var update = Builders<Proposal>.Update
+                .Push(p => p.Sites, siteId)
+                .Set(p => p.UpdatedAt, DateTime.UtcNow);
 
-            UpdateResult? result = await _proposalCollection.UpdateOneAsync(filter, update);
+            var result = await _proposalCollection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
 
         public async Task<bool> HasExistingSite(string proposalId)
         {
-            Proposal? proposal = await GetProposalById(proposalId);
-            return proposal?.HasSite ?? false;
+            var proposal = await GetProposalById(proposalId);
+            return proposal?.Sites.Any() ?? false;
         }
     }
 }

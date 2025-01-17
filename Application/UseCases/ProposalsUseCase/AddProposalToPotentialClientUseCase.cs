@@ -6,46 +6,61 @@ using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
-
 public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClientUseCase
 {
     private readonly IPotentialClientRepository _potentialClientRepository;
+    private readonly IProposalRepository _proposalRepository;
 
-    public AddProposalToPotentialClientUseCase(IPotentialClientRepository potentialClientRepository)
+    public AddProposalToPotentialClientUseCase(
+        IPotentialClientRepository potentialClientRepository,
+        IProposalRepository proposalRepository)
     {
         _potentialClientRepository = potentialClientRepository;
+        _proposalRepository = proposalRepository;
     }
 
     public async Task<string> Execute(string clientId, CreateProposalDto proposalDto)
     {
-        // Validar ID del cliente
         if (string.IsNullOrWhiteSpace(clientId))
             throw new ArgumentException("El ID del cliente es requerido");
 
-        // Validar DTO
         if (proposalDto == null)
             throw new ArgumentNullException(nameof(proposalDto));
 
-        // Verificar si existe el cliente
-        _ = await _potentialClientRepository.GetByIdPotencialClient(clientId)
+        var client = await _potentialClientRepository.GetByIdPotencialClient(clientId)
             ?? throw new InvalidOperationException($"No se encontró el cliente con ID: {clientId}");
 
-        // Crear nueva propuesta
-        Proposal? proposal = new()
+        var proposal = new Proposal
         {
-            Title = proposalDto.Title,
-            Description = proposalDto.Description,
-            Amount = proposalDto.Amount,
-            Status = "Pendiente",
-            CreationDate = DateTime.UtcNow
+            ClientId = clientId,
+            Number = GenerateProposalNumber(),
+            Status = new ProposalStatus
+            {
+                Proposal = "Pendiente",
+                Sending = "No enviado",
+                Review = "Sin revisar"
+            },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            History = new List<ProposalHistory>
+            {
+                new() {
+                    Action = "Creación de propuesta",
+                    Date = DateTime.UtcNow,
+                    PotentialClientId = clientId
+                }
+            }
         };
 
-        // Intentar agregar la propuesta
-        bool result = await _potentialClientRepository.AddProposalToPotentialClient(clientId, proposal);
+        var success = await _proposalRepository.CreateProposal(proposal);
+        if (!success)
+            throw new InvalidOperationException("No se pudo crear la propuesta");
 
-        if (!result)
-            throw new InvalidOperationException("No se pudo agregar la propuesta al cliente");
+        return "Propuesta creada exitosamente";
+    }
 
-        return "Propuesta agregada exitosamente";
+    private string GenerateProposalNumber()
+    {
+        return $"PROP-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8)}";
     }
 }

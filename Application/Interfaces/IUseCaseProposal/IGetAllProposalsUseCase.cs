@@ -4,5 +4,5 @@ namespace SagaAserhi.Application.Interfaces.IUseCaseProposal;
 
 public interface IGetAllProposalsUseCase
 {
-    Task<List<ProposalDto>> Execute(int pageNumber, int pageSize);
+    Task<(List<ProposalDto> Proposals, int TotalCount)> Execute(int pageNumber, int pageSize);
 }

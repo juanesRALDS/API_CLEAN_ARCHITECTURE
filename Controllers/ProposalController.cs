@@ -48,23 +48,29 @@ public class ProposalController : ControllerBase
         }
     }
 
-    [HttpPost("{id}/proposals")]
-    public async Task<IActionResult> AddProposal(string id, [FromBody] CreateProposalDto dto)
+    [HttpPost("clients/{clientId}/proposals")]
+    public async Task<IActionResult> CreateProposal(string clientId, [FromBody] CreateProposalDto dto)
     {
         try
         {
-            string? result = await _addProposalToPotentialClientUseCase.Execute(id, dto);
-            return Ok(result);
+            var result = await _addProposalToPotentialClientUseCase.Execute(clientId, dto);
+            return Ok(new { Message = result });
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { Error = ex.Message });
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            return StatusCode(500, ex.Message);
+            return NotFound(new { Error = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Error = "Error interno del servidor" });
         }
     }
+
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateProposalDto dto)
     {
