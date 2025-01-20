@@ -9,6 +9,6 @@ public interface IProposalRepository
     Task<bool> CreateProposal(Proposal proposal);
     Task<bool> UpdateProposal(string id, Proposal proposal);
     Task<IEnumerable<Proposal>> GetAllAsync(CancellationToken cancellationToken);
-    Task<bool> UpdateProposalSite(string proposalId, string siteId);
+    Task<bool> UpdateProposalSite(string proposalId, Site site);
     Task<bool> HasExistingSite(string proposalId);
 }

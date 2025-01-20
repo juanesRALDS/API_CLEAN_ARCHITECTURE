@@ -1,0 +1,72 @@
+// Application/UseCases/ContractUseCase/GetAllContractsUseCase.cs
+
+using SagaAserhi.Application.DTO.ContractsDtos;
+using SagaAserhi.Application.Interfaces.IContractsUseCase;
+using SagaAserhi.Application.Interfaces.IRepository;
+
+namespace SagaAserhi.Application.UseCases.ContractsUseCase;
+
+public class GetAllContractsUseCase : IGetAllContractsUseCase
+{
+    private readonly IContractRepository _contractRepository;
+
+    public GetAllContractsUseCase(IContractRepository contractRepository)
+    {
+        _contractRepository = contractRepository;
+    }
+
+    public async Task<(List<ContractDto>, int)> Execute(int pageNumber, int pageSize)
+    {
+        if (pageNumber <= 0)
+            throw new ArgumentException("El número de página debe ser mayor que 0");
+        if (pageSize <= 0)
+            throw new ArgumentException("El tamaño de página debe ser mayor que 0");
+
+        try
+        {
+            var (contracts, totalCount) = await _contractRepository.GetAllContracts(pageNumber, pageSize);
+            
+            var contractsDto = contracts.Select(c => new ContractDto
+            {
+                Id = c.Id,
+                ProposalId = c.ProposalId,
+                ClientId = c.ClientId,
+                Number = c.Number,
+                Status = c.Status,
+                Dates = new ContractDatesDto
+                {
+                    Start = c.Dates.Start,
+                    End = c.Dates.End
+                },
+                Documents = new DocumentsDto
+                {
+                    Annexes = c.Documents.Annexes.Select(a => new AnnexDto
+                    {
+                        Name = a.Name,
+                        Path = a.Path,
+                        UploadDate = a.UploadDate
+                    }).ToList(),
+                    Clauses = c.Documents.Clauses.Select(cl => new ClauseDto
+                    {
+                        Content = cl.Content
+                    }).ToList()
+                },
+                History = c.History.Select(h => new ContractHistoryDto
+                {
+                    Status = h.Status,
+                    Date = h.Date,
+                    Observation = h.Observation,
+                    UserId = h.UserId
+                }).ToList(),
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt
+            }).ToList();
+
+            return (contractsDto, totalCount);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al obtener los contratos: {ex.Message}", ex);
+        }
+    }
+}

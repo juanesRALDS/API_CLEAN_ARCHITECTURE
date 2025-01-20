@@ -1,4 +1,4 @@
-using SagaAserhi.Domain.Entities;
+
 
 namespace SagaAserhi.Application.DTO.ProposalDtos;
 public class ProposalDto
@@ -9,6 +9,7 @@ public class ProposalDto
     public ProposalStatusDto Status { get; set; } = new();
     public List<SiteDto> Sites { get; set; } = new();
     public List<ProposalHistoryDto> History { get; set; } = new();
+    public PaymentDto Payment { get; set; } = new();
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public string CompanyBusinessName { get; set; } = string.Empty;
@@ -46,4 +47,11 @@ public class ProposalHistoryDto
     public DateTime Date { get; set; }
     public string PotentialClientId { get; set; } = string.Empty;
     public string Action { get; set; } = string.Empty;
+}
+
+public class PaymentDto
+{
+    public string Method { get; set; } = string.Empty;
+    public string Frequency { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
 }

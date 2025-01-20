@@ -23,7 +23,6 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
         try
         {
             var (proposals, totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize);
-
             var proposalsDto = new List<ProposalDto>();
 
             foreach (var proposal in proposals)
@@ -35,37 +34,44 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
                     Id = proposal.Id,
                     ClientId = proposal.ClientId,
                     Number = proposal.Number,
-                    CompanyBusinessName = client?.BusinessInfo.TradeName ?? string.Empty,
+                    CompanyBusinessName = client?.BusinessInfo?.TradeName ?? string.Empty,
                     Status = new ProposalStatusDto
                     {
-                        Proposal = proposal.Status.Proposal,
-                        Sending = proposal.Status.Sending,
-                        Review = proposal.Status.Review
+                        Proposal = proposal.Status?.Proposal ?? string.Empty,
+                        Sending = proposal.Status?.Sending ?? string.Empty,
+                        Review = proposal.Status?.Review ?? string.Empty
                     },
-                    Sites = proposal.Sites.Select(s => new SiteDto
+                    Sites = proposal.Sites?.Select(s => new SiteDto
                     {
                         Id = s.Id,
-                        Name = s.Name,
-                        Address = s.Address,
-                        City = s.City,
-                        Phone = s.Phone,
-                        Wastes = s.Wastes.Select(w => new WasteDto
+                        Name = s.Name ?? string.Empty,
+                        Address = s.Address ?? string.Empty,
+                        City = s.City ?? string.Empty,
+                        Phone = s.Phone ?? string.Empty,
+                        Wastes = s.Wastes?.Select(w => new WasteDto
                         {
-                            Type = w.Type,
-                            Classification = w.Classification,
-                            Treatment = w.Treatment,
-                            Frequency = w.Frequency,
+                            Type = w.Type ?? string.Empty,
+                            Classification = w.Classification ?? string.Empty,
+                            Treatment = w.Treatment ?? string.Empty,
+                            Frequency = w.Frequency ?? string.Empty,
                             Price = w.Price
-                        }).ToList()
-                    }).ToList(),
-                    History = proposal.History.Select(h => new ProposalHistoryDto
+                        }).ToList() ?? new List<WasteDto>()
+                    }).ToList() ?? new List<SiteDto>(),
+                    History = proposal.History?.Select(h => new ProposalHistoryDto
                     {
                         Date = h.Date,
-                        PotentialClientId = h.PotentialClientId,
-                        Action = h.Action
-                    }).ToList(),
+                        PotentialClientId = h.PotentialClientId ?? string.Empty,
+                        Action = h.Action ?? string.Empty
+                    }).ToList() ?? new List<ProposalHistoryDto>(),
+                    Payment = new PaymentDto
+                    {
+                        Method = proposal.Payment?.Method ?? string.Empty,
+                        Frequency = proposal.Payment?.Frequency ?? string.Empty,
+                        Amount = proposal.Payment?.Amount ?? 0
+                    },
                     CreatedAt = proposal.CreatedAt,
                     UpdatedAt = proposal.UpdatedAt
+
                 };
 
                 proposalsDto.Add(proposalDto);

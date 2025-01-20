@@ -35,13 +35,16 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 City = request.SiteInfo.City,
                 Phone = request.SiteInfo.Phone,
                 ProposalId = request.ProposalId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Wastes = new List<Waste>()
             };
 
+            // Crear el sitio y actualizar la propuesta
             await _siteRepository.CreateAsync(site);
+            var updated = await _proposalRepository.UpdateProposalSite(request.ProposalId, site);
 
-            // Actualizar la propuesta con el nuevo sitio
-            await _proposalRepository.UpdateProposalSite(request.ProposalId, site.Id);
+            if (!updated)
+                throw new InvalidOperationException("No se pudo actualizar la propuesta con el nuevo sitio");
 
             return new SiteDtos
             {

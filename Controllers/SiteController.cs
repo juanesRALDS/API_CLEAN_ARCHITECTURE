@@ -41,19 +41,22 @@ public class SitesController : ControllerBase
             };
 
             var result = await _createSiteUseCase.Execute(siteRequest);
-            return Created($"/api/proposals/{proposalId}/sites/{result.Id}", result);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
+
+            return Created($"/api/proposals/{proposalId}/sites/{result.Id}", new
+            {
+                success = true,
+                data = result,
+                message = "Sitio creado exitosamente"
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "Error al crear el sitio",
+                error = ex.Message
+            });
         }
     }
 

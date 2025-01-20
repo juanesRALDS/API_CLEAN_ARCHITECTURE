@@ -21,39 +21,20 @@ namespace SagaAserhi.Infrastructure.Repositories
         {
             try
             {
-                var skip = (pageNumber - 1) * pageSize;
-
-                var pipeline = new[]
-                {
-                new BsonDocument("$sort", new BsonDocument("createdAt", -1)),
-                new BsonDocument("$skip", skip),
-                new BsonDocument("$limit", pageSize),
-                new BsonDocument("$lookup", new BsonDocument
-                {
-                    { "from", "potentialClients" },
-                    { "localField", "clientId" },
-                    { "foreignField", "_id" },
-                    { "as", "potentialClient" }
-                }),
-                new BsonDocument("$unwind", new BsonDocument
-                {
-                    { "path", "$potentialClient" },
-                    { "preserveNullAndEmptyArrays", true }
-                })
-            };
+                var filter = Builders<Proposal>.Filter.Empty;
+                var sort = Builders<Proposal>.Sort.Descending(x => x.CreatedAt);
 
                 var proposals = await _proposalCollection
-                    .Aggregate<Proposal>(pipeline)
+                    .Find(filter)
+                    .Sort(sort)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Limit(pageSize)
                     .ToListAsync();
 
-                var totalCount = await _proposalCollection.CountDocumentsAsync(new BsonDocument());
+                var totalCount = await _proposalCollection.CountDocumentsAsync(filter);
 
                 // Log para diagnóstico
                 Console.WriteLine($"Repository - Found {proposals.Count} proposals");
-                foreach (var proposal in proposals)
-                {
-                    Console.WriteLine($"Proposal ID: {proposal.Id}, Client ID: {proposal.ClientId}");
-                }
 
                 return (proposals, (int)totalCount);
             }
@@ -115,12 +96,14 @@ namespace SagaAserhi.Infrastructure.Repositories
             return proposal?.Sites.Any() ?? false;
         }
 
-        public async Task<bool> UpdateProposalSite(string proposalId, string siteId)
+        public async Task<bool> UpdateProposalSite(string proposalId, Site site)
         {
             try
             {
                 var filter = Builders<Proposal>.Filter.Eq(p => p.Id, proposalId);
-                var update = Builders<Proposal>.Update.Push(p => p.Sites, new Site { Id = siteId });
+                var update = Builders<Proposal>.Update
+                    .Push(p => p.Sites, site)
+                    .Set(p => p.UpdatedAt, DateTime.UtcNow);
 
                 var result = await _proposalCollection.UpdateOneAsync(filter, update);
                 return result.ModifiedCount > 0;

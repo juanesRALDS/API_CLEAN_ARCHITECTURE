@@ -14,17 +14,7 @@ namespace SagaAserhi.Domain.Entities
         public DateTime End { get; set; }
     }
 
-    public class Payment
-    {
-        [BsonElement("method")]
-        public string Method { get; set; } = string.Empty;
 
-        [BsonElement("frequency")]
-        public string Frequency { get; set; } = string.Empty;
-
-        [BsonElement("amount")]
-        public decimal Amount { get; set; }
-    }
 
     public class Annex
     {
@@ -94,9 +84,6 @@ namespace SagaAserhi.Domain.Entities
 
         [BsonElement("dates")]
         public ContractDates Dates { get; set; } = new ContractDates();
-
-        [BsonElement("payment")]
-        public Payment Payment { get; set; } = new Payment();
 
         [BsonElement("documents")]
         public Documents Documents { get; set; } = new Documents();

@@ -31,6 +31,18 @@ namespace SagaAserhi.Domain.Entities
         public string PotentialClientId { get; set; } = string.Empty;
     }
 
+    public class Payment
+    {
+        [BsonElement("method")]
+        public string Method { get; set; } = string.Empty;
+
+        [BsonElement("frequency")]
+        public string Frequency { get; set; } = string.Empty;
+
+        [BsonElement("amount")]
+        public decimal Amount { get; set; }
+    }
+
     public class Proposal
     {
         [BsonId]

@@ -27,6 +27,8 @@ using SagaAserhi.Application.UseCases.SiteUseCase;
 using SagaAserhi.Application.Interfaces.AttachmentUseCase;
 using SagaAserhi.Application.UseCases.AttachmentUseCase;
 using MongoDB.Bson.Serialization;
+using SagaAserhi.Application.Interfaces.IContractsUseCase;
+using SagaAserhi.Application.UseCases.ContractsUseCase;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -71,8 +73,8 @@ builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
 builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
 builder.Services.AddScoped<IExportPotentialClientPdfUseCase, ExportPotentialClientPdfUseCase>();
 builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
-
-
+builder.Services.AddScoped<IGetAllContractsUseCase, GetAllContractsUseCase>();
+// Program.cs
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -80,6 +82,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPotentialClientRepository, PotentialClientRepository>();
 builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
 
 builder.Services.AddScoped<IEmailService, EmailService>();

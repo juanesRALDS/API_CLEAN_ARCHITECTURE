@@ -7,34 +7,37 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SagaAserhi.Domain.Entities
 {
-   public class Site
-{
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-    
-    [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
-    
-    [BsonElement("address")]
-    public string Address { get; set; } = string.Empty;
-    
-    [BsonElement("city")]
-    public string City { get; set; } = string.Empty;
-    
-    [BsonElement("phone")]
-    public string Phone { get; set; } = string.Empty;
-    
-    [BsonElement("proposalId")]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string ProposalId { get; set; } = string.Empty;
-    
-    [BsonElement("createdAt")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
-    [BsonElement("wastes")]
-    public List<Waste> Wastes { get; set; } = new List<Waste>();
-}
+    public class Site
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+
+        [BsonElement("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [BsonElement("address")]
+        public string Address { get; set; } = string.Empty;
+
+        [BsonElement("city")]
+        public string City { get; set; } = string.Empty;
+
+        [BsonElement("phone")]
+        public string Phone { get; set; } = string.Empty;
+
+        [BsonElement("proposalId")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ProposalId { get; set; } = string.Empty;
+
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("wastes")]
+        public List<Waste> Wastes { get; set; } = new List<Waste>();
+
+        [BsonElement("Payment")]
+        public Payment Payment { get; set; } = new Payment();
+    }
 
 
     public class Waste
