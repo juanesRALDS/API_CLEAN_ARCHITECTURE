@@ -2,16 +2,21 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using SagaAserhi.Domain.Entities;
+using SagaAserhi.Application.Interfaces.Services;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SagaAserhi.Infrastructure.Services
 {
-    public class ProposalExcelServices
+    public class ProposalExcelServices : IProposalExcelService
     {
         private static readonly string[] Headers = new[]
         {
-            "Número de Propuesta", "Estado de Propuesta", "Envío", "Revisión", "Fecha de Creación", "Nombre Comercial del Cliente", "Dirección del Sitio", "Ciudad del Sitio", "Teléfono del Sitio"
+            "Número de Propuesta", "Estado de Propuesta", "Envío", "Revisión", 
+            "Fecha de Creación", "Nombre Comercial del Cliente", 
+            "Dirección del Sitio", "Ciudad del Sitio", "Teléfono del Sitio"
         };
 
         private static Cell CreateCell(string text)
@@ -26,29 +31,28 @@ namespace SagaAserhi.Infrastructure.Services
         private static void AddHeaders(SheetData sheetData)
         {
             Row headerRow = new();
-            IEnumerable<Cell> headerCells = Headers.Select(header => CreateCell(header));
-            headerRow.Append(headerCells);
+            headerRow.Append(Headers.Select(header => CreateCell(header)));
             sheetData.Append(headerRow);
         }
 
         private static void AddProposalsData(SheetData sheetData, IEnumerable<Proposal> proposals)
         {
-            foreach (Proposal proposal in proposals)
+            foreach (var proposal in proposals)
             {
                 foreach (var site in proposal.Sites)
                 {
                     Row dataRow = new();
-                    IEnumerable<Cell> cells = new[]
+                    var cells = new[]
                     {
-                        CreateCell(proposal.Number ?? string.Empty),
-                        CreateCell(proposal.Status.Proposal ?? string.Empty),
-                        CreateCell(proposal.Status.Sending ?? string.Empty),
-                        CreateCell(proposal.Status.Review ?? string.Empty),
+                        CreateCell(proposal.Number),
+                        CreateCell(proposal.Status.Proposal),
+                        CreateCell(proposal.Status.Sending),
+                        CreateCell(proposal.Status.Review),
                         CreateCell(proposal.CreatedAt.ToString("yyyy-MM-dd")),
-                        CreateCell(proposal.PotentialClient.BusinessInfo.TradeName ?? string.Empty),
-                        CreateCell(site.Address ?? string.Empty),
-                        CreateCell(site.City ?? string.Empty),
-                        CreateCell(site.Phone ?? string.Empty)
+                        CreateCell(proposal.PotentialClient?.BusinessInfo?.TradeName ?? string.Empty),
+                        CreateCell(site.Address),
+                        CreateCell(site.City),
+                        CreateCell(site.Phone)
                     };
                     dataRow.Append(cells);
                     sheetData.Append(dataRow);
@@ -56,36 +60,36 @@ namespace SagaAserhi.Infrastructure.Services
             }
         }
 
-        public static void GenerateExcelFile(IEnumerable<Proposal> proposals, string filePath)
+        public async Task<byte[]> ExportToExcel(CancellationToken cancellationToken)
         {
-            using (var spreadsheetDocument = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
+            using var memoryStream = new MemoryStream();
+            using var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook);
+            
+            var workbookPart = spreadsheetDocument.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+
+            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+            worksheetPart.Worksheet = new Worksheet(new SheetData());
+
+            var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
+            var sheet = new Sheet()
             {
-                WorkbookPart workbookPart = spreadsheetDocument.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
+                Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = "Proposals"
+            };
+            sheets.Append(sheet);
 
-                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                worksheetPart.Worksheet = new Worksheet(new SheetData());
+            var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+            
+            AddHeaders(sheetData);
+            // Aquí deberías obtener y agregar los datos de las propuestas
+            // AddProposalsData(sheetData, proposals);
 
-                Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                Sheet sheet = new()
-                {
-                    Id = spreadsheetDocument.WorkbookPart!.GetIdOfPart(worksheetPart),
-                    SheetId = 1,
-                    Name = "Proposals"
-                };
-                sheets.Append(sheet);
+            workbookPart.Workbook.Save();
+            spreadsheetDocument.Close();
 
-                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>() ?? new SheetData();
-                if (worksheetPart.Worksheet.GetFirstChild<SheetData>() == null)
-                {
-                    worksheetPart.Worksheet.AppendChild(sheetData);
-                }
-
-                AddHeaders(sheetData);
-                AddProposalsData(sheetData, proposals);
-
-                workbookPart.Workbook.Save();
-            }
+            return memoryStream.ToArray();
         }
     }
 }

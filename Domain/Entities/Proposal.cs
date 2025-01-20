@@ -6,9 +6,6 @@ using System.Collections.Generic;
 namespace SagaAserhi.Domain.Entities
 {
 
-
-
-
     public class ProposalStatus
     {
         [BsonElement("proposal")]

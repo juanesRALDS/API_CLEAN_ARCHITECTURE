@@ -1,5 +1,4 @@
-
-namespace SagaAserhi.Infrastructure.Services;
+namespace SagaAserhi.Application.Interfaces.Services;
 
 public interface IProposalExcelService
 {

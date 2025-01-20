@@ -27,22 +27,29 @@ public class ProposalController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProposalDto>>> GetAll(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<dynamic>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            var result = await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
-            return Ok(result);
+            var (proposals, totalCount) = await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = proposals,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new { Success = false, Message = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            return StatusCode(500, new { Success = false, Message = "Error interno del servidor", Error = ex.Message });
         }
     }
 

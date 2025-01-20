@@ -1,5 +1,5 @@
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
-using SagaAserhi.Infrastructure.Services;
+using SagaAserhi.Application.Interfaces.Services;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 

@@ -7,43 +7,76 @@ using SagaAserhi.Domain.Entities;
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 public class GetAllProposalsUseCase : IGetAllProposalsUseCase
 {
-    private readonly IProposalRepository _repository;
 
-    public GetAllProposalsUseCase(IProposalRepository repository)
+    private readonly IPotentialClientRepository _clientRepository;
+    private IProposalRepository _proposalrepository;
+
+
+    public GetAllProposalsUseCase(IProposalRepository proposalrepository, IPotentialClientRepository clientRepository)
     {
-        _repository = repository;
+        _proposalrepository = proposalrepository;
+        _clientRepository = clientRepository;
     }
 
-    public async Task<(List<ProposalDto> Proposals, int TotalCount)> Execute(int pageNumber, int pageSize)
+    public async Task<(List<ProposalDto>, int)> Execute(int pageNumber, int pageSize)
     {
-        if (pageNumber <= 0)
-            throw new ArgumentException("El número de página debe ser mayor a 0", nameof(pageNumber));
-
-        if (pageSize <= 0)
-            throw new ArgumentException("El tamaño de página debe ser mayor a 0", nameof(pageSize));
-
         try
         {
-            var (proposals, totalCount) = await _repository.GetAllProposals(pageNumber, pageSize);
+            var (proposals, totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize);
 
-            var proposalsDto = proposals.Select(p => new ProposalDto
+            var proposalsDto = new List<ProposalDto>();
+
+            foreach (var proposal in proposals)
             {
-                Id = p.Id,
-                ClientId = p.ClientId,
-                Number = p.Number,
-                Status = p.Status,
-                Sites = p.Sites,
-                History = p.History,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt,
-                CompanyBusinessName = p.PotentialClient?.BusinessInfo.TradeName ?? string.Empty
-            }).ToList();
+                var client = await _clientRepository.GetByIdPotencialClient(proposal.ClientId);
+
+                var proposalDto = new ProposalDto
+                {
+                    Id = proposal.Id,
+                    ClientId = proposal.ClientId,
+                    Number = proposal.Number,
+                    CompanyBusinessName = client?.BusinessInfo.TradeName ?? string.Empty,
+                    Status = new ProposalStatusDto
+                    {
+                        Proposal = proposal.Status.Proposal,
+                        Sending = proposal.Status.Sending,
+                        Review = proposal.Status.Review
+                    },
+                    Sites = proposal.Sites.Select(s => new SiteDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Address = s.Address,
+                        City = s.City,
+                        Phone = s.Phone,
+                        Wastes = s.Wastes.Select(w => new WasteDto
+                        {
+                            Type = w.Type,
+                            Classification = w.Classification,
+                            Treatment = w.Treatment,
+                            Frequency = w.Frequency,
+                            Price = w.Price
+                        }).ToList()
+                    }).ToList(),
+                    History = proposal.History.Select(h => new ProposalHistoryDto
+                    {
+                        Date = h.Date,
+                        PotentialClientId = h.PotentialClientId,
+                        Action = h.Action
+                    }).ToList(),
+                    CreatedAt = proposal.CreatedAt,
+                    UpdatedAt = proposal.UpdatedAt
+                };
+
+                proposalsDto.Add(proposalDto);
+            }
 
             return (proposalsDto, totalCount);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
+            Console.WriteLine($"UseCase Error: {ex.Message}");
+            throw;
         }
     }
 }

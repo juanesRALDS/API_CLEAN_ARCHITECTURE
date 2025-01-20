@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
 using SagaAserhi.Infrastructure.Context;
@@ -13,64 +14,52 @@ namespace SagaAserhi.Infrastructure.Repositories
 
         public ProposalRepository(MongoDbContext context)
         {
-            _proposalCollection = context.GetCollection<Proposal>("proposals");
-        }
+            _proposalCollection = context.GetCollection<Proposal>("proposals"); ;
 
+        }
         public async Task<(List<Proposal> Proposals, int TotalCount)> GetAllProposals(int pageNumber, int pageSize)
         {
             try
             {
-                var countFacet = AggregateFacet.Create("count",
-                    PipelineDefinition<Proposal, AggregateCountResult>.Create(new[]
-                    {
-                        PipelineStageDefinitionBuilder.Count<Proposal>()
-                    }));
-
-                var dataFacet = AggregateFacet.Create("data",
-                    PipelineDefinition<Proposal, Proposal>.Create(new[]
-                    {
-                        PipelineStageDefinitionBuilder.Skip<Proposal>((pageNumber - 1) * pageSize),
-                        PipelineStageDefinitionBuilder.Limit<Proposal>(pageSize)
-                    }));
+                var skip = (pageNumber - 1) * pageSize;
 
                 var pipeline = new[]
                 {
-                    new BsonDocument("$lookup", new BsonDocument
-                    {
-                        { "from", "potentialClients" },
-                        { "localField", "clientId" },
-                        { "foreignField", "_id" },
-                        { "as", "client" }
-                    }),
-                    new BsonDocument("$unwind", new BsonDocument
-                    {
-                        { "path", "$client" },
-                        { "preserveNullAndEmptyArrays", true }
-                    }),
-                    new BsonDocument("$project", new BsonDocument
-                    {
-                        { "_id", 1 },
-                        { "clientId", 1 },
-                        { "number", 1 },
-                        { "status", 1 },
-                        { "sites", 1 },
-                        { "history", 1 },
-                        { "createdAt", 1 },
-                        { "updatedAt", 1 },
-                        { "companyBusinessName", "$client.businessInfo.businessName" }
-                    })
-                };
+                new BsonDocument("$sort", new BsonDocument("createdAt", -1)),
+                new BsonDocument("$skip", skip),
+                new BsonDocument("$limit", pageSize),
+                new BsonDocument("$lookup", new BsonDocument
+                {
+                    { "from", "potentialClients" },
+                    { "localField", "clientId" },
+                    { "foreignField", "_id" },
+                    { "as", "potentialClient" }
+                }),
+                new BsonDocument("$unwind", new BsonDocument
+                {
+                    { "path", "$potentialClient" },
+                    { "preserveNullAndEmptyArrays", true }
+                })
+            };
 
-                var aggregation = await _proposalCollection
+                var proposals = await _proposalCollection
                     .Aggregate<Proposal>(pipeline)
                     .ToListAsync();
 
                 var totalCount = await _proposalCollection.CountDocumentsAsync(new BsonDocument());
 
-                return (aggregation, (int)totalCount);
+                // Log para diagnóstico
+                Console.WriteLine($"Repository - Found {proposals.Count} proposals");
+                foreach (var proposal in proposals)
+                {
+                    Console.WriteLine($"Proposal ID: {proposal.Id}, Client ID: {proposal.ClientId}");
+                }
+
+                return (proposals, (int)totalCount);
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Repository Error: {ex.Message}");
                 throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
             }
         }

@@ -26,6 +26,7 @@ using SagaAserhi.Application.Interfaces.ISiteUseCase;
 using SagaAserhi.Application.UseCases.SiteUseCase;
 using SagaAserhi.Application.Interfaces.AttachmentUseCase;
 using SagaAserhi.Application.UseCases.AttachmentUseCase;
+using MongoDB.Bson.Serialization;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -44,19 +45,19 @@ builder.Services.AddScoped<IMongoCollection<User>>(sp =>
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<JwtConfig>>().Value);
-    
+
 
 // **3. Registro de dependencias**  
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IGetUserByTokenUseCase,GetUserByTokenUseCase>();
-builder.Services.AddScoped<IGetAllUsersUseCase,GetAllUsersUseCase>();
-builder.Services.AddScoped<IUpdateUserUseCase,UpdateUserUseCase>();
-builder.Services.AddScoped<IDeleteUserUseCase,DeleteUserUseCase>();
-builder.Services.AddScoped<IGetUserByIdUseCase,GetUserByIdUseCase>();
+builder.Services.AddScoped<IGetUserByTokenUseCase, GetUserByTokenUseCase>();
+builder.Services.AddScoped<IGetAllUsersUseCase, GetAllUsersUseCase>();
+builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
+builder.Services.AddScoped<IDeleteUserUseCase, DeleteUserUseCase>();
+builder.Services.AddScoped<IGetUserByIdUseCase, GetUserByIdUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUserUseCase>();
 builder.Services.AddScoped<IRegisterUseCase, RegisterUseCase>();
-builder.Services.AddScoped<IUpdatePasswordUseCase,UpdatePasswordUseCase>();
-builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase,GeneratePasswordResetTokenUseCase>();
+builder.Services.AddScoped<IUpdatePasswordUseCase, UpdatePasswordUseCase>();
+builder.Services.AddScoped<IGeneratePasswordResetTokenUseCase, GeneratePasswordResetTokenUseCase>();
 builder.Services.AddScoped<IGetAllPotentialClientsWithProposalsUseCase, GetAllPotentialClientsWithProposalsUseCase>();
 builder.Services.AddScoped<ICreatePotentialClientUseCase, CreatePotentialClientUseCase>();
 builder.Services.AddScoped<IUpdatePotentialClientUseCase, UpdatePotentialClientUseCase>();
@@ -68,14 +69,14 @@ builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUse
 builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
 builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
 builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
-builder.Services.AddScoped<IExportPotentialClientPdfUseCase,ExportPotentialClientPdfUseCase >();
+builder.Services.AddScoped<IExportPotentialClientPdfUseCase, ExportPotentialClientPdfUseCase>();
 builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
 
 
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();  
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPotentialClientRepository, PotentialClientRepository>();
 builder.Services.AddScoped<IProposalRepository, ProposalRepository>();
 builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
@@ -83,13 +84,20 @@ builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
-builder.Services.AddScoped<IPasswordHasher,SagaAserhi.Infrastructure.Services.PasswordHasher>();
-builder.Services.AddScoped<IPotentialClientExcelService, PotentialClientExcelService>();
+builder.Services.AddScoped<IPasswordHasher, SagaAserhi.Infrastructure.Services.PasswordHasher>();
+builder.Services.AddScoped<IPotentialClientExcelServices, PotentialClientExcelServices>();
 builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();
-builder.Services.AddScoped<ISiteRepository, SiteRepository>();   
-builder.Services.AddScoped<IPotentialClientPdfService, PotentialClientPdfService>();   
+builder.Services.AddScoped<ISiteRepository, SiteRepository>();
+builder.Services.AddScoped<IPotentialClientPdfService, PotentialClientPdfService>();
 
-
+BsonClassMap.RegisterClassMap<BusinessInfo>(cm =>
+{
+    cm.AutoMap();
+    cm.MapMember(c => c.TradeName).SetElementName("tradeName");
+    cm.MapMember(c => c.EconomicActivity).SetElementName("economicActivity");
+    cm.MapMember(c => c.Email).SetElementName("email");
+    cm.MapMember(c => c.Phone).SetElementName("phone");
+});
 
 // **4. Configuración de JWT Authentication**
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

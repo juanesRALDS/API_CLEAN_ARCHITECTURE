@@ -22,14 +22,15 @@ public class PotentialClientRepository : IPotentialClientRepository
     {
         try
         {
-            FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Empty;
-            List<PotentialClient>? clients = await _Clientcollection
-               .Find(filter)
-               .Skip((pageNumber - 1) * pageSize)
-               .Limit(pageSize)
-               .ToListAsync();
+            var filter = Builders<PotentialClient>.Filter.Empty;
+            var sort = Builders<PotentialClient>.Sort.Descending(x => x.CreatedAt);
 
-            return clients;
+            return await _Clientcollection
+                .Find(filter)
+                .Sort(sort)
+                .Skip((pageNumber - 1) * pageSize)
+                .Limit(pageSize)
+                .ToListAsync() ?? new List<PotentialClient>();
         }
         catch (Exception ex)
         {

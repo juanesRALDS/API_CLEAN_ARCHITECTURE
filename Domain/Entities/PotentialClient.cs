@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace SagaAserhi.Domain.Entities
 {
+    [BsonIgnoreExtraElements]
+
     public class Identification
     {
         [BsonElement("type")]
@@ -14,6 +16,7 @@ namespace SagaAserhi.Domain.Entities
         public string Number { get; set; } = string.Empty;
     }
 
+    [BsonIgnoreExtraElements]
     public class BusinessInfo
     {
 
@@ -63,6 +66,7 @@ namespace SagaAserhi.Domain.Entities
         public List<StatusHistory> History { get; set; } = new List<StatusHistory>();
     }
 
+    [BsonIgnoreExtraElements]
     public class PotentialClient
     {
         [BsonId]
@@ -70,16 +74,16 @@ namespace SagaAserhi.Domain.Entities
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("identification")]
-        public Identification Identification { get; set; } = new Identification();
+        public Identification Identification { get; set; } = new();
 
         [BsonElement("businessInfo")]
-        public BusinessInfo BusinessInfo { get; set; } = new BusinessInfo();
+        public BusinessInfo BusinessInfo { get; set; } = new();
 
         [BsonElement("location")]
-        public Location Location { get; set; } = new Location();
+        public Location Location { get; set; } = new();
 
         [BsonElement("status")]
-        public Status Status { get; set; } = new Status();
+        public Status Status { get; set; } = new();
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; }

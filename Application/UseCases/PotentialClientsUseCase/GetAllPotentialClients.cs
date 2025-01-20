@@ -1,11 +1,6 @@
-using SagaAserhi.Application.DTO;
 using SagaAserhi.Application.DTO.PotentialClientDto;
-using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
-using SagaAserhi.Domain.Entities;
-
-namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
 public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClientsWithProposalsUseCase
 {
@@ -19,10 +14,10 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
     public async Task<List<PotentialClientDto>> Execute(int pageNumber, int pageSize)
     {
         if (pageNumber <= 0)
-            throw new ArgumentException("Page number must be greater than 0.", nameof(pageNumber));
+            throw new ArgumentException("El número de página debe ser mayor que 0.", nameof(pageNumber));
 
         if (pageSize <= 0)
-            throw new ArgumentException("Page size must be greater than 0.", nameof(pageSize));
+            throw new ArgumentException("El tamaño de página debe ser mayor que 0.", nameof(pageSize));
 
         try
         {
@@ -31,10 +26,35 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
             return clients.Select(c => new PotentialClientDto
             {
                 Id = c.Id,
-                Identification = c.Identification,
-                BusinessInfo = c.BusinessInfo,
-                Location = c.Location,
-                Status = c.Status,
+                Identification = new IdentificationDto
+                {
+                    Type = c.Identification.Type,
+                    Number = c.Identification.Number
+                },
+                BusinessInfo = new BusinessInfoDto
+                {
+                    
+                    TradeName = c.BusinessInfo.TradeName,
+                    EconomicActivity = c.BusinessInfo.EconomicActivity,
+                    Email = c.BusinessInfo.Email,
+                    Phone = c.BusinessInfo.Phone
+                },
+                Location = new LocationDto
+                {
+                    Address = c.Location.Address,
+                    City = c.Location.City,
+                    Department = c.Location.Department
+                },
+                Status = new StatusDto
+                {
+                    Current = c.Status.Current,
+                    History = c.Status.History.Select(h => new StatusHistoryDto
+                    {
+                        Status = h.Status,
+                        Date = h.Date,
+                        Observation = h.Observation
+                    }).ToList()
+                },
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             }).ToList();
