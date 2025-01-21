@@ -74,6 +74,8 @@ builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
 builder.Services.AddScoped<IExportPotentialClientPdfUseCase, ExportPotentialClientPdfUseCase>();
 builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
 builder.Services.AddScoped<IGetAllContractsUseCase, GetAllContractsUseCase>();
+builder.Services.AddScoped<ICreateContractUseCase, CreateContractUseCase >();
+
 // Program.cs
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -85,6 +87,7 @@ builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
 
+
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenServices>();
 builder.Services.AddScoped<IPasswordHasher, SagaAserhi.Infrastructure.Services.PasswordHasher>();
@@ -92,6 +95,7 @@ builder.Services.AddScoped<IPotentialClientExcelServices, PotentialClientExcelSe
 builder.Services.AddScoped<IProposalExcelService, ProposalExcelServices>();
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();
 builder.Services.AddScoped<IPotentialClientPdfService, PotentialClientPdfService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 BsonClassMap.RegisterClassMap<BusinessInfo>(cm =>
 {

@@ -38,4 +38,27 @@ public class ContractRepository : IContractRepository
             throw new Exception($"Error al obtener contratos: {ex.Message}", ex);
         }
     }
+
+    public async Task<bool> CreateContract(Contract contract)
+    {
+        try
+        {
+            await _contractCollection.InsertOneAsync(contract);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<Contract?> GetContractById(string id)
+    {
+        return await _contractCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<Contract>> GetContractsByProposalId(string proposalId)
+    {
+        return await _contractCollection.Find(x => x.ProposalId == proposalId).ToListAsync();
+    }
 }

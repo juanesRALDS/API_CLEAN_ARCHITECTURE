@@ -53,7 +53,6 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
                             Type = w.Type ?? string.Empty,
                             Classification = w.Classification ?? string.Empty,
                             Treatment = w.Treatment ?? string.Empty,
-                            Frequency = w.Frequency ?? string.Empty,
                             Price = w.Price
                         }).ToList() ?? new List<WasteDto>()
                     }).ToList() ?? new List<SiteDto>(),
@@ -63,12 +62,6 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
                         PotentialClientId = h.PotentialClientId ?? string.Empty,
                         Action = h.Action ?? string.Empty
                     }).ToList() ?? new List<ProposalHistoryDto>(),
-                    Payment = new PaymentDto
-                    {
-                        Method = proposal.Payment?.Method ?? string.Empty,
-                        Frequency = proposal.Payment?.Frequency ?? string.Empty,
-                        Amount = proposal.Payment?.Amount ?? 0
-                    },
                     CreatedAt = proposal.CreatedAt,
                     UpdatedAt = proposal.UpdatedAt
 

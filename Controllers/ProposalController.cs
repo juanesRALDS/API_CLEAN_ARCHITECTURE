@@ -54,11 +54,11 @@ public class ProposalController : ControllerBase
     }
 
     [HttpPost("clients/{clientId}/proposals")]
-    public async Task<IActionResult> CreateProposal(string clientId, [FromBody] CreateProposalDto dto)
+    public async Task<IActionResult> CreateProposal(string clientId)
     {
         try
         {
-            var result = await _addProposalToPotentialClientUseCase.Execute(clientId, dto);
+            var result = await _addProposalToPotentialClientUseCase.Execute(clientId);
             return Ok(new { Message = result });
         }
         catch (ArgumentException ex)

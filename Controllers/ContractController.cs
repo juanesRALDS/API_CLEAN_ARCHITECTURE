@@ -1,6 +1,8 @@
 // Controllers/ContractController.cs
 using Microsoft.AspNetCore.Mvc;
+using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Controllers;
 
@@ -9,10 +11,14 @@ namespace SagaAserhi.Controllers;
 public class ContractController : ControllerBase
 {
     private readonly IGetAllContractsUseCase _getAllContractsUseCase;
+    private readonly ICreateContractUseCase _createContractUseCase;
 
-    public ContractController(IGetAllContractsUseCase getAllContractsUseCase)
+    public ContractController(IGetAllContractsUseCase getAllContractsUseCase,
+            ICreateContractUseCase createContractUseCase)
     {
         _getAllContractsUseCase = getAllContractsUseCase;
+        _createContractUseCase = createContractUseCase;
+
     }
 
     [HttpGet]
@@ -21,7 +27,7 @@ public class ContractController : ControllerBase
         try
         {
             var (contracts, totalCount) = await _getAllContractsUseCase.Execute(pageNumber, pageSize);
-            
+
             return Ok(new
             {
                 Success = true,
@@ -39,6 +45,44 @@ public class ContractController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { Success = false, Message = "Error interno del servidor", Error = ex.Message });
+        }
+    }
+
+    [HttpPost("proposals/{proposalId}/contracts")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Contract>> CreateContract(
+        string proposalId,
+        [FromForm] CreateContractDto dto)
+    {
+        try
+        {
+            var result = await _createContractUseCase.Execute(proposalId, dto);
+
+            return Created($"/api/contracts/{result.Id}", new
+            {
+                success = true,
+                data = result,
+                message = "Contrato creado exitosamente"
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Error de validación",
+                error = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "Error al crear el contrato",
+                error = ex.Message
+            });
         }
     }
 }

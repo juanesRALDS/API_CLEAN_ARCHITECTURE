@@ -13,7 +13,6 @@ public class SiteRepository : ISiteRepository
     {
         _sites = database.GetCollection<Site>("Sites");
     }
-
     public async Task CreateAsync(Site site)
     {
         await _sites.InsertOneAsync(site);

@@ -20,7 +20,7 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
         var sheetData = new SheetData();
         worksheetPart.Worksheet = new Worksheet(sheetData);
 
-        var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+        var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
         var sheet = new Sheet()
         {
             Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),

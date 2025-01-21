@@ -19,13 +19,11 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
         _proposalRepository = proposalRepository;
     }
 
-    public async Task<string> Execute(string clientId, CreateProposalDto proposalDto)
+    public async Task<string> Execute(string clientId)
     {
         if (string.IsNullOrWhiteSpace(clientId))
             throw new ArgumentException("El ID del cliente es requerido");
 
-        if (proposalDto == null)
-            throw new ArgumentNullException(nameof(proposalDto));
 
         var client = await _potentialClientRepository.GetByIdPotencialClient(clientId)
             ?? throw new InvalidOperationException($"No se encontró el cliente con ID: {clientId}");
@@ -40,8 +38,6 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
                 Sending = "No enviado",
                 Review = "Sin revisar"
             },
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
             History = new List<ProposalHistory>
             {
                 new() {
@@ -49,7 +45,9 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
                     Date = DateTime.UtcNow,
                     PotentialClientId = clientId
                 }
-            }
+            },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         var success = await _proposalRepository.CreateProposal(proposal);

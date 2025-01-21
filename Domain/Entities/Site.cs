@@ -29,16 +29,29 @@ namespace SagaAserhi.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProposalId { get; set; } = string.Empty;
 
-        [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         [BsonElement("wastes")]
         public List<Waste> Wastes { get; set; } = new List<Waste>();
 
-        [BsonElement("Payment")]
-        public Payment Payment { get; set; } = new Payment();
+        [BsonElement("frequencies")]
+        public Frequency Frequencies { get; set; } = new Frequency();
+
+        [BsonElement("TotalPrice")]
+        public decimal TotalPrice { get; set; }
+
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
     }
 
+    public class Frequency 
+    {
+
+        [BsonElement("FrequencyOfTravel")]
+        public string FrequencyOfTravel { get; set; } = string.Empty;
+
+        [BsonElement("amount")]
+        public decimal Amount { get; set; }
+    }
 
     public class Waste
     {
@@ -51,12 +64,7 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("treatment")]
         public string Treatment { get; set; } = string.Empty;
 
-        [BsonElement("frequency")]
-        public string Frequency { get; set; } = string.Empty;
-
         [BsonElement("price")]
         public decimal Price { get; set; }
     }
-
-
 }

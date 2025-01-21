@@ -4,5 +4,5 @@ namespace SagaAserhi.Application.Interfaces.IUseCaseProposal;
 
 public interface IAddProposalToPotentialClientUseCase
 {
-    Task<string> Execute(string clientId, CreateProposalDto proposalDto);
+    Task<string> Execute(string clientId);
 }

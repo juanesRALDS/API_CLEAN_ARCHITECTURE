@@ -20,7 +20,7 @@ public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
         await ValidateInput(dto);
 
         DateTime now = DateTime.UtcNow;
-        PotentialClient potentialClient = new PotentialClient
+        PotentialClient potentialClient = new()
         {
             Identification = dto.Identification,
             BusinessInfo = dto.BusinessInfo,

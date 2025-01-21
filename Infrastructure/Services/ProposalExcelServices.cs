@@ -43,7 +43,7 @@ public class ProposalExcelServices : IProposalExcelService
                 var sheetData = new SheetData();
                 worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
                 var sheet = new Sheet()
                 {
                     Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
@@ -113,7 +113,6 @@ public class ProposalExcelServices : IProposalExcelService
                         CreateCell(waste.Type),
                         CreateCell(waste.Classification),
                         CreateCell(waste.Treatment),
-                        CreateCell(waste.Frequency),
                         CreateCell(waste.Price.ToString("C"))
                     });
                     sheetData.Append(row);
