@@ -30,10 +30,21 @@ public class SiteRepository : ISiteRepository
         return await _sites.Find(filter).ToListAsync();
     }
 
-    public async Task UpdateAsync(Site site)
+    public async Task<Site> UpdateSite(string id, Site site)
     {
-        FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.Id, site.Id);
-        await _sites.ReplaceOneAsync(filter, site);
+        FilterDefinition<Site> filter = Builders<Site>.Filter.Eq(s => s.Id, id);
+        UpdateDefinition<Site> update = Builders<Site>.Update
+            .Set(s => s.Name, site.Name)
+            .Set(s => s.Address, site.Address)
+            .Set(s => s.City, site.City)
+            .Set(s => s.Phone, site.Phone)
+            .Set(s => s.ProposalId, site.ProposalId)
+            .Set(s => s.Wastes, site.Wastes)
+            .Set(s => s.Frequencies, site.Frequencies)
+            .Set(s => s.TotalPrice, site.TotalPrice);
+
+        await _sites.UpdateOneAsync(filter, update);
+        return await GetByIdAsync(id);
     }
 
     public async Task DeleteAsync(string id)

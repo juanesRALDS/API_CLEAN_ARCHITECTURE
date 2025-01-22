@@ -19,7 +19,7 @@ namespace SagaAserhi.Domain.Entities
     public class Annex
     {
         [BsonElement("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
         [BsonElement("path")]
         public string Path { get; set; } = string.Empty;
@@ -58,7 +58,6 @@ namespace SagaAserhi.Domain.Entities
         public string Observation { get; set; } = string.Empty;
 
         [BsonElement("userId")]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string UserId { get; set; } = string.Empty;
     }
 

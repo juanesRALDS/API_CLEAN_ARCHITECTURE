@@ -21,7 +21,7 @@ namespace SagaAserhi.Application.UseCases.SiteUseCase
         {
             if (string.IsNullOrWhiteSpace(proposalId))
                 throw new ArgumentException("El ID de propuesta es requerido");
-            
+
             IEnumerable<Site>? sites = await _siteRepository.GetByProposalIdAsync(proposalId);
 
             return sites.Select(site => new SiteDtos
@@ -31,6 +31,20 @@ namespace SagaAserhi.Application.UseCases.SiteUseCase
                 Address = site.Address,
                 City = site.City,
                 Phone = site.Phone,
+                ProposalId = site.ProposalId,
+                Wastes = site.Wastes.Select(w => new WasteDto
+                {
+                    Type = w.Type,
+                    Classification = w.Classification,
+                    Treatment = w.Treatment,
+                    Price = w.Price
+                }).ToList(),
+                Frequency = new FrequencyDto
+                {
+                    FrequencyOfTravel = site.Frequencies.FrequencyOfTravel,
+                    Amount = site.Frequencies.Amount
+                },
+                TotalPrice = site.TotalPrice,
                 CreatedAt = site.CreatedAt
             }).ToList();
         }

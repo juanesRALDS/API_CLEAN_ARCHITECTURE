@@ -1,10 +1,8 @@
-// Application/UseCases/ContractUseCase/GetAllContractsUseCase.cs
-
 using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
 
-namespace SagaAserhi.Application.UseCases.ContractsUseCase;
+namespace SagaAserhi.Application.UseCases.ContractUseCase;
 
 public class GetAllContractsUseCase : IGetAllContractsUseCase
 {
@@ -17,15 +15,10 @@ public class GetAllContractsUseCase : IGetAllContractsUseCase
 
     public async Task<(List<ContractDto>, int)> Execute(int pageNumber, int pageSize)
     {
-        if (pageNumber <= 0)
-            throw new ArgumentException("El número de página debe ser mayor que 0");
-        if (pageSize <= 0)
-            throw new ArgumentException("El tamaño de página debe ser mayor que 0");
-
         try
         {
             var (contracts, totalCount) = await _contractRepository.GetAllContracts(pageNumber, pageSize);
-            
+
             var contractsDto = contracts.Select(c => new ContractDto
             {
                 Id = c.Id,
@@ -42,12 +35,13 @@ public class GetAllContractsUseCase : IGetAllContractsUseCase
                 {
                     Annexes = c.Documents.Annexes.Select(a => new AnnexDto
                     {
-                        Name = a.Name,
+                        Title = a.Title,
                         Path = a.Path,
                         UploadDate = a.UploadDate
                     }).ToList(),
                     Clauses = c.Documents.Clauses.Select(cl => new ClauseDto
                     {
+                        Title = cl.Title,
                         Content = cl.Content
                     }).ToList()
                 },
@@ -55,8 +49,7 @@ public class GetAllContractsUseCase : IGetAllContractsUseCase
                 {
                     Status = h.Status,
                     Date = h.Date,
-                    Observation = h.Observation,
-                    UserId = h.UserId
+                    Observation = h.Observation
                 }).ToList(),
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
@@ -66,7 +59,7 @@ public class GetAllContractsUseCase : IGetAllContractsUseCase
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al obtener los contratos: {ex.Message}", ex);
+            throw new Exception($"Error al obtener contratos: {ex.Message}", ex);
         }
     }
 }

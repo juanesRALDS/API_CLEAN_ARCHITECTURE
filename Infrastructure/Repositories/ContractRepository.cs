@@ -43,12 +43,18 @@ public class ContractRepository : IContractRepository
     {
         try
         {
+            if (contract == null)
+                throw new ArgumentNullException(nameof(contract));
+
+            Console.WriteLine($"Intentando crear contrato: {contract.Id}");
             await _contractCollection.InsertOneAsync(contract);
+            Console.WriteLine($"Contrato creado exitosamente: {contract.Id}");
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            Console.WriteLine($"Error al crear contrato: {ex.Message}");
+            throw new Exception($"Error al crear contrato en MongoDB: {ex.Message}", ex);
         }
     }
 

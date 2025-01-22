@@ -29,6 +29,7 @@ using SagaAserhi.Application.UseCases.AttachmentUseCase;
 using MongoDB.Bson.Serialization;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.UseCases.ContractsUseCase;
+using SagaAserhi.Application.UseCases.ContractUseCase;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,7 @@ builder.Services.AddScoped<IExportPotentialClientPdfUseCase, ExportPotentialClie
 builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
 builder.Services.AddScoped<IGetAllContractsUseCase, GetAllContractsUseCase>();
 builder.Services.AddScoped<ICreateContractUseCase, CreateContractUseCase >();
+builder.Services.AddScoped<IUpdateSiteUseCase, UpdateSiteUseCase>();
 
 // Program.cs
 

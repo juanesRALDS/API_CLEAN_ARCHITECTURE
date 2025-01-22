@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
@@ -25,18 +26,17 @@ public class CreateContractUseCase : ICreateContractUseCase
         _proposalRepository = proposalRepository;
         _fileService = fileService;
     }
-
     public async Task<Contract> Execute(string proposalId, CreateContractDto dto)
     {
         try
         {
             dto.Validate();
-
             var proposal = await _proposalRepository.GetProposalById(proposalId)
                 ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {proposalId}");
 
             var contract = new Contract
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 ProposalId = proposalId,
                 ClientId = proposal.ClientId,
                 Number = $"CONT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString("N").Substring(0, 8)}",
@@ -49,36 +49,40 @@ public class CreateContractUseCase : ICreateContractUseCase
                 Documents = new Documents
                 {
                     Annexes = new List<Annex>(),
-                    Clauses = dto.Clauses.Select(c => new Clause
-                    {
-                        Content = c.Content
-                    }).ToList()
+                                   Clauses = dto.Clauses.Select(c => new Clause
+                {   
+                    Title = c.Title,
+                    Content = c.Content
+                }).ToList()
                 },
                 History = new List<ContractHistory>
             {
-                new()
+                new ContractHistory
                 {
                     Status = "Creado",
                     Date = DateTime.UtcNow,
-                    Observation = "Contrato creado"
+                    Observation = "Contrato creado",
+                    UserId = "system" // Valor por defecto
                 }
             },
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
-            // Subir archivos
             if (dto.Files != null && dto.Files.Any())
             {
                 foreach (var file in dto.Files)
                 {
-                    var filePath = await _fileService.UploadFile(file, "contracts");
-                    contract.Documents.Annexes.Add(new Annex
+                    if (file.Length > 0)
                     {
-                        Name = file.FileName,
-                        Path = filePath,
-                        UploadDate = DateTime.UtcNow
-                    });
+                        var filePath = await _fileService.UploadFile(file, "contracts");
+                        contract.Documents.Annexes.Add(new Annex
+                        {
+                            Title = file.FileName,
+                            Path = filePath,
+                            UploadDate = DateTime.UtcNow
+                        });
+                    }
                 }
             }
 

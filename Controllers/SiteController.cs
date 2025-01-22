@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.DTO.SiteDto;
+using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.Interfaces.ISiteUseCase;
 
 namespace SagaAserhi.Controllers;
@@ -15,15 +17,18 @@ public class SitesController : ControllerBase
     private readonly ICreateSiteUseCase _createSiteUseCase;
     private readonly IGetSiteUseCase _getSiteUseCase;
     private readonly IGetSiteUseCase _GetSiteUseCase;
+    private readonly IUpdateSiteUseCase _updateSiteUseCase;
 
     public SitesController(ICreateSiteUseCase createSiteUseCase,
                             IGetSiteUseCase getSiteUseCase,
-                            IGetSiteUseCase GetSiteUseCase
+                            IGetSiteUseCase GetSiteUseCase,
+                            IUpdateSiteUseCase updateSiteUseCase
     )
     {
         _createSiteUseCase = createSiteUseCase;
         _getSiteUseCase = getSiteUseCase;
         _GetSiteUseCase = GetSiteUseCase;
+        _updateSiteUseCase = updateSiteUseCase;
     }
 
     [HttpPost]
@@ -75,6 +80,20 @@ public class SitesController : ControllerBase
         catch (Exception ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<UpdateSiteDto>> UpdateSite(string id, [FromBody] UpdateSiteDto updateSiteDto)
+    {
+        try
+        {
+            UpdateSiteDto result = await _updateSiteUseCase.Execute(id, updateSiteDto);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }

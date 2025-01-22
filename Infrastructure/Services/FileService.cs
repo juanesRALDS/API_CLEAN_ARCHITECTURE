@@ -18,10 +18,23 @@ public class FileService : IFileService
     {
         try
         {
-            var uploadPath = Path.Combine(_environment.WebRootPath, folder);
+            // Asegurar que wwwroot existe
+            var wwwrootPath = _environment.WebRootPath;
+            if (string.IsNullOrEmpty(wwwrootPath))
+            {
+                wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                if (!Directory.Exists(wwwrootPath))
+                {
+                    Directory.CreateDirectory(wwwrootPath);
+                }
+            }
 
+            // Crear carpeta de destino
+            var uploadPath = Path.Combine(wwwrootPath, folder);
             if (!Directory.Exists(uploadPath))
+            {
                 Directory.CreateDirectory(uploadPath);
+            }
 
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var filePath = Path.Combine(uploadPath, fileName);
@@ -31,7 +44,7 @@ public class FileService : IFileService
                 await file.CopyToAsync(stream);
             }
 
-            return Path.Combine(folder, fileName);
+            return Path.Combine(folder, fileName).Replace("\\", "/");
         }
         catch (Exception ex)
         {
