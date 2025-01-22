@@ -67,4 +67,17 @@ public class ContractRepository : IContractRepository
     {
         return await _contractCollection.Find(x => x.ProposalId == proposalId).ToListAsync();
     }
+
+    public async Task<Contract> UpdateContract(string id, Contract contract)
+    {
+        FilterDefinition<Contract> filter = Builders<Contract>.Filter.Eq(c => c.Id, id);
+        await _contractCollection.ReplaceOneAsync(filter, contract);
+        return await GetContractById(id);
+    }
+
+    public async Task<Annex?> GetAnnexById(string contractId, string annexId)
+    {
+        var contract = await GetContractById(contractId);
+        return contract?.Documents.Annexes.FirstOrDefault(a => a.AnnexId == annexId);
+    }
 }

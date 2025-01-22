@@ -1,4 +1,6 @@
 // Application/DTO/ContractDtos/ContractDto.cs
+using MongoDB.Bson;
+
 namespace SagaAserhi.Application.DTO.ContractsDtos;
 
 public class ContractDto
@@ -37,6 +39,7 @@ public class DocumentsDto
 
 public class AnnexDto
 {
+    public string AnnexId { get; set; } = ObjectId.GenerateNewId().ToString();
     public string Title { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
     public DateTime UploadDate { get; set; }

@@ -18,6 +18,9 @@ namespace SagaAserhi.Domain.Entities
 
     public class Annex
     {
+        [BsonElement("AnenxId")]
+        public string AnnexId { get; set; } = ObjectId.GenerateNewId().ToString();
+
         [BsonElement("name")]
         public string Title { get; set; } = string.Empty;
 
@@ -74,7 +77,7 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("clientId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string ClientId { get; set; } = string.Empty;
-        
+
         [BsonElement("number")]
         public string Number { get; set; } = string.Empty;
 

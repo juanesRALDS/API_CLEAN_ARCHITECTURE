@@ -77,6 +77,7 @@ builder.Services.AddScoped<IUploadAttachmentUseCase, UploadAttachmentUseCase>();
 builder.Services.AddScoped<IGetAllContractsUseCase, GetAllContractsUseCase>();
 builder.Services.AddScoped<ICreateContractUseCase, CreateContractUseCase >();
 builder.Services.AddScoped<IUpdateSiteUseCase, UpdateSiteUseCase>();
+builder.Services.AddScoped<IUpdateContractUseCase, UpdateContractUseCase>();
 
 // Program.cs
 

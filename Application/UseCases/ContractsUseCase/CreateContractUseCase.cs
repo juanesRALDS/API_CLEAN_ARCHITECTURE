@@ -49,12 +49,13 @@ public class CreateContractUseCase : ICreateContractUseCase
                 Documents = new Documents
                 {
                     Annexes = new List<Annex>(),
-                                   Clauses = dto.Clauses.Select(c => new Clause
-                {   
-                    Title = c.Title,
-                    Content = c.Content
-                }).ToList()
+                    Clauses = dto.Clauses.Select(c => new Clause
+                    {
+                        Title = c.Title,
+                        Content = c.Content
+                    }).ToList()
                 },
+
                 History = new List<ContractHistory>
             {
                 new ContractHistory
@@ -78,6 +79,7 @@ public class CreateContractUseCase : ICreateContractUseCase
                         var filePath = await _fileService.UploadFile(file, "contracts");
                         contract.Documents.Annexes.Add(new Annex
                         {
+                            AnnexId = ObjectId.GenerateNewId().ToString(),
                             Title = file.FileName,
                             Path = filePath,
                             UploadDate = DateTime.UtcNow

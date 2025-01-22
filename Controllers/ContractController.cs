@@ -11,11 +11,16 @@ public class ContractController : ControllerBase
     private readonly ICreateContractUseCase _createContractUseCase;
     private readonly IGetAllContractsUseCase _getAllContractsUseCase;
 
+    private readonly IUpdateContractUseCase _updateContractUseCase;
+
     public ContractController(ICreateContractUseCase createContractUseCase,
-            IGetAllContractsUseCase getAllContractsUseCase)
+            IGetAllContractsUseCase getAllContractsUseCase,
+            IUpdateContractUseCase updateContractUseCase
+            )
     {
         _createContractUseCase = createContractUseCase;
         _getAllContractsUseCase = getAllContractsUseCase;
+        _updateContractUseCase = updateContractUseCase;
     }
 
     [HttpPost("proposals/{proposalId}/contracts")]
@@ -117,6 +122,52 @@ public class ContractController : ControllerBase
                 message = "Error al obtener los contratos",
                 error = ex.Message
             });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ContractDto>> UpdateContract(
+       string id,
+       [FromForm] string Status,
+       [FromForm] DateTime Start,
+       [FromForm] DateTime End,
+       [FromForm] string ClausesTitle,
+       [FromForm] string ClausesContent,
+       [FromForm] string? AnnexToReplaceId,
+       IFormFile? NewFile)
+    {
+        try
+        {
+            var clausesList = new List<ClauseDto>
+        {
+            new ClauseDto
+            {
+                Title = ClausesTitle,
+                Content = ClausesContent
+            }
+        };
+
+            var updateDto = new UpdateContractDto
+            {
+                Status = Status,
+                Start = Start,
+                End = End,
+                Clauses = clausesList,
+                AnnexToReplaceId = AnnexToReplaceId,
+                NewFile = NewFile
+            };
+
+            ContractDto result = await _updateContractUseCase.Execute(id, updateDto);
+            return Ok(new
+            {
+                success = true,
+                data = result,
+                message = "Contrato actualizado exitosamente"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
         }
     }
 
