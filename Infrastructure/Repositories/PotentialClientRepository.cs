@@ -108,4 +108,20 @@ public class PotentialClientRepository : IPotentialClientRepository
         return await _Clientcollection.Find(_ => true)
                               .ToListAsync(cancellationToken);
     }
+
+    public async Task<(IEnumerable<PotentialClient> Clients, int TotalCount)> GetAllForExcel(
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken)
+    {
+        var filter = Builders<PotentialClient>.Filter.Empty;
+        var totalCount = await _Clientcollection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+
+        var clients = await _Clientcollection.Find(filter)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (clients, (int)totalCount);
+    }
 }

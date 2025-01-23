@@ -12,15 +12,18 @@ public class ContractController : ControllerBase
     private readonly IGetAllContractsUseCase _getAllContractsUseCase;
 
     private readonly IUpdateContractUseCase _updateContractUseCase;
+    private readonly IAddAnnexUseCase _addAnnexUseCase;
 
     public ContractController(ICreateContractUseCase createContractUseCase,
             IGetAllContractsUseCase getAllContractsUseCase,
-            IUpdateContractUseCase updateContractUseCase
+            IUpdateContractUseCase updateContractUseCase,
+            IAddAnnexUseCase addAnnexUseCase
             )
     {
         _createContractUseCase = createContractUseCase;
         _getAllContractsUseCase = getAllContractsUseCase;
         _updateContractUseCase = updateContractUseCase;
+        _addAnnexUseCase = addAnnexUseCase;
     }
 
     [HttpPost("proposals/{proposalId}/contracts")]
@@ -140,8 +143,7 @@ public class ContractController : ControllerBase
         {
             var clausesList = new List<ClauseDto>
         {
-            new ClauseDto
-            {
+            new() {
                 Title = ClausesTitle,
                 Content = ClausesContent
             }
@@ -172,4 +174,36 @@ public class ContractController : ControllerBase
     }
 
 
+    [HttpPost("{id}/annexes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<List<AnnexDto>>> AddAnnexes(
+        string id,
+        [FromForm] IFormFileCollection files)
+    {
+        try
+        {
+            var dto = new AddAnnexDto
+            {
+                ContractId = id,
+                Files = files
+            };
+
+            var result = await _addAnnexUseCase.Execute(dto);
+            return Ok(new
+            {
+                success = true,
+                data = result,
+                message = "Anexos agregados exitosamente"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+    }
 }

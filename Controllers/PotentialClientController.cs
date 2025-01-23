@@ -16,13 +16,16 @@ public class PotentialClientController : ControllerBase
     private readonly IExcelPotentialClientUseCase _exportExcelUseCase;
     private readonly IExportPotentialClientPdfUseCase _exportPdfUseCase;
 
+    private readonly IExcelPotentialClientUseCase _generateExcelUseCase;
+
     public PotentialClientController(
         IGetAllPotentialClientsWithProposalsUseCase GetAllPotentialClientsWithProposalsUseCase,
         ICreatePotentialClientUseCase createPotentialClientUseCase,
         IUpdatePotentialClientUseCase updatePotentialClientUseCase,
         IDeletePotentialClientUseCase deletePotentialClientUseCase,
         IExcelPotentialClientUseCase exportExcelUseCase,
-        IExportPotentialClientPdfUseCase exportPdfUseCase
+        IExportPotentialClientPdfUseCase exportPdfUseCase,
+        IExcelPotentialClientUseCase generateExcelUseCase
 
     )
     {
@@ -32,6 +35,7 @@ public class PotentialClientController : ControllerBase
         _deletePotentialClientUseCase = deletePotentialClientUseCase;
         _exportExcelUseCase = exportExcelUseCase;
         _exportPdfUseCase = exportPdfUseCase;
+        _generateExcelUseCase = generateExcelUseCase;
     }
 
     [HttpGet]
@@ -41,7 +45,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            List<PotentialClientDto>? clients = 
+            List<PotentialClientDto>? clients =
                 await _GetAllPotentialClientsWithProposalsUseCase.Execute(pageNumber, pageSize);
             return Ok(clients);
         }
@@ -89,7 +93,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-             string? result = await _deletePotentialClientUseCase.Execute(Id);
+            string? result = await _deletePotentialClientUseCase.Execute(Id);
             return Ok(result);
         }
         catch (System.Exception ex)
@@ -99,7 +103,7 @@ public class PotentialClientController : ControllerBase
         }
     }
 
-    [HttpGet("export")]
+    [HttpGet("PDF")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ExportToExcel(CancellationToken cancellationToken)
@@ -119,7 +123,26 @@ public class PotentialClientController : ControllerBase
         }
     }
 
-    
-
-
+    [HttpGet("excel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GenerateExcel(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _generateExcelUseCase.Execute(pageNumber, pageSize, cancellationToken);
+            return File(
+                result.Content,
+                result.ContentType,
+                result.FileName
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

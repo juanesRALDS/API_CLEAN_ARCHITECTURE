@@ -1,38 +1,36 @@
-
+using SagaAserhi.Application.DTO.PotentialClientDto;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
-using SagaAserhi.Infrastructure.Services;
-
-namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 
 public class ExcelPotentialClientUseCase : IExcelPotentialClientUseCase
 {
     private readonly IPotentialClientExcelServices _excelService;
     private readonly IPotentialClientRepository _repository;
 
-    public ExcelPotentialClientUseCase(IPotentialClientExcelServices excelService,
-    IPotentialClientRepository repository)
+    public ExcelPotentialClientUseCase(
+        IPotentialClientExcelServices excelService,
+        IPotentialClientRepository repository)
     {
         _excelService = excelService;
         _repository = repository;
     }
 
-    public async Task<byte[]> ExecuteAsync(CancellationToken cancellationToken)
+    public async Task<ExcelfileClientDto> Execute(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        try
-        {
-            var clients = await _repository.GetAllAsync(cancellationToken);
-            if (!clients.Any())
-            {
-                throw new InvalidOperationException("No hay clientes potenciales para generar el reporte");
-            }
+        var (clients, totalCount) = await _repository.GetAllForExcel(pageNumber, pageSize, cancellationToken);
 
-            return await _excelService.GenerateExcel(clients);
-        }
-        catch (Exception ex) when (ex is not InvalidOperationException)
+        byte[] excelContent = await _excelService.GenerateExcel(
+            clients,
+            pageNumber,
+            pageSize,
+            totalCount
+        );
+
+        return new ExcelfileClientDto
         {
-            throw new ApplicationException($"Error al generar el PDF: {ex.Message}", ex);
-        }
+            Content = excelContent,
+            FileName = $"PotentialClients_Page{pageNumber}_{DateTime.Now:yyyyMMdd}.xlsx"
+        };
     }
 }

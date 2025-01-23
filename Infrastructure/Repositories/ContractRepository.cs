@@ -72,7 +72,8 @@ public class ContractRepository : IContractRepository
     {
         FilterDefinition<Contract> filter = Builders<Contract>.Filter.Eq(c => c.Id, id);
         await _contractCollection.ReplaceOneAsync(filter, contract);
-        return await GetContractById(id);
+        var updatedContract = await GetContractById(id);
+        return updatedContract ?? throw new InvalidOperationException("Error al recuperar el contrato actualizado");
     }
 
     public async Task<Annex?> GetAnnexById(string contractId, string annexId)

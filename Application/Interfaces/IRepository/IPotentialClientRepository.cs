@@ -12,4 +12,10 @@ public interface IPotentialClientRepository
 
     Task<IEnumerable<PotentialClient>> GetAllAsync(CancellationToken cancellationToken);
 
+    Task<(IEnumerable<PotentialClient> Clients, int TotalCount)> GetAllForExcel(
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken
+);
+
 }
