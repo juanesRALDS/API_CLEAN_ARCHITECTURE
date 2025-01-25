@@ -18,11 +18,11 @@ public class GetAllProposalsUseCase : IGetAllProposalsUseCase
         _clientRepository = clientRepository;
     }
 
-    public async Task<(List<ProposalDto>, int)> Execute(int pageNumber, int pageSize)
+public async Task<(List<ProposalDto>, int)> Execute(int pageNumber, int pageSize, string? status = null)
+{
+    try
     {
-        try
-        {
-            var (proposals, totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize);
+        var (proposals, totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize, status);
             var proposalsDto = new List<ProposalDto>();
 
             foreach (var proposal in proposals)

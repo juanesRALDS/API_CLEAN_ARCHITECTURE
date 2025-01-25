@@ -123,26 +123,23 @@ public class PotentialClientController : ControllerBase
         }
     }
 
-    [HttpGet("excel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GenerateExcel(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        CancellationToken cancellationToken = default)
+[HttpGet("excel")]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+public async Task<IActionResult> GenerateExcel(CancellationToken cancellationToken)
+{
+    try
     {
-        try
-        {
-            var result = await _generateExcelUseCase.Execute(pageNumber, pageSize, cancellationToken);
-            return File(
-                result.Content,
-                result.ContentType,
-                result.FileName
-            );
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _generateExcelUseCase.Execute(cancellationToken);
+        return File(
+            result.Content,
+            result.ContentType,
+            result.FileName
+        );
     }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "Error al exportar el archivo Excel", error = ex.Message });
+    }
+}
 }

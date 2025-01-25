@@ -9,76 +9,76 @@ namespace SagaAserhi.Infrastructure.Services;
 
 public class PotentialClientExcelServices : IPotentialClientExcelServices
 {
-    private const int INITIAL_ROW = 1;
-
-    public async Task<byte[]> GenerateExcel(IEnumerable<PotentialClient> clients, int pageNumber, int pageSize, int totalCount)
+    private readonly IPotentialClientRepository _repository;
+    private static readonly string[] Headers = new[]
     {
-        return await Task.Run(() =>
+        "Tipo Identificación", "Número Identificación", "Nombre Comercial",
+        "Actividad Económica", "Email", "Teléfono", "Dirección",
+        "Ciudad", "Departamento", "Estado Actual", "Fecha Creación",
+        "Última Actualización"
+    };
+
+    public PotentialClientExcelServices(IPotentialClientRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<byte[]> ExportToExcel(CancellationToken cancellationToken)
+    {
+        var (clients, _) = await _repository.GetAllForExcel(1, int.MaxValue, cancellationToken);
+        var stream = new MemoryStream();
+
+        using var spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook);
+        var workbookPart = spreadsheetDocument.AddWorkbookPart();
+        workbookPart.Workbook = new Workbook();
+
+        var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+        var sheetData = new SheetData();
+        worksheetPart.Worksheet = new Worksheet(sheetData);
+
+        var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
+        sheets.AppendChild(new Sheet()
         {
-            using var memoryStream = new MemoryStream();
-            using var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook);
-
-            var workbookPart = spreadsheetDocument.AddWorkbookPart();
-            workbookPart.Workbook = new Workbook();
-
-            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-            var sheetData = new SheetData();
-            worksheetPart.Worksheet = new Worksheet(sheetData);
-
-            var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
-            sheets.AppendChild(new Sheet()
-            {
-                Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
-                SheetId = 1,
-                Name = "Clientes Potenciales"
-            });
-
-            var paginationRow = new Row();
-            paginationRow.AppendChild(CreateCell($"Página {pageNumber}"));
-            paginationRow.AppendChild(CreateCell($"Registros por página: {pageSize}"));
-            paginationRow.AppendChild(CreateCell($"Total registros: {totalCount}"));
-            sheetData.AppendChild(paginationRow);
-
-            // Agregar una fila vacía como separador
-            sheetData.AppendChild(new Row());
-
-            // Continuar con los headers y data
-            AddHeaders(sheetData);
-            AddClientData(sheetData, clients);
-
-            workbookPart.Workbook.Save();
-            return memoryStream.ToArray();
+            Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
+            SheetId = 1,
+            Name = "Clientes Potenciales"
         });
+
+        AddHeaders(sheetData);
+        await AddClientData(sheetData, clients, cancellationToken);
+
+        workbookPart.Workbook.Save();
+        stream.Position = 0;
+        return stream.ToArray();
     }
 
     private void AddHeaders(SheetData sheetData)
     {
-        var headerRow = new Row { RowIndex = INITIAL_ROW };
-        var headers = GetHeaders();
-
-        foreach (var header in headers)
+        var headerRow = new Row();
+        foreach (string header in Headers)
         {
             headerRow.AppendChild(CreateCell(header));
         }
-
         sheetData.AppendChild(headerRow);
     }
 
-    private void AddClientData(SheetData sheetData, IEnumerable<PotentialClient> clients)
+    private Task AddClientData(SheetData sheetData, IEnumerable<PotentialClient> clients, 
+        CancellationToken cancellationToken)
     {
-        uint rowIndex = INITIAL_ROW + 1;
-
         foreach (var client in clients)
         {
-            var row = new Row { RowIndex = rowIndex++ };
+            if (cancellationToken.IsCancellationRequested)
+                break;
+
+            var row = new Row();
             row.Append(GetClientCells(client));
             sheetData.AppendChild(row);
         }
+        return Task.CompletedTask;
     }
 
-    private IEnumerable<Cell> GetClientCells(PotentialClient client)
-    {
-        return new[]
+    private IEnumerable<Cell> GetClientCells(PotentialClient client) =>
+        new[]
         {
             CreateCell(client.Identification.Type),
             CreateCell(client.Identification.Number),
@@ -93,31 +93,11 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
             CreateCell(client.CreatedAt.ToString("dd/MM/yyyy HH:mm")),
             CreateCell(client.UpdatedAt.ToString("dd/MM/yyyy HH:mm"))
         };
-    }
 
-    private string[] GetHeaders() => new[]
-    {
-        "Tipo Identificación",
-        "Número Identificación",
-        "Nombre Comercial",
-        "Actividad Económica",
-        "Email",
-        "Teléfono",
-        "Dirección",
-        "Ciudad",
-        "Departamento",
-        "Estado Actual",
-        "Fecha Creación",
-        "Última Actualización"
-    };
-
-
-    private Cell CreateCell(string text)
-    {
-        return new Cell
+    private Cell CreateCell(string text) =>
+        new()
         {
             DataType = CellValues.String,
             CellValue = new CellValue(string.IsNullOrEmpty(text) ? "-" : text)
         };
-    }
 }

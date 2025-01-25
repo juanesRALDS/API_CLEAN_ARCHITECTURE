@@ -6,31 +6,21 @@ using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 public class ExcelPotentialClientUseCase : IExcelPotentialClientUseCase
 {
     private readonly IPotentialClientExcelServices _excelService;
-    private readonly IPotentialClientRepository _repository;
 
-    public ExcelPotentialClientUseCase(
-        IPotentialClientExcelServices excelService,
-        IPotentialClientRepository repository)
+
+    public ExcelPotentialClientUseCase(IPotentialClientExcelServices excelService)
     {
         _excelService = excelService;
-        _repository = repository;
     }
 
-    public async Task<ExcelfileClientDto> Execute(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<ExcelfileClientDto> Execute(CancellationToken cancellationToken)
     {
-        var (clients, totalCount) = await _repository.GetAllForExcel(pageNumber, pageSize, cancellationToken);
-
-        byte[] excelContent = await _excelService.GenerateExcel(
-            clients,
-            pageNumber,
-            pageSize,
-            totalCount
-        );
-
+        byte[] excelContent = await _excelService.ExportToExcel(cancellationToken);
+        
         return new ExcelfileClientDto
         {
             Content = excelContent,
-            FileName = $"PotentialClients_Page{pageNumber}_{DateTime.Now:yyyyMMdd}.xlsx"
+            FileName = $"PotentialClients_{DateTime.Now:yyyyMMdd}.xlsx"
         };
     }
 }

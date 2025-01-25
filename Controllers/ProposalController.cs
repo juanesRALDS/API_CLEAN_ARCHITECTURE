@@ -27,11 +27,14 @@ public class ProposalController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<dynamic>> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<dynamic>> GetAll(
+     [FromQuery] int pageNumber = 1,
+     [FromQuery] int pageSize = 10,
+     [FromQuery] string? status = null)
     {
         try
         {
-            var (proposals, totalCount) = await _getAllProposalsUseCase.Execute(pageNumber, pageSize);
+            var (proposals, totalCount) = await _getAllProposalsUseCase.Execute(pageNumber, pageSize, status!);
 
             return Ok(new
             {
@@ -40,6 +43,7 @@ public class ProposalController : ControllerBase
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
+                Status = status,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
             });
         }

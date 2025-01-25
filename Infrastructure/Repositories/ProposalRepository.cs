@@ -17,30 +17,36 @@ namespace SagaAserhi.Infrastructure.Repositories
             _proposalCollection = context.GetCollection<Proposal>("proposals"); ;
 
         }
-        public async Task<(List<Proposal> Proposals, int TotalCount)> GetAllProposals(int pageNumber, int pageSize)
+        public async Task<(List<Proposal> Proposals, int TotalCount)> GetAllProposals(
+      int pageNumber,
+      int pageSize,
+      string? status = null)
         {
             try
             {
-                var filter = Builders<Proposal>.Filter.Empty;
-                var sort = Builders<Proposal>.Sort.Descending(x => x.CreatedAt);
+                FilterDefinitionBuilder<Proposal>? builder = Builders<Proposal>.Filter;
+                FilterDefinition<Proposal>? filter = builder.Empty;
 
-                var proposals = await _proposalCollection
+                if (!string.IsNullOrEmpty(status))
+                {
+                    filter = builder.Eq(x => x.Status.Proposal, status);
+                }
+
+                SortDefinition<Proposal>? sort = Builders<Proposal>.Sort.Descending(x => x.CreatedAt);
+
+                List<Proposal>? proposals = await _proposalCollection
                     .Find(filter)
                     .Sort(sort)
                     .Skip((pageNumber - 1) * pageSize)
                     .Limit(pageSize)
                     .ToListAsync();
 
-                var totalCount = await _proposalCollection.CountDocumentsAsync(filter);
-
-                // Log para diagnóstico
-                Console.WriteLine($"Repository - Found {proposals.Count} proposals");
+                long totalCount = await _proposalCollection.CountDocumentsAsync(filter);
 
                 return (proposals, (int)totalCount);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Repository Error: {ex.Message}");
                 throw new Exception($"Error al obtener propuestas: {ex.Message}", ex);
             }
         }

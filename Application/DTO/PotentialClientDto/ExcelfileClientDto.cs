@@ -8,6 +8,7 @@ namespace SagaAserhi.Application.DTO.PotentialClientDto;
 public class ExcelfileClientDto
 {
     public byte[] Content { get; set; } = Array.Empty<byte>();
-    public string FileName { get; set; } = "PotentialClients.xlsx";
+    public string FileName { get; set; } = "PotentialClientsldkasklsldls.xlsx";
     public string ContentType { get; set; } = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    
 }
