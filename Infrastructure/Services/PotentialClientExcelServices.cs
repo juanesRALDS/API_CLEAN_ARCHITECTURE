@@ -5,8 +5,6 @@ using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Infrastructure.Services;
-
 public class PotentialClientExcelServices : IPotentialClientExcelServices
 {
     private readonly IPotentialClientRepository _repository;
@@ -23,33 +21,44 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
         _repository = repository;
     }
 
-    public async Task<byte[]> ExportToExcel(CancellationToken cancellationToken)
+    public async Task<byte[]> ExportToExcelPotencialClient(CancellationToken cancellationToken)
     {
-        var (clients, _) = await _repository.GetAllForExcel(1, int.MaxValue, cancellationToken);
-        var stream = new MemoryStream();
-
-        using var spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook);
-        var workbookPart = spreadsheetDocument.AddWorkbookPart();
-        workbookPart.Workbook = new Workbook();
-
-        var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-        var sheetData = new SheetData();
-        worksheetPart.Worksheet = new Worksheet(sheetData);
-
-        var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
-        sheets.AppendChild(new Sheet()
+        try
         {
-            Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
-            SheetId = 1,
-            Name = "Clientes Potenciales"
-        });
+            var (clients, _) = await _repository.GetAllForExcel(1, int.MaxValue, cancellationToken);
+            var stream = new MemoryStream();
 
-        AddHeaders(sheetData);
-        await AddClientData(sheetData, clients, cancellationToken);
+            using (var spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
+            {
+                var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
 
-        workbookPart.Workbook.Save();
-        stream.Position = 0;
-        return stream.ToArray();
+                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                var sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
+                var sheet = new Sheet()
+                {
+                    Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = "Clientes Potenciales"
+                };
+                sheets.Append(sheet);
+
+                AddHeaders(sheetData);
+                await AddClientsData(sheetData, clients, cancellationToken);
+
+                workbookPart.Workbook.Save();
+            }
+
+            stream.Position = 0;
+            return stream.ToArray();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al exportar a Excel: {ex.Message}", ex);
+        }
     }
 
     private void AddHeaders(SheetData sheetData)
@@ -57,12 +66,12 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
         var headerRow = new Row();
         foreach (string header in Headers)
         {
-            headerRow.AppendChild(CreateCell(header));
+            headerRow.Append(CreateCell(header));
         }
-        sheetData.AppendChild(headerRow);
+        sheetData.Append(headerRow);
     }
 
-    private Task AddClientData(SheetData sheetData, IEnumerable<PotentialClient> clients, 
+    private Task AddClientsData(SheetData sheetData, IEnumerable<PotentialClient> clients, 
         CancellationToken cancellationToken)
     {
         foreach (var client in clients)
@@ -72,13 +81,14 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
 
             var row = new Row();
             row.Append(GetClientCells(client));
-            sheetData.AppendChild(row);
+            sheetData.Append(row);
         }
         return Task.CompletedTask;
     }
 
-    private IEnumerable<Cell> GetClientCells(PotentialClient client) =>
-        new[]
+    private IEnumerable<Cell> GetClientCells(PotentialClient client)
+    {
+        return new[]
         {
             CreateCell(client.Identification.Type),
             CreateCell(client.Identification.Number),
@@ -93,11 +103,14 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
             CreateCell(client.CreatedAt.ToString("dd/MM/yyyy HH:mm")),
             CreateCell(client.UpdatedAt.ToString("dd/MM/yyyy HH:mm"))
         };
+    }
 
-    private Cell CreateCell(string text) =>
-        new()
+    private Cell CreateCell(string value)
+    {
+        return new Cell()
         {
             DataType = CellValues.String,
-            CellValue = new CellValue(string.IsNullOrEmpty(text) ? "-" : text)
+            CellValue = new CellValue(string.IsNullOrEmpty(value) ? "-" : value)
         };
+    }
 }

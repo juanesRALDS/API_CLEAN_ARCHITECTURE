@@ -9,5 +9,5 @@ namespace SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 
 public interface IExcelPotentialClientUseCase
 {
-    Task<ExcelfileClientDto> Execute(CancellationToken cancellationToken);
+    Task<byte[]> Execute(CancellationToken cancellationToken);
 }

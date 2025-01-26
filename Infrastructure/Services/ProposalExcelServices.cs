@@ -19,7 +19,7 @@ public class ProposalExcelServices : IProposalExcelService
         "Dirección del Sitio", "Ciudad del Sitio", "Teléfono del Sitio",
         "Tipo de Residuo", "Clasificación", "Tratamiento", "Frecuencia", "Precio"
     };
-
+    
     public ProposalExcelServices(IProposalRepository proposalRepository,
         IPotentialClientRepository clientRepository)
     {

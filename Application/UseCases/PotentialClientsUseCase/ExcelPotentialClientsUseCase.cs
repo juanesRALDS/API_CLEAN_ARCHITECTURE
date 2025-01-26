@@ -13,14 +13,8 @@ public class ExcelPotentialClientUseCase : IExcelPotentialClientUseCase
         _excelService = excelService;
     }
 
-    public async Task<ExcelfileClientDto> Execute(CancellationToken cancellationToken)
+    public async Task<byte[]> Execute(CancellationToken cancellationToken)
     {
-        byte[] excelContent = await _excelService.ExportToExcel(cancellationToken);
-        
-        return new ExcelfileClientDto
-        {
-            Content = excelContent,
-            FileName = $"PotentialClients_{DateTime.Now:yyyyMMdd}.xlsx"
-        };
+        return await _excelService.ExportToExcelPotencialClient(cancellationToken);
     }
 }
