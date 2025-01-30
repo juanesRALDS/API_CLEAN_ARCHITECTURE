@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Domain.Entities;
+using iText.Kernel.Geom;
 
 namespace SagaAserhi.Infrastructure.Services
 {
@@ -18,18 +19,21 @@ namespace SagaAserhi.Infrastructure.Services
         {
             return await Task.Run(() =>
             {
-                MemoryStream memoryStream = new MemoryStream();
-                PdfWriter writer = new PdfWriter(memoryStream);
-                PdfDocument pdf = new PdfDocument(writer);
-                Document document = new Document(pdf);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    var writer = new PdfWriter(memoryStream);
+                    var pdf = new PdfDocument(writer);
+                    var document = new Document(pdf, PageSize.A4);
+                    document.SetMargins(40, 40, 40, 40);
 
-                AddTitle(document);
-                AddDate(document);
-                AddClientTable(document, clients);
-                AddFooter(document, clients);
+                    AddTitle(document);
+                    AddDate(document);
+                    AddClientTable(document, clients);
+                    AddFooter(document, clients);
 
-                document.Close();
-                return memoryStream.ToArray();
+                    document.Close();
+                    return memoryStream.ToArray();
+                }
             });
         }
 
@@ -37,9 +41,9 @@ namespace SagaAserhi.Infrastructure.Services
         {
             Paragraph title = new Paragraph("Reporte de Clientes Potenciales")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20)
+                .SetFontSize(22)
                 .SetBold()
-                .SetMarginBottom(20);
+                .SetMarginBottom(15);
 
             document.Add(title);
         }
@@ -49,21 +53,19 @@ namespace SagaAserhi.Infrastructure.Services
             Paragraph date = new Paragraph($"Fecha de generación: {DateTime.Now:dd/MM/yyyy HH:mm}")
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetFontSize(10)
-                .SetMarginBottom(10);
+                .SetItalic()
+                .SetMarginBottom(15);
 
             document.Add(date);
         }
 
         private void AddClientTable(Document document, IEnumerable<PotentialClient> clients)
         {
-            float[] columnWidths = { 1, 2, 2, 2, 2, 1 }; // Proporción de ancho de columnas
-            Table table = new Table(UnitValue.CreatePercentArray(columnWidths)).UseAllAvailableWidth();
+            float[] columnWidths = { 1.3f, 2f, 2f, 2f, 2.5f, 1.5f };
+            Table table = new Table(UnitValue.CreatePercentArray(columnWidths))
+                .UseAllAvailableWidth();
 
-            // Encabezados
-            string[] headers = {
-                "Identificación", "Nombre Comercial", "Actividad Económica",
-                "Contacto", "Ubicación", "Estado"
-            };
+            string[] headers = { "ID", "Representante", "Nombre", "Actividad", "Contacto", "Estado" };
 
             foreach (string header in headers)
             {
@@ -71,23 +73,23 @@ namespace SagaAserhi.Infrastructure.Services
                     .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
                     .SetTextAlignment(TextAlignment.CENTER)
                     .SetBold()
-                    .Add(new Paragraph(header));
+                    .SetPadding(8)
+                    .Add(new Paragraph(header).SetFontSize(10));
 
                 table.AddHeaderCell(headerCell);
             }
 
-            // Datos de clientes
             foreach (PotentialClient client in clients)
             {
-                table.AddCell(CreateCell($"{client.Identification?.Type}: {client.Identification?.Number}"));
-                table.AddCell(CreateCell(client.BusinessInfo!.TradeName));
-                table.AddCell(CreateCell(client.BusinessInfo!.EconomicActivity));
-                table.AddCell(CreateCell($"Email: {client.BusinessInfo?.Email}\nTel: {client.BusinessInfo?.Phone}"));
-                table.AddCell(CreateCell($"{client.Location?.City}, {client.Location?.Department}\n{client.Location?.Address}"));
-                table.AddCell(CreateCell($"Estado: {client.Status?.Current}\nActualizado: {client.UpdatedAt:dd/MM/yyyy}"));
+                table.AddCell(CreateCell(TruncateText($"{client.Identification?.Type}: {client.Identification?.Number}", 18), TextAlignment.CENTER));
+                table.AddCell(CreateCell(TruncateText(client.LegalRepresentative, 25)));
+                table.AddCell(CreateCell(TruncateText(client.BusinessInfo!.TradeName, 25)));
+                table.AddCell(CreateCell(TruncateText(client.BusinessInfo!.EconomicActivity, 25)));
+                table.AddCell(CreateCell($"Email: {TruncateText(client.BusinessInfo?.Email, 22)}\nTel: {client.BusinessInfo?.Phone}"));
+                table.AddCell(CreateCell($"{client.Status?.Current}\n{client.UpdatedAt:dd/MM/yy}", TextAlignment.CENTER));
             }
 
-            document.Add(table.SetMarginTop(20));
+            document.Add(table);
         }
 
         private void AddFooter(Document document, IEnumerable<PotentialClient> clients)
@@ -96,17 +98,26 @@ namespace SagaAserhi.Infrastructure.Services
             Paragraph footer = new Paragraph($"Total de clientes: {clientCount}")
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetFontSize(10)
-                .SetMarginTop(20);
+                .SetMarginTop(15)
+                .SetBold();
 
             document.Add(footer);
         }
 
-        private Cell CreateCell(string content)
+        private Cell CreateCell(string content, TextAlignment alignment = TextAlignment.LEFT)
         {
             return new Cell()
-                .SetTextAlignment(TextAlignment.LEFT)
-                .SetPadding(5)
-                .Add(new Paragraph(content ?? "N/A").SetFontSize(9));
+                .SetTextAlignment(alignment)
+                .SetPadding(6)
+                .Add(new Paragraph(content ?? "N/A")
+                    .SetFontSize(9)
+                    .SetFixedLeading(12));
+        }
+
+        private string TruncateText(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text)) return "N/A";
+            return text.Length <= maxLength ? text : text.Substring(0, maxLength - 3) + "...";
         }
     }
 }

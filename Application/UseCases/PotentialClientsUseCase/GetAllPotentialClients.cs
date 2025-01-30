@@ -31,6 +31,7 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
                     Type = c.Identification.Type,
                     Number = c.Identification.Number
                 },
+                LegalRepresentative = c.LegalRepresentative,
                 BusinessInfo = new BusinessInfoDto
                 {
                     
@@ -38,12 +39,6 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
                     EconomicActivity = c.BusinessInfo.EconomicActivity,
                     Email = c.BusinessInfo.Email,
                     Phone = c.BusinessInfo.Phone
-                },
-                Location = new LocationDto
-                {
-                    Address = c.Location.Address,
-                    City = c.Location.City,
-                    Department = c.Location.Department
                 },
                 Status = new StatusDto
                 {

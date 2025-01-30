@@ -10,9 +10,8 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
     private readonly IPotentialClientRepository _repository;
     private static readonly string[] Headers = new[]
     {
-        "Tipo Identificación", "Número Identificación", "Nombre Comercial",
-        "Actividad Económica", "Email", "Teléfono", "Dirección",
-        "Ciudad", "Departamento", "Estado Actual", "Fecha Creación",
+        "Tipo Identificación", "Número Identificación","Nombre representate legal", "Nombre Comercial",
+        "Actividad Económica", "Email", "Teléfono", "Estado Actual", "Fecha Creación",
         "Última Actualización"
     };
 
@@ -92,13 +91,11 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
         {
             CreateCell(client.Identification.Type),
             CreateCell(client.Identification.Number),
+            CreateCell(client.LegalRepresentative),
             CreateCell(client.BusinessInfo.TradeName),
             CreateCell(client.BusinessInfo.EconomicActivity),
             CreateCell(client.BusinessInfo.Email),
             CreateCell(client.BusinessInfo.Phone),
-            CreateCell(client.Location.Address),
-            CreateCell(client.Location.City),
-            CreateCell(client.Location.Department),
             CreateCell(client.Status.Current),
             CreateCell(client.CreatedAt.ToString("dd/MM/yyyy HH:mm")),
             CreateCell(client.UpdatedAt.ToString("dd/MM/yyyy HH:mm"))

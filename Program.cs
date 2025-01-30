@@ -75,7 +75,7 @@ builder.Services.AddScoped<IUpdateSiteUseCase, UpdateSiteUseCase>();
 builder.Services.AddScoped<IUpdateContractUseCase, UpdateContractUseCase>();
 builder.Services.AddScoped<IAddAnnexUseCase, AddAnnexUseCase>();
 builder.Services.AddScoped<IExcelPotentialClientUseCase, ExcelPotentialClientUseCase>();
-
+builder.Services.AddScoped<IContractsPDFUseCase,ContractsPDFUseCase>();
 
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
 builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
@@ -93,6 +93,7 @@ builder.Services.AddScoped<ISiteRepository, SiteRepository>();
 builder.Services.AddScoped<IPotentialClientPdfService, PotentialClientPdfService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IPotentialClientExcelServices, PotentialClientExcelServices>();
+builder.Services.AddScoped<IContratPDFServices, ContratPDFServices>();
 
 BsonClassMap.RegisterClassMap<BusinessInfo>(cm =>
 {

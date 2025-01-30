@@ -33,18 +33,6 @@ namespace SagaAserhi.Domain.Entities
         public string Phone { get; set; } = string.Empty;
     }
 
-    public class Location
-    {
-        [BsonElement("address")]
-        public string Address { get; set; } = string.Empty;
-
-        [BsonElement("city")]
-        public string City { get; set; } = string.Empty;
-
-        [BsonElement("department")]
-        public string Department { get; set; } = string.Empty;
-    }
-
     public class StatusHistory
     {
         [BsonElement("status")]
@@ -76,11 +64,11 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("identification")]
         public Identification Identification { get; set; } = new();
 
+        [BsonElement("LegalRepresentative")]
+        public string LegalRepresentative { get; set; } = string.Empty;
+
         [BsonElement("businessInfo")]
         public BusinessInfo BusinessInfo { get; set; } = new();
-
-        [BsonElement("location")]
-        public Location Location { get; set; } = new();
 
         [BsonElement("status")]
         public Status Status { get; set; } = new();

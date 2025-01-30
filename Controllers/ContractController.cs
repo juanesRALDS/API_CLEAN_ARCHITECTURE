@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
+using SagaAserhi.Application.UseCases.ContractsUseCase;
 using SagaAserhi.Domain.Entities;
 
 [ApiController]
@@ -13,17 +14,21 @@ public class ContractController : ControllerBase
 
     private readonly IUpdateContractUseCase _updateContractUseCase;
     private readonly IAddAnnexUseCase _addAnnexUseCase;
+    private readonly IContractsPDFUseCase _contractsPDFUseCase;
+
 
     public ContractController(ICreateContractUseCase createContractUseCase,
             IGetAllContractsUseCase getAllContractsUseCase,
             IUpdateContractUseCase updateContractUseCase,
-            IAddAnnexUseCase addAnnexUseCase
+            IAddAnnexUseCase addAnnexUseCase,
+            IContractsPDFUseCase contractsPDFUseCase
             )
     {
         _createContractUseCase = createContractUseCase;
         _getAllContractsUseCase = getAllContractsUseCase;
         _updateContractUseCase = updateContractUseCase;
         _addAnnexUseCase = addAnnexUseCase;
+        _contractsPDFUseCase = contractsPDFUseCase;
     }
 
     [HttpPost("proposals/{proposalId}/contracts")]
@@ -204,6 +209,26 @@ public class ContractController : ControllerBase
                 success = false,
                 message = ex.Message
             });
+        }
+    }
+
+
+
+    [HttpGet("generate-pdf/{clientId}/{siteId}")]
+    public async Task<IActionResult> GenerateContractPdf(string clientId, string siteId)
+    {
+        try
+        {
+            var pdfBytes = await _contractsPDFUseCase.Execute(clientId, siteId);
+            return File(pdfBytes, "application/pdf", $"contrato_{clientId}_{siteId}.pdf");
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error al generar el contrato: {ex.Message}");
         }
     }
 }

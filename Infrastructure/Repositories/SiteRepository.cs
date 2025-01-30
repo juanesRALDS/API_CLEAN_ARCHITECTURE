@@ -11,7 +11,7 @@ public class SiteRepository : ISiteRepository
 
     public SiteRepository(MongoDbContext database)
     {
-        _sites = database.GetCollection<Site>("Sites");
+        _sites = database.GetCollection<Site>("site");
     }
     public async Task CreateAsync(Site site)
     {

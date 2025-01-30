@@ -43,6 +43,7 @@ public class PotentialClientDto
 {
     public string Id { get; set; } = string.Empty;
     public IdentificationDto Identification { get; set; } = new();
+    public string LegalRepresentative { get; set; } = string.Empty;
     public BusinessInfoDto BusinessInfo { get; set; } = new();
     public LocationDto Location { get; set; } = new();
     public StatusDto Status { get; set; } = new();
@@ -54,7 +55,7 @@ public class PotentialClientDto
 public class UpdatePotentialClientDto
 {
     public Identification? Identification { get; set; }
+    public string? LegalRepresentative { get; set; }
     public BusinessInfo? BusinessInfo { get; set; }
-    public Location? Location { get; set; }
     public string? Status { get; set; }
 }

@@ -40,12 +40,6 @@ public class GetAllPotentialClientsUseCaseTest
                 Email = "test@test.com",
                 Phone = "123456789"
             },
-            Location = new Location
-            {
-                Address = "Test Address",
-                City = "Test City",
-                Department = "Test Department"
-            },
             Status = new Status
             {
                 Current = "Activo",

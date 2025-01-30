@@ -15,6 +15,7 @@ public class CreateSiteDto
     public string Address { get; set; } = string.Empty;
     [Required]
     public string City { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
     [Phone]
     public string Phone { get; set; } = string.Empty;
     public List<WasteDto> Wastes { get; set; } = new();

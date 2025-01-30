@@ -30,6 +30,7 @@ namespace SagaAserhi.Application.UseCases.SiteUseCase
                 Name = site.Name,
                 Address = site.Address,
                 City = site.City,
+                Department = site.Department,
                 Phone = site.Phone,
                 ProposalId = site.ProposalId,
                 Wastes = site.Wastes.Select(w => new WasteDto

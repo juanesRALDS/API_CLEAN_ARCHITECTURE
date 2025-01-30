@@ -27,9 +27,6 @@ namespace SagaAserhi.Tests.UseCase.ProposalUseCase
             
             _validUpdateDto = new UpdateProposalDto
             {
-                Title = "Propuesta Actualizada",
-                Description = "Nueva descripción",
-                Amount = 1500.00M,
                 Status = new UpdateProposalStatusDto
                 {
                     Proposal = "Aprobada",

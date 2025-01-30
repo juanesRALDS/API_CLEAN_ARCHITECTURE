@@ -8,7 +8,7 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
 {
     private readonly IPotentialClientRepository _repository;
-    private readonly string[] VALID_STATUSES = { "Activo", "Pendiente", "Inactivo" };
+    private readonly string[] VALID_STATUSES = { "Active", "Pending", "Inactive" };
 
     public CreatePotentialClientUseCase(IPotentialClientRepository repository)
     {
@@ -23,8 +23,8 @@ public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
         PotentialClient potentialClient = new()
         {
             Identification = dto.Identification,
+            LegalRepresentative = dto.LegalRepresentative,
             BusinessInfo = dto.BusinessInfo,
-            Location = dto.Location,
             Status = new Status
             {
                 Current = dto.Status,
@@ -57,7 +57,8 @@ public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
             throw new ArgumentException("El tipo de identificación no puede estar vacío", nameof(dto.Identification.Type));
         if (string.IsNullOrWhiteSpace(dto.Identification.Number))
             throw new ArgumentException("El número de identificación no puede estar vacío", nameof(dto.Identification.Number));
-
+        if (string.IsNullOrWhiteSpace(dto.LegalRepresentative))
+            throw new ArgumentException("el representate legal no puede estar vacio", nameof(dto.LegalRepresentative));
         // Validar BusinessInfo
         if (string.IsNullOrWhiteSpace(dto.BusinessInfo.TradeName))
             throw new ArgumentException("El nombre comercial no puede estar vacío", nameof(dto.BusinessInfo.TradeName));
@@ -70,13 +71,6 @@ public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
         if (string.IsNullOrWhiteSpace(dto.BusinessInfo.Phone))
             throw new ArgumentException("El teléfono no puede estar vacío", nameof(dto.BusinessInfo.Phone));
 
-        // Validar Location
-        if (string.IsNullOrWhiteSpace(dto.Location.Address))
-            throw new ArgumentException("La dirección no puede estar vacía", nameof(dto.Location.Address));
-        if (string.IsNullOrWhiteSpace(dto.Location.City))
-            throw new ArgumentException("La ciudad no puede estar vacía", nameof(dto.Location.City));
-        if (string.IsNullOrWhiteSpace(dto.Location.Department))
-            throw new ArgumentException("El departamento no puede estar vacío", nameof(dto.Location.Department));
 
         // Validar Status
         if (string.IsNullOrWhiteSpace(dto.Status) || !VALID_STATUSES.Contains(dto.Status))

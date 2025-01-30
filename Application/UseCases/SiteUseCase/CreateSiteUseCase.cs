@@ -53,6 +53,7 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 Name = request.SiteInfo.Name,
                 Address = request.SiteInfo.Address,
                 City = request.SiteInfo.City,
+                Department = request.SiteInfo.Department,
                 Phone = request.SiteInfo.Phone,
                 ProposalId = request.ProposalId,
                 Wastes = wastes,
@@ -73,6 +74,7 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 Name = site.Name,
                 Address = site.Address,
                 City = site.City,
+                Department = site.Department,
                 Phone = site.Phone,
                 Wastes = site.Wastes.Select(w => new WasteDto
                 {

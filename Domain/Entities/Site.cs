@@ -22,6 +22,9 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("city")]
         public string City { get; set; } = string.Empty;
 
+        [BsonElement("department")]
+        public string Department { get; set; } = string.Empty;
+
         [BsonElement("phone")]
         public string Phone { get; set; } = string.Empty;
 

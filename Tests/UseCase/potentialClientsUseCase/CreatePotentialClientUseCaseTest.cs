@@ -34,12 +34,6 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
                     Email = "test@empresa.com",
                     Phone = "3001234567"
                 },
-                Location = new Location
-                {
-                    Address = "Calle 123",
-                    City = "Medellín",
-                    Department = "Antioquia"
-                },
                 Status = "Activo"
             };
         }
@@ -61,7 +55,6 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
             {
                 Identification = new Identification { Type = tipoInvalido, Number = _validDto.Identification.Number },
                 BusinessInfo = _validDto.BusinessInfo,
-                Location = _validDto.Location,
                 Status = _validDto.Status
             };
 
@@ -79,7 +72,6 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
             {
                 Identification = new Identification { Type = _validDto.Identification.Type, Number = numeroInvalido },
                 BusinessInfo = _validDto.BusinessInfo,
-                Location = _validDto.Location,
                 Status = _validDto.Status
             };
 
@@ -103,7 +95,6 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
                     Email = emailInvalido,
                     Phone = _validDto.BusinessInfo.Phone
                 },
-                Location = _validDto.Location,
                 Status = _validDto.Status
             };
 
@@ -122,7 +113,6 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
             {
                 Identification = _validDto.Identification,
                 BusinessInfo = _validDto.BusinessInfo,
-                Location = _validDto.Location,
                 Status = estadoInvalido
             };
 

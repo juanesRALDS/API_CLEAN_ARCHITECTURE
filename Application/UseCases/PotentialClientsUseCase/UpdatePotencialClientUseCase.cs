@@ -31,8 +31,8 @@ public class UpdatePotentialClientUseCase : IUpdatePotentialClientUseCase
         {
             Id = id,
             Identification = dto.Identification ?? existingClient.Identification,
+            LegalRepresentative = dto.LegalRepresentative ?? existingClient.LegalRepresentative,
             BusinessInfo = dto.BusinessInfo ?? existingClient.BusinessInfo,
-            Location = dto.Location ?? existingClient.Location,
             Status = new Status
             {
                 Current = dto.Status ?? existingClient.Status.Current,
@@ -42,7 +42,6 @@ public class UpdatePotentialClientUseCase : IUpdatePotentialClientUseCase
             UpdatedAt = now
         };
 
-        // Agregar nuevo estado al historial si cambió
         if (dto.Status != null && dto.Status != existingClient.Status.Current)
         {
             updatedClient.Status.History.Add(new StatusHistory
