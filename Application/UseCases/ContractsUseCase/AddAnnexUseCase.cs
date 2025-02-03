@@ -24,17 +24,17 @@ public class AddAnnexUseCase : IAddAnnexUseCase
 
     public async Task<List<AnnexDto>> Execute(AddAnnexDto dto)
     {
-        var contract = await _contractRepository.GetContractById(dto.ContractId)
+        Contract? contract = await _contractRepository.GetContractById(dto.ContractId)
             ?? throw new Exception("Contrato no encontrado");
 
-        var newAnnexes = new List<Annex>();
+        List<Annex> newAnnexes = new();
 
-        foreach (var file in dto.Files)
+        foreach (IFormFile file in dto.Files)
         {
             if (file.Length > 0)
             {
                 string filePath = await _fileService.UploadFile(file, "contracts");
-                var annex = new Annex
+                Annex? annex = new()
                 {
                     AnnexId = ObjectId.GenerateNewId().ToString(),
                     Title = file.FileName,

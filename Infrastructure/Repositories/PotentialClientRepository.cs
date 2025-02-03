@@ -22,8 +22,8 @@ public class PotentialClientRepository : IPotentialClientRepository
     {
         try
         {
-            var filter = Builders<PotentialClient>.Filter.Empty;
-            var sort = Builders<PotentialClient>.Sort.Descending(x => x.CreatedAt);
+            FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Empty;
+            SortDefinition<PotentialClient>? sort = Builders<PotentialClient>.Sort.Descending(x => x.CreatedAt);
 
             return await _Clientcollection
                 .Find(filter)
