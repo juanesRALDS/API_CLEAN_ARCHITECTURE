@@ -130,7 +130,7 @@ public class PotentialClientController : ControllerBase
     {
         try
         {
-            var fileContent = await _generateExcelUseCase.Execute(cancellationToken);
+            byte[]? fileContent = await _generateExcelUseCase.Execute(cancellationToken);
             return File(
                 fileContent,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

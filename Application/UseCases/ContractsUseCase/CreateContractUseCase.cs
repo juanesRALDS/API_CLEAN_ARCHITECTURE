@@ -31,10 +31,10 @@ public class CreateContractUseCase : ICreateContractUseCase
         try
         {
             dto.Validate();
-            var proposal = await _proposalRepository.GetProposalById(proposalId)
+            Proposal? proposal = await _proposalRepository.GetProposalById(proposalId)
                 ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {proposalId}");
 
-            var contract = new Contract
+            Contract? contract = new Contract
             {
                 Id = ObjectId.GenerateNewId().ToString(),
                 ProposalId = proposalId,
@@ -72,11 +72,11 @@ public class CreateContractUseCase : ICreateContractUseCase
 
             if (dto.Files != null && dto.Files.Any())
             {
-                foreach (var file in dto.Files)
+                foreach (IFormFile file in dto.Files)
                 {
                     if (file.Length > 0)
                     {
-                        var filePath = await _fileService.UploadFile(file, "contracts");
+                        String? filePath = await _fileService.UploadFile(file, "contracts");
                         contract.Documents.Annexes.Add(new Annex
                         {
                             AnnexId = ObjectId.GenerateNewId().ToString(),
@@ -88,7 +88,7 @@ public class CreateContractUseCase : ICreateContractUseCase
                 }
             }
 
-            var success = await _contractRepository.CreateContract(contract);
+            bool success = await _contractRepository.CreateContract(contract);
             if (!success)
                 throw new InvalidOperationException("No se pudo crear el contrato");
 

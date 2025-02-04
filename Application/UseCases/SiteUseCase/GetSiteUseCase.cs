@@ -33,12 +33,14 @@ namespace SagaAserhi.Application.UseCases.SiteUseCase
                 Department = site.Department,
                 Phone = site.Phone,
                 ProposalId = site.ProposalId,
+                ClientID = site.ClientID,
                 Wastes = site.Wastes.Select(w => new WasteDto
                 {
                     Type = w.Type,
                     Classification = w.Classification,
                     Treatment = w.Treatment,
-                    Price = w.Price
+                    Price = w.Price,
+                    DescriptionWaste = w.DescriptionWaste
                 }).ToList(),
                 Frequency = new FrequencyDto
                 {

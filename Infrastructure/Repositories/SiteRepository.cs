@@ -13,12 +13,12 @@ public class SiteRepository : ISiteRepository
     {
         _sites = database.GetCollection<Site>("site");
     }
-    public async Task CreateAsync(Site site)
+    public async Task CreateSite(Site site)
     {
         await _sites.InsertOneAsync(site);
     }
 
-    public async Task<Site> GetByIdAsync(string id)
+    public async Task<Site> GetByIdSite(string id)
     {
         FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.Id, id);
         return await _sites.Find(filter).FirstOrDefaultAsync();
@@ -44,16 +44,16 @@ public class SiteRepository : ISiteRepository
             .Set(s => s.TotalPrice, site.TotalPrice);
 
         await _sites.UpdateOneAsync(filter, update);
-        return await GetByIdAsync(id);
+        return await GetByIdSite(id);
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteSite(string id)
     {
         FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.Id, id);
         await _sites.DeleteOneAsync(filter);
     }
 
-    public async Task<bool> ExistsAsync(string id)
+    public async Task<bool> ExistsSite(string id)
     {
         FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.Id, id);
         return await _sites.Find(filter).AnyAsync();

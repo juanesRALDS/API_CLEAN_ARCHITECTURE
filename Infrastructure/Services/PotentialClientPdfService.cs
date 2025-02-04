@@ -21,9 +21,9 @@ namespace SagaAserhi.Infrastructure.Services
             {
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    var writer = new PdfWriter(memoryStream);
-                    var pdf = new PdfDocument(writer);
-                    var document = new Document(pdf, PageSize.A4);
+                    PdfWriter? writer = new(memoryStream);
+                    PdfDocument? pdf = new(writer);
+                    Document? document = new(pdf, PageSize.A4);
                     document.SetMargins(40, 40, 40, 40);
 
                     AddTitle(document);

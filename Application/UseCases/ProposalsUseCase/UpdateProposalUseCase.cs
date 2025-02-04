@@ -1,6 +1,7 @@
 using SagaAserhi.Application.DTO.ProposalDtos;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.IUseCaseProposal;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ProposalsUseCase;
 
@@ -23,10 +24,10 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
         try
         {
-            var existingProposal = await _repository.GetProposalById(id)
+            Proposal? existingProposal = await _repository.GetProposalById(id)
                 ?? throw new InvalidOperationException($"No se encontró la propuesta con ID: {id}");
 
-            // Actualizar estado
+
             if (dto.Status != null)
             {
                 if (!string.IsNullOrEmpty(dto.Status.Proposal))
@@ -39,7 +40,7 @@ public class UpdateProposalUseCase : IUpdateProposalUseCase
 
             existingProposal.UpdatedAt = DateTime.UtcNow;
 
-            var result = await _repository.UpdateProposal(id, existingProposal);
+            bool result = await _repository.UpdateProposal(id, existingProposal);
             if (!result)
                 throw new InvalidOperationException("No se pudo actualizar la propuesta");
 

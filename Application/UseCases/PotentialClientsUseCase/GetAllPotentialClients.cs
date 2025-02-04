@@ -1,6 +1,7 @@
 using SagaAserhi.Application.DTO.PotentialClientDto;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
+using SagaAserhi.Domain.Entities;
 
 public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClientsWithProposalsUseCase
 {
@@ -21,7 +22,7 @@ public class GetAllPotentialClientsWithProposalsUseCase : IGetAllPotentialClient
 
         try
         {
-            var clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
+            List<PotentialClient>? clients = await _repository.GetAllPotentialClientsWithProposals(pageNumber, pageSize);
 
             return clients.Select(c => new PotentialClientDto
             {

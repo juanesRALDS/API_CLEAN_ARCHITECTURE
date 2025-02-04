@@ -34,7 +34,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var (proposals, totalCount) = await _getAllProposalsUseCase.Execute(pageNumber, pageSize, status!);
+            (List<ProposalDto> proposals, int totalCount) = await _getAllProposalsUseCase.Execute(pageNumber, pageSize, status!);
 
             return Ok(new
             {
@@ -62,7 +62,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var result = await _addProposalToPotentialClientUseCase.Execute(clientId);
+            string? result = await _addProposalToPotentialClientUseCase.Execute(clientId);
             return Ok(new { Message = result });
         }
         catch (ArgumentException ex)
@@ -84,7 +84,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var result = await _updateProposalUseCase.Execute(id, dto);
+            string? result = await _updateProposalUseCase.Execute(id, dto);
             return Ok(new { Message = result });
         }
         catch (ArgumentException ex)
@@ -108,7 +108,7 @@ public class ProposalController : ControllerBase
     {
         try
         {
-            var fileContent = await _exportProposalUseCase.ExecuteAsync(cancellationToken);
+            byte[]? fileContent = await _exportProposalUseCase.ExecuteAsync(cancellationToken);
             return File(
                 fileContent,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

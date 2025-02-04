@@ -45,6 +45,7 @@ public class WasteDto
     [Required]
     [Range(0, double.MaxValue)]
     public decimal Price { get; set; }
+    public string DescriptionWaste { get; set; } = string.Empty;
 }
 
 public class FrequencyDto

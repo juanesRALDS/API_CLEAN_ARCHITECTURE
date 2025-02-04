@@ -25,20 +25,21 @@ public class CreateSiteUseCase : ICreateSiteUseCase
 
         try
         {
-            var proposal = await _proposalRepository.GetProposalById(request.ProposalId)
+            Proposal? proposal = await _proposalRepository.GetProposalById(request.ProposalId)
                 ?? throw new InvalidOperationException($"Propuesta no encontrada con ID: {request.ProposalId}");
 
 
-            var wastes = request.SiteInfo.Wastes.Select(w => new Waste
+             List<Waste>? wastes = request.SiteInfo.Wastes.Select(w => new Waste
             {
                 Type = w.Type,
                 Classification = w.Classification,
                 Treatment = w.Treatment,
-                Price = w.Price
+                Price = w.Price,
+                DescriptionWaste = w.DescriptionWaste
             }).ToList();
 
             // Mapear frecuencia
-            var frequency = new Frequency
+            Frequency? frequency = new()
             {
                 FrequencyOfTravel = request.SiteInfo.Frequency.FrequencyOfTravel,
                 Amount = request.SiteInfo.Frequency.Amount
@@ -48,22 +49,23 @@ public class CreateSiteUseCase : ICreateSiteUseCase
             decimal totalWastesPrice = wastes.Sum(w => w.Price);
             decimal totalPrice = totalWastesPrice + frequency.Amount;
 
-            var site = new Site
-            {
+            Site? site = new()
+            {   
                 Name = request.SiteInfo.Name,
                 Address = request.SiteInfo.Address,
                 City = request.SiteInfo.City,
                 Department = request.SiteInfo.Department,
                 Phone = request.SiteInfo.Phone,
                 ProposalId = request.ProposalId,
+                ClientID = proposal.ClientId,
                 Wastes = wastes,
                 Frequencies = frequency,
                 TotalPrice = totalPrice,
                 CreatedAt = DateTime.UtcNow
             };
             // Crear el sitio y actualizar la propuesta
-            await _siteRepository.CreateAsync(site);
-            var updated = await _proposalRepository.UpdateProposalSite(request.ProposalId, site);
+            await _siteRepository.CreateSite(site);
+            bool updated = await _proposalRepository.UpdateProposalSite(request.ProposalId, site);
 
             if (!updated)
                 throw new InvalidOperationException("No se pudo actualizar la propuesta con el nuevo sitio");
@@ -76,12 +78,15 @@ public class CreateSiteUseCase : ICreateSiteUseCase
                 City = site.City,
                 Department = site.Department,
                 Phone = site.Phone,
+                ProposalId = site.ProposalId,
+                ClientID = site.ClientID,
                 Wastes = site.Wastes.Select(w => new WasteDto
                 {
                     Type = w.Type,
                     Classification = w.Classification,
                     Treatment = w.Treatment,
-                    Price = w.Price
+                    Price = w.Price,
+                    DescriptionWaste = w.DescriptionWaste
                 }).ToList(),
                 Frequency = new FrequencyDto
                 {

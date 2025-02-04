@@ -19,17 +19,17 @@ public class ContractRepository : IContractRepository
     {
         try
         {
-            var filter = Builders<Contract>.Filter.Empty;
-            var sort = Builders<Contract>.Sort.Descending(x => x.CreatedAt);
+            FilterDefinition<Contract>? filter = Builders<Contract>.Filter.Empty;
+            SortDefinition<Contract>? sort = Builders<Contract>.Sort.Descending(x => x.CreatedAt);
 
-            var contracts = await _contractCollection
+            List<Contract>? contracts = await _contractCollection
                 .Find(filter)
                 .Sort(sort)
                 .Skip((pageNumber - 1) * pageSize)
                 .Limit(pageSize)
                 .ToListAsync();
 
-            var totalCount = await _contractCollection.CountDocumentsAsync(filter);
+            long totalCount = await _contractCollection.CountDocumentsAsync(filter);
 
             return (contracts, (int)totalCount);
         }
@@ -72,13 +72,13 @@ public class ContractRepository : IContractRepository
     {
         FilterDefinition<Contract> filter = Builders<Contract>.Filter.Eq(c => c.Id, id);
         await _contractCollection.ReplaceOneAsync(filter, contract);
-        var updatedContract = await GetContractById(id);
+        Contract? updatedContract = await GetContractById(id);
         return updatedContract ?? throw new InvalidOperationException("Error al recuperar el contrato actualizado");
     }
 
     public async Task<Annex?> GetAnnexById(string contractId, string annexId)
     {
-        var contract = await GetContractById(contractId);
+        Contract? contract = await GetContractById(contractId);
         return contract?.Documents.Annexes.FirstOrDefault(a => a.AnnexId == annexId);
     }
 }

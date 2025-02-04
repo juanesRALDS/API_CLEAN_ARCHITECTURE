@@ -19,7 +19,7 @@ public class FileService : IFileService
         try
         {
             // Asegurar que wwwroot existe
-            var wwwrootPath = _environment.WebRootPath;
+            string? wwwrootPath = _environment.WebRootPath;
             if (string.IsNullOrEmpty(wwwrootPath))
             {
                 wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -30,16 +30,16 @@ public class FileService : IFileService
             }
 
             // Crear carpeta de destino
-            var uploadPath = Path.Combine(wwwrootPath, folder);
+            string? uploadPath = Path.Combine(wwwrootPath, folder);
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
             }
 
-            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-            var filePath = Path.Combine(uploadPath, fileName);
+            string? fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            string? filePath = Path.Combine(uploadPath, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            using (FileStream? stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
@@ -56,7 +56,7 @@ public class FileService : IFileService
     {
         try
         {
-            var fullPath = Path.Combine(_environment.WebRootPath, filePath);
+            string? fullPath = Path.Combine(_environment.WebRootPath, filePath);
             if (File.Exists(fullPath))
             {
                 await Task.Run(() => File.Delete(fullPath));

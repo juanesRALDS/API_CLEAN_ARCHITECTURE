@@ -77,7 +77,7 @@ public class CreatePotentialClientUseCase : ICreatePotentialClientUseCase
             throw new ArgumentException($"El estado debe ser uno de los siguientes: {string.Join(", ", VALID_STATUSES)}", nameof(dto.Status));
 
         // Verificar duplicados
-        var existingClients = await _repository.GetAllAsync(CancellationToken.None);
+        IEnumerable<PotentialClient>? existingClients = await _repository.GetAllAsync(CancellationToken.None);
 
         if (existingClients.Any(c => c.Identification.Number.Equals(dto.Identification.Number, StringComparison.OrdinalIgnoreCase)))
             throw new InvalidOperationException("Ya existe un cliente con este número de identificación");

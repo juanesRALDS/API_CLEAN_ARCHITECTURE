@@ -21,13 +21,13 @@ public class UpdatePotentialClientUseCase : IUpdatePotentialClientUseCase
         if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("El ID del cliente potencial es obligatorio.");
 
-        var existingClient = await _repository.GetByIdPotencialClient(id)
+        PotentialClient? existingClient = await _repository.GetByIdPotencialClient(id)
             ?? throw new KeyNotFoundException($"Cliente potencial con ID {id} no encontrado.");
 
         await ValidateUpdate(dto, existingClient);
 
-        var now = DateTime.UtcNow;
-        var updatedClient = new PotentialClient
+        DateTime now = DateTime.UtcNow;
+        PotentialClient? updatedClient = new()
         {
             Id = id,
             Identification = dto.Identification ?? existingClient.Identification,
@@ -74,7 +74,7 @@ public class UpdatePotentialClientUseCase : IUpdatePotentialClientUseCase
                 throw new ArgumentException("Formato de email inválido");
 
             // Verificar duplicados solo si se cambia el email o nombre comercial
-            var existingClients = await _repository.GetAllAsync(CancellationToken.None);
+            IEnumerable<PotentialClient>? existingClients = await _repository.GetAllAsync(CancellationToken.None);
 
             if (!string.IsNullOrWhiteSpace(dto.BusinessInfo.Email) &&
                 existingClients.Any(c => c.Id != existingClient.Id &&

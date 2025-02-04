@@ -114,10 +114,10 @@ public class PotentialClientRepository : IPotentialClientRepository
     int pageSize,
     CancellationToken cancellationToken)
     {
-        var filter = Builders<PotentialClient>.Filter.Empty;
-        var totalCount = await _Clientcollection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        FilterDefinition<PotentialClient>? filter = Builders<PotentialClient>.Filter.Empty;
+        long totalCount = await _Clientcollection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 
-        var clients = await _Clientcollection.Find(filter)
+        List<PotentialClient>? clients = await _Clientcollection.Find(filter)
             .Skip((pageNumber - 1) * pageSize)
             .Limit(pageSize)
             .ToListAsync(cancellationToken);

@@ -29,6 +29,7 @@ public class SiteDto
     public string Address { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
+    public string ClientID { get; set; } = string.Empty;
     public List<WasteDto> Wastes { get; set; } = new();
 }
 
@@ -39,6 +40,7 @@ public class WasteDto
     public string Treatment { get; set; } = string.Empty;
     public string Frequency { get; set; } = string.Empty;
     public decimal Price { get; set; }
+    public string DescriptionWaste { get; set; } = string.Empty;
 }
 
 

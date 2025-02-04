@@ -31,20 +31,20 @@ public class ProposalExcelServices : IProposalExcelService
     {
         try
         {
-            var (proposals, _) = await _proposalRepository.GetAllProposals(1, int.MaxValue);
-            var stream = new MemoryStream();
+            (List<Proposal> proposals, _) = await _proposalRepository.GetAllProposals(1, int.MaxValue);
+            MemoryStream stream = new();
 
-            using (var spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
             {
-                var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                WorkbookPart workbookPart = spreadsheetDocument.AddWorkbookPart();
                 workbookPart.Workbook = new Workbook();
 
-                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                var sheetData = new SheetData();
+                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                SheetData sheetData = new();
                 worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
-                var sheet = new Sheet()
+                Sheets sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
+                Sheet sheet = new Sheet()
                 {
                     Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
                     SheetId = 1,
@@ -69,11 +69,11 @@ public class ProposalExcelServices : IProposalExcelService
 
     private void AddHeaders(SheetData sheetData)
     {
-        var headerRow = new Row();
+        Row headerRow = new Row();
 
         foreach (string header in Headers)
         {
-            var cell = new Cell()
+            Cell cell = new Cell()
             {
                 DataType = CellValues.String,
                 CellValue = new CellValue(header)
@@ -87,26 +87,26 @@ public class ProposalExcelServices : IProposalExcelService
     private async Task AddProposalsData(SheetData sheetData, IEnumerable<Proposal> proposals,
         CancellationToken cancellationToken)
     {
-        foreach (var proposal in proposals)
+        foreach (Proposal proposal in proposals)
         {
             if (cancellationToken.IsCancellationRequested)
                 break;
 
-            var client = await _clientRepository.GetByIdPotencialClient(proposal.ClientId);
+            PotentialClient? client = await _clientRepository.GetByIdPotencialClient(proposal.ClientId);
 
-            foreach (var site in proposal.Sites)
+            foreach (Site site in proposal.Sites)
             {
-                foreach (var waste in site.Wastes)
+                foreach (Waste waste in site.Wastes)
                 {
-                    var row = new Row();
+                    Row row = new Row();
                     row.Append(new[]
                     {
                         CreateCell(proposal.Number),
-                        CreateCell(proposal.Status?.Proposal ?? ""),
-                        CreateCell(proposal.Status?.Sending ?? ""),
-                        CreateCell(proposal.Status?.Review ?? ""),
+                        CreateCell(proposal.Status?.Proposal ?? string.Empty),
+                        CreateCell(proposal.Status?.Sending ?? string.Empty),
+                        CreateCell(proposal.Status?.Review ?? string.Empty),
                         CreateCell(proposal.CreatedAt.ToString("dd/MM/yyyy")),
-                        CreateCell(client?.BusinessInfo?.TradeName ?? ""),
+                        CreateCell(client?.BusinessInfo?.TradeName ?? string.Empty),
                         CreateCell(site.Address),
                         CreateCell(site.City),
                         CreateCell(site.Phone),

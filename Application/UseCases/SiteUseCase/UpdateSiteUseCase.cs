@@ -26,7 +26,7 @@ namespace SagaAserhi.Application.UseCases.ContractsUseCase
             updateSiteDto.Validate();
 
             // Obtener el sitio existente
-            Site existingSite = await _siteRepository.GetByIdAsync(id);
+            Site existingSite = await _siteRepository.GetByIdSite(id);
             if (existingSite == null)
                 throw new Exception("Sitio no encontrado");
 
@@ -40,7 +40,8 @@ namespace SagaAserhi.Application.UseCases.ContractsUseCase
                 Type = w.Type,
                 Classification = w.Classification,
                 Treatment = w.Treatment,
-                Price = w.Price
+                Price = w.Price,
+                DescriptionWaste = w.DescriptionWaste
             }).ToList();
             existingSite.Frequencies = new Frequency
             {
@@ -66,7 +67,8 @@ namespace SagaAserhi.Application.UseCases.ContractsUseCase
                     Type = w.Type,
                     Classification = w.Classification,
                     Treatment = w.Treatment,
-                    Price = w.Price
+                    Price = w.Price,
+                    DescriptionWaste = w.DescriptionWaste
                 }).ToList(),
                 Frequency = new FrequencyDto
                 {

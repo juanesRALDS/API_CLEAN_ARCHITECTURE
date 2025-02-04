@@ -1,6 +1,7 @@
 using SagaAserhi.Application.DTO.ContractsDtos;
 using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Domain.Entities;
 
 namespace SagaAserhi.Application.UseCases.ContractUseCase;
 
@@ -17,9 +18,9 @@ public class GetAllContractsUseCase : IGetAllContractsUseCase
     {
         try
         {
-            var (contracts, totalCount) = await _contractRepository.GetAllContracts(pageNumber, pageSize);
+            (List<Contract> contracts, int totalCount) = await _contractRepository.GetAllContracts(pageNumber, pageSize);
 
-            var contractsDto = contracts.Select(c => new ContractDto
+            List<ContractDto>? contractsDto = contracts.Select(c => new ContractDto
             {
                 Id = c.Id,
                 ProposalId = c.ProposalId,

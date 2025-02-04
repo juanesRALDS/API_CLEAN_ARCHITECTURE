@@ -44,8 +44,8 @@ public class ContractController : ControllerBase
         try
         {
             // Crear lista de cláusulas
-            var clauses = new List<ClauseDto>
-        {
+            List<ClauseDto>? clauses = new()
+            {
             new ClauseDto
             {
                 Title = ClausesTitle ?? "Cláusula General",
@@ -63,7 +63,7 @@ public class ContractController : ControllerBase
                 });
             }
 
-            var dto = new CreateContractDto
+            CreateContractDto? dto = new()
             {
                 Status = Status,
                 Start = Start,
@@ -72,7 +72,7 @@ public class ContractController : ControllerBase
                 Files = Files
             };
 
-            var result = await _createContractUseCase.Execute(proposalId, dto);
+            Contract? result = await _createContractUseCase.Execute(proposalId, dto);
 
             return Created($"/api/contracts/{result.Id}", new
             {
@@ -110,7 +110,7 @@ public class ContractController : ControllerBase
     {
         try
         {
-            var (contracts, totalCount) = await _getAllContractsUseCase.Execute(pageNumber, pageSize);
+            (List<ContractDto> contracts, int totalCount) = await _getAllContractsUseCase.Execute(pageNumber, pageSize);
 
             return Ok(new
             {
@@ -146,15 +146,15 @@ public class ContractController : ControllerBase
     {
         try
         {
-            var clausesList = new List<ClauseDto>
-        {
+            List<ClauseDto>? clausesList = new()
+            {
             new() {
                 Title = ClausesTitle,
                 Content = ClausesContent
             }
         };
 
-            var updateDto = new UpdateContractDto
+            UpdateContractDto? updateDto = new()
             {
                 Status = Status,
                 Start = Start,
@@ -188,13 +188,13 @@ public class ContractController : ControllerBase
     {
         try
         {
-            var dto = new AddAnnexDto
+            AddAnnexDto dto = new()
             {
                 ContractId = id,
                 Files = files
             };
 
-            var result = await _addAnnexUseCase.Execute(dto);
+            List<AnnexDto>? result = await _addAnnexUseCase.Execute(dto);
             return Ok(new
             {
                 success = true,
@@ -219,7 +219,7 @@ public class ContractController : ControllerBase
     {
         try
         {
-            var pdfBytes = await _contractsPDFUseCase.Execute(clientId, siteId);
+            byte[]? pdfBytes = await _contractsPDFUseCase.Execute(clientId, siteId);
             return File(pdfBytes, "application/pdf", $"contrato_{clientId}_{siteId}.pdf");
         }
         catch (KeyNotFoundException ex)

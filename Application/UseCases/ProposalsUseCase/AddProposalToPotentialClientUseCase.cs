@@ -25,10 +25,10 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
             throw new ArgumentException("El ID del cliente es requerido");
 
 
-        var client = await _potentialClientRepository.GetByIdPotencialClient(clientId)
+        PotentialClient client = await _potentialClientRepository.GetByIdPotencialClient(clientId)
             ?? throw new InvalidOperationException($"No se encontró el cliente con ID: {clientId}");
 
-        var proposal = new Proposal
+        Proposal? proposal = new Proposal
         {
             ClientId = clientId,
             Number = GenerateProposalNumber(),
@@ -50,7 +50,7 @@ public class AddProposalToPotentialClientUseCase : IAddProposalToPotentialClient
             UpdatedAt = DateTime.UtcNow
         };
 
-        var success = await _proposalRepository.CreateProposal(proposal);
+        bool success = await _proposalRepository.CreateProposal(proposal);
         if (!success)
             throw new InvalidOperationException("No se pudo crear la propuesta");
 

@@ -8,6 +8,7 @@ namespace SagaAserhi.Application.UseCases.PotentialClientsUseCase;
 using SagaAserhi.Application.Interfaces.Services;
 using SagaAserhi.Application.Interfaces.UseCasePotentialClient;
 using SagaAserhi.Application.Interfaces.IRepository;
+using SagaAserhi.Domain.Entities;
 
 public class ExportPotentialClientPdfUseCase : IExportPotentialClientPdfUseCase
 {
@@ -26,7 +27,7 @@ public class ExportPotentialClientPdfUseCase : IExportPotentialClientPdfUseCase
     {
         try
         {
-            var clients = await _repository.GetAllAsync(cancellationToken);
+            IEnumerable<PotentialClient>? clients = await _repository.GetAllAsync(cancellationToken);
             if (!clients.Any())
             {
                 throw new InvalidOperationException("No hay clientes potenciales para generar el reporte");

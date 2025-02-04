@@ -31,7 +31,7 @@ public class ContractsPDFUseCase : IContractsPDFUseCase
         if (client == null)
             throw new KeyNotFoundException($"Cliente no encontrado con ID: {clientId}");
 
-        Site? site = await _siteRepository.GetByIdAsync(siteId);
+        Site? site = await _siteRepository.GetByIdSite(siteId);
         if (site == null)
             throw new KeyNotFoundException($"Sitio no encontrado con ID: {siteId}");
 

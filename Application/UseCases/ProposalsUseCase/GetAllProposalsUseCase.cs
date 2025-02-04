@@ -22,14 +22,14 @@ public async Task<(List<ProposalDto>, int)> Execute(int pageNumber, int pageSize
 {
     try
     {
-        var (proposals, totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize, status);
-            var proposalsDto = new List<ProposalDto>();
+        (List<Proposal> proposals, int totalCount) = await _proposalrepository.GetAllProposals(pageNumber, pageSize, status);
+            List<ProposalDto>? proposalsDto = new();
 
-            foreach (var proposal in proposals)
+            foreach (Proposal proposal in proposals)
             {
-                var client = await _clientRepository.GetByIdPotencialClient(proposal.ClientId);
+                PotentialClient? client = await _clientRepository.GetByIdPotencialClient(proposal.ClientId);
 
-                var proposalDto = new ProposalDto
+                ProposalDto? proposalDto = new()
                 {
                     Id = proposal.Id,
                     ClientId = proposal.ClientId,
@@ -48,12 +48,14 @@ public async Task<(List<ProposalDto>, int)> Execute(int pageNumber, int pageSize
                         Address = s.Address ?? string.Empty,
                         City = s.City ?? string.Empty,
                         Phone = s.Phone ?? string.Empty,
+                        ClientID = s.ClientID ?? string.Empty,
                         Wastes = s.Wastes?.Select(w => new WasteDto
                         {
                             Type = w.Type ?? string.Empty,
                             Classification = w.Classification ?? string.Empty,
                             Treatment = w.Treatment ?? string.Empty,
-                            Price = w.Price
+                            Price = w.Price,
+                            DescriptionWaste = w.DescriptionWaste ?? string.Empty
                         }).ToList() ?? new List<WasteDto>()
                     }).ToList() ?? new List<SiteDto>(),
                     History = proposal.History?.Select(h => new ProposalHistoryDto

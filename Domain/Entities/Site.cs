@@ -28,6 +28,10 @@ namespace SagaAserhi.Domain.Entities
         [BsonElement("phone")]
         public string Phone { get; set; } = string.Empty;
 
+        [BsonElement("ClientID")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ClientID { get; set; } = string.Empty;
+        
         [BsonElement("proposalId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProposalId { get; set; } = string.Empty;
@@ -46,7 +50,7 @@ namespace SagaAserhi.Domain.Entities
 
     }
 
-    public class Frequency 
+    public class Frequency
     {
 
         [BsonElement("FrequencyOfTravel")]
@@ -69,5 +73,7 @@ namespace SagaAserhi.Domain.Entities
 
         [BsonElement("price")]
         public decimal Price { get; set; }
+        [BsonElement("description of the waste")]
+        public string DescriptionWaste { get; set; } = string.Empty;
     }
 }

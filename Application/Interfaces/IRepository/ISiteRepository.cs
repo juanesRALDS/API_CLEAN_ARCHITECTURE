@@ -8,10 +8,10 @@ namespace SagaAserhi.Application.Interfaces.IRepository;
 
 public interface ISiteRepository
 {
-    Task CreateAsync(Site site);
-    Task<Site> GetByIdAsync(string id);
+    Task CreateSite(Site site);
+    Task<Site> GetByIdSite(string id);
     Task<IEnumerable<Site>> GetByProposalIdAsync(string proposalId);
     Task<Site> UpdateSite(string id, Site site);
-    Task DeleteAsync(string id);
-    Task<bool> ExistsAsync(string id);
+    Task DeleteSite(string id);
+    Task<bool> ExistsSite(string id);
 }

@@ -15,6 +15,7 @@ public class SiteDtos
     public string Department { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string ProposalId { get; set; } = string.Empty;
+    public string ClientID { get; set; } = string.Empty;
     public List<WasteDto> Wastes { get; set; } = new();
     public FrequencyDto Frequency { get; set; } = new();
     public decimal TotalPrice { get; set; }

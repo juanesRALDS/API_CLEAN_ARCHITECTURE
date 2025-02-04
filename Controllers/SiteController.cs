@@ -16,19 +16,19 @@ public class SitesController : ControllerBase
 {
     private readonly ICreateSiteUseCase _createSiteUseCase;
     private readonly IGetSiteUseCase _getSiteUseCase;
-    private readonly IGetSiteUseCase _GetSiteUseCase;
     private readonly IUpdateSiteUseCase _updateSiteUseCase;
+    private readonly IDeleteSiteUseCase _deleteSiteUseCase;
 
     public SitesController(ICreateSiteUseCase createSiteUseCase,
                             IGetSiteUseCase getSiteUseCase,
-                            IGetSiteUseCase GetSiteUseCase,
-                            IUpdateSiteUseCase updateSiteUseCase
+                            IUpdateSiteUseCase updateSiteUseCase,
+                            IDeleteSiteUseCase deleteSiteUseCase
     )
     {
         _createSiteUseCase = createSiteUseCase;
         _getSiteUseCase = getSiteUseCase;
-        _GetSiteUseCase = GetSiteUseCase;
         _updateSiteUseCase = updateSiteUseCase;
+        _deleteSiteUseCase = deleteSiteUseCase;
     }
 
     [HttpPost]
@@ -39,13 +39,13 @@ public class SitesController : ControllerBase
         try
         {
             string proposalId = (string)RouteData.Values["proposalId"]!;
-            var siteRequest = new SiteRequestDto
+            SiteRequestDto? siteRequest = new()
             {
                 ProposalId = proposalId,
                 SiteInfo = dto
             };
 
-            var result = await _createSiteUseCase.Execute(siteRequest);
+            SiteDtos? result = await _createSiteUseCase.Execute(siteRequest);
 
             return Created($"/api/proposals/{proposalId}/sites/{result.Id}", new
             {
@@ -94,6 +94,37 @@ public class SitesController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSite(string id)
+    {
+        try
+        {
+            await _deleteSiteUseCase.Execute(id);
+            return Ok(new
+            {
+                success = true,
+                message = "Sitio eliminado exitosamente"
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                success = false,
+                message = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                success = false,
+                message = "Error al eliminar el sitio",
+                error = ex.Message
+            });
         }
     }
 }

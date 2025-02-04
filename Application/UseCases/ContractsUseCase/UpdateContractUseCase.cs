@@ -44,7 +44,7 @@ public class UpdateContractUseCase : IUpdateContractUseCase
         // Manejar reemplazo de anexo
         if (!string.IsNullOrEmpty(dto.AnnexToReplaceId) && dto.NewFile != null)
         {
-            var annexToReplace = existingContract.Documents.Annexes
+            Annex? annexToReplace = existingContract.Documents.Annexes
                 .FirstOrDefault(a => a.AnnexId == dto.AnnexToReplaceId);
 
             if (annexToReplace == null)
