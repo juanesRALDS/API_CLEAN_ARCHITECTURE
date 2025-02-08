@@ -6,7 +6,7 @@ using SagaAserhi.Application.Interfaces.IContractsUseCase;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Domain.Entities;
 
-namespace SagaAserhi.Application.UseCases.ContractsUseCase
+namespace SagaAserhi.Application.UseCases.SiteUseCase
 {
     public class UpdateSiteUseCase : IUpdateSiteUseCase
     {

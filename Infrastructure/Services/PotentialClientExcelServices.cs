@@ -24,20 +24,20 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
     {
         try
         {
-            var (clients, _) = await _repository.GetAllForExcel(1, int.MaxValue, cancellationToken);
-            var stream = new MemoryStream();
+            (IEnumerable<PotentialClient> clients, int _) = await _repository.GetAllForExcel(1, int.MaxValue, cancellationToken);
+            MemoryStream? stream = new MemoryStream();
 
-            using (var spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
+            using (SpreadsheetDocument? spreadsheetDocument = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))
             {
-                var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                WorkbookPart? workbookPart = spreadsheetDocument.AddWorkbookPart();
                 workbookPart.Workbook = new Workbook();
 
-                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                var sheetData = new SheetData();
+                WorksheetPart? worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                SheetData? sheetData = new();
                 worksheetPart.Worksheet = new Worksheet(sheetData);
 
-                var sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
-                var sheet = new Sheet()
+                 Sheets? sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
+                Sheet? sheet = new()
                 {
                     Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
                     SheetId = 1,
@@ -62,7 +62,7 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
 
     private void AddHeaders(SheetData sheetData)
     {
-        var headerRow = new Row();
+        Row? headerRow = new();
         foreach (string header in Headers)
         {
             headerRow.Append(CreateCell(header));
@@ -73,12 +73,12 @@ public class PotentialClientExcelServices : IPotentialClientExcelServices
     private Task AddClientsData(SheetData sheetData, IEnumerable<PotentialClient> clients, 
         CancellationToken cancellationToken)
     {
-        foreach (var client in clients)
+        foreach (PotentialClient? client in clients)
         {
             if (cancellationToken.IsCancellationRequested)
                 break;
 
-            var row = new Row();
+            Row? row = new Row();
             row.Append(GetClientCells(client));
             sheetData.Append(row);
         }

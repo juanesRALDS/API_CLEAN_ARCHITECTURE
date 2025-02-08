@@ -68,6 +68,7 @@ builder.Services.AddScoped<IUpdateProposalUseCase, UpdateProposalUseCase>();
 builder.Services.AddScoped<IExcelProposalUseCase, ExcelProposalUseCase>();
 builder.Services.AddScoped<ICreateSiteUseCase, CreateSiteUseCase>();
 builder.Services.AddScoped<IGetSiteUseCase, GetSiteUseCase>();
+builder.Services.AddScoped<IDeleteSiteUseCase, DeleteSiteUseCase>();
 builder.Services.AddScoped<IExportPotentialClientPdfUseCase, ExportPotentialClientPdfUseCase>();
 builder.Services.AddScoped<IGetAllContractsUseCase, GetAllContractsUseCase>();
 builder.Services.AddScoped<ICreateContractUseCase, CreateContractUseCase>();

@@ -23,11 +23,23 @@ public class SiteRepository : ISiteRepository
         FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.Id, id);
         return await _sites.Find(filter).FirstOrDefaultAsync();
     }
-
-    public async Task<IEnumerable<Site>> GetByProposalIdAsync(string proposalId)
+    public async Task<IEnumerable<Site>> GetAllSites(int pageNumber = 1, int pageSize = 10)
     {
+        int skip = (pageNumber - 1) * pageSize;
+        return await _sites.Find(_ => true)
+                          .Skip(skip)
+                          .Limit(pageSize)
+                          .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Site>> GetByProposalId(string proposalId, int pageNumber = 1, int pageSize = 10)
+    {
+        int skip = (pageNumber - 1) * pageSize;
         FilterDefinition<Site>? filter = Builders<Site>.Filter.Eq(s => s.ProposalId, proposalId);
-        return await _sites.Find(filter).ToListAsync();
+        return await _sites.Find(filter)
+                          .Skip(skip)
+                          .Limit(pageSize)
+                          .ToListAsync();
     }
 
     public async Task<Site> UpdateSite(string id, Site site)

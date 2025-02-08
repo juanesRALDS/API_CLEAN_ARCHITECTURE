@@ -11,7 +11,7 @@ using SagaAserhi.Application.Interfaces.ISiteUseCase;
 namespace SagaAserhi.Controllers;
 
 [ApiController]
-[Route("api/proposals/{proposalId}/sites")]
+[Route("api/sites")]
 public class SitesController : ControllerBase
 {
     private readonly ICreateSiteUseCase _createSiteUseCase;
@@ -31,7 +31,7 @@ public class SitesController : ControllerBase
         _deleteSiteUseCase = deleteSiteUseCase;
     }
 
-    [HttpPost]
+    [HttpPost("createSite{ProposalID}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SiteDtos>> CreateSite([FromBody] CreateSiteDto dto)
@@ -67,14 +67,17 @@ public class SitesController : ControllerBase
 
 
 
-    [HttpGet]
+    [HttpGet("getSite")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<SiteDtos>>> GetAllSites(string proposalId)
+    public async Task<ActionResult<List<SiteDtos>>> GetAllSites(string proposalId, 
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10
+     )
     {
         try
         {
-            List<SiteDtos>? sites = await _getSiteUseCase.Execute(proposalId);
+            List<SiteDtos>? sites = await _getSiteUseCase.Execute(proposalId, pageNumber, pageSize);
             return Ok(sites);
         }
         catch (Exception ex)
@@ -83,7 +86,7 @@ public class SitesController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("putSite{SiteID}")]
     public async Task<ActionResult<UpdateSiteDto>> UpdateSite(string id, [FromBody] UpdateSiteDto updateSiteDto)
     {
         try
@@ -97,7 +100,8 @@ public class SitesController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("deleteSite{SiteID}")]
+
     public async Task<IActionResult> DeleteSite(string id)
     {
         try

@@ -51,7 +51,7 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
         public async Task Execute_ConTipoIdentificacionInvalida_DebeLanzarArgumentException(string tipoInvalido)
         {
             // Arrange
-            var dtoConTipoInvalido = new CreatePotentialClientDto
+            CreatePotentialClientDto? dtoConTipoInvalido = new CreatePotentialClientDto
             {
                 Identification = new Identification { Type = tipoInvalido, Number = _validDto.Identification.Number },
                 BusinessInfo = _validDto.BusinessInfo,
@@ -68,7 +68,7 @@ namespace SagaAserhi.Tests.UseCase.PotentialClientsUseCase
         public async Task Execute_ConNumeroIdentificacionInvalido_DebeLanzarArgumentException(string numeroInvalido)
         {
             // Arrange
-            var dtoConNumeroInvalido = new CreatePotentialClientDto
+             CreatePotentialClientDto? dtoConNumeroInvalido = new CreatePotentialClientDto
             {
                 Identification = new Identification { Type = _validDto.Identification.Type, Number = numeroInvalido },
                 BusinessInfo = _validDto.BusinessInfo,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Wordprocessing;
 using SagaAserhi.Application.DTO.SiteDto;
 using SagaAserhi.Application.Interfaces.IRepository;
 using SagaAserhi.Application.Interfaces.ISiteUseCase;
@@ -17,12 +18,18 @@ namespace SagaAserhi.Application.UseCases.SiteUseCase
             _siteRepository = siteRepository;
         }
 
-        public async Task<List<SiteDtos>> Execute(string proposalId)
+        public async Task<List<SiteDtos>> Execute(string proposalId, int pageNumber, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(proposalId))
-                throw new ArgumentException("El ID de propuesta es requerido");
+            IEnumerable<Site> sites;
 
-            IEnumerable<Site>? sites = await _siteRepository.GetByProposalIdAsync(proposalId);
+            if (string.IsNullOrWhiteSpace(proposalId))
+            {
+                sites = await _siteRepository.GetAllSites(pageNumber, pageSize);
+            }
+            else
+            {
+                sites = await _siteRepository.GetByProposalId(proposalId, pageNumber, pageSize);
+            }
 
             return sites.Select(site => new SiteDtos
             {

@@ -10,7 +10,8 @@ public interface ISiteRepository
 {
     Task CreateSite(Site site);
     Task<Site> GetByIdSite(string id);
-    Task<IEnumerable<Site>> GetByProposalIdAsync(string proposalId);
+    Task<IEnumerable<Site>> GetByProposalId(string proposalId, int pageNumber = 1, int pageSize = 10);
+     Task<IEnumerable<Site>> GetAllSites(int pageNumber = 1, int pageSize = 10);
     Task<Site> UpdateSite(string id, Site site);
     Task DeleteSite(string id);
     Task<bool> ExistsSite(string id);
