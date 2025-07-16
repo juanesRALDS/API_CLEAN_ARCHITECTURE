@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SagaAserhi.Application.DTO;
-using SagaAserhi.Application.DTO.Auth;
 using SagaAserhi.Application.Interfaces.Auth.IAuthUsecases;
+using SagaAserhi.Application.DTO.Auth;
+using SagaAserhi.Application.DTO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SagaAserhi.Controllers;
 
@@ -30,7 +29,6 @@ public class AuthController : Controller
 
 
     [HttpGet("GetUserFromToken")]
-    [Authorize]
     public async Task<IActionResult> GetUserFromToken()
     {
         try
